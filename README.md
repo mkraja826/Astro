@@ -19,6 +19,9 @@ The repository currently provides:
 - `GET /v1/classical/varahamihira_v1/profile`
 - `GET /v1/classical/varahamihira_v1/rules`
 - `GET /v1/classical/varahamihira_v1/weighting/profile`
+- `GET /v1/classical/varahamihira_v1/validation/profile`
+- `GET /v1/classical/varahamihira_v1/validation/cases`
+- `POST /v1/classical/varahamihira_v1/validation/compare`
 - `GET /v1/classical/varahamihira_v1/rashis`
 - `GET /v1/classical/varahamihira_v1/grahas`
 - `POST /v1/classical/varahamihira_v1/conditions`
@@ -57,6 +60,8 @@ The repository currently provides:
 - Separately versioned controlled strength weighting with visible formulas
 - Additive weighted Karmājīva and active-Dasha summaries
 - Three frozen formula-level golden fixtures
+- Twelve frozen globally diverse external-validation chart inputs
+- Partial snapshot comparison with field-specific tolerances and discrepancy reports
 - Active Vimshottari timing annotated with ownership, condition, aspect, bindu, career, and relationship facts
 - Explicit neutral Rahu and Ketu coverage without invented classical dignity rules
 - True Rahu and opposite Ketu
@@ -109,6 +114,9 @@ The classical source layer is available through:
 GET  /v1/classical/varahamihira_v1/profile
 GET  /v1/classical/varahamihira_v1/rules
 GET  /v1/classical/varahamihira_v1/weighting/profile
+GET  /v1/classical/varahamihira_v1/validation/profile
+GET  /v1/classical/varahamihira_v1/validation/cases
+POST /v1/classical/varahamihira_v1/validation/compare
 GET  /v1/classical/varahamihira_v1/rashis
 GET  /v1/classical/varahamihira_v1/grahas
 POST /v1/classical/varahamihira_v1/conditions
@@ -167,9 +175,12 @@ summaries while preserving the original evidence-only responses unchanged.
 Rahu and Ketu remain unavailable for scoring. Cancellation and event prediction
 remain disabled.
 
-Three internal golden fixtures freeze the weighting arithmetic. External
-multi-software chart validation is still incomplete and is reported as such by
-the weighting-profile endpoint.
+Three internal golden fixtures freeze the weighting arithmetic. The external
+validation harness separately freezes twelve diverse birth inputs and compares
+partial snapshots from independent programs. Every supplied field is reported
+as a match or mismatch using documented tolerances; omitted groups are skipped.
+No external snapshots are approved yet, so external multi-software validation
+remains explicitly incomplete.
 
 The classical Dasha endpoint preserves the existing current Vimshottari timing
 response and annotates each active lord with D1 placement, house ownership,
@@ -261,6 +272,7 @@ See [`docs/EPHEMERIS_DEPLOYMENT.md`](docs/EPHEMERIS_DEPLOYMENT.md).
 - [`docs/CLASSICAL_RELATIONSHIPS_V1.md`](docs/CLASSICAL_RELATIONSHIPS_V1.md)
 - [`docs/CLASSICAL_STRENGTH_V1.md`](docs/CLASSICAL_STRENGTH_V1.md)
 - [`docs/CONTROLLED_STRENGTH_WEIGHTING_V1.md`](docs/CONTROLLED_STRENGTH_WEIGHTING_V1.md)
+- [`docs/GOLDEN_CHART_VALIDATION_V1.md`](docs/GOLDEN_CHART_VALIDATION_V1.md)
 
 ## Docker
 
