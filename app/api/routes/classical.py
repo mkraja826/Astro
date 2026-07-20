@@ -8,16 +8,17 @@ from app.engine.classical_aspects import calculate_varahamihira_aspects
 from app.engine.classical_career import calculate_varahamihira_career
 from app.engine.classical_conditions import calculate_varahamihira_conditions
 from app.engine.classical_dasha import calculate_varahamihira_dasha_context
-from app.engine.classical_dasha_rules import (
-    extend_varahamihira_profile,
-    extend_varahamihira_rules,
-)
 from app.engine.classical_reference import (
     get_varahamihira_grahas,
     get_varahamihira_profile,
     get_varahamihira_rashis,
     get_varahamihira_rules,
 )
+from app.engine.classical_relationship_rules import (
+    extend_varahamihira_profile,
+    extend_varahamihira_rules,
+)
+from app.engine.classical_relationships import calculate_varahamihira_relationships
 from app.engine.current_dasha import DashaQueryError
 from app.engine.positions import BirthTimeError
 from app.schemas.classical import (
@@ -45,6 +46,10 @@ from app.schemas.classical_conditions import (
 from app.schemas.classical_dasha import (
     ClassicalDashaRequest,
     ClassicalDashaResponse,
+)
+from app.schemas.classical_relationships import (
+    ClassicalRelationshipsRequest,
+    ClassicalRelationshipsResponse,
 )
 
 router = APIRouter(
@@ -209,6 +214,31 @@ def varahamihira_ashtakavarga(
 
     try:
         return calculate_varahamihira_ashtakavarga(request)
+    except BirthTimeError as exc:
+        raise _unprocessable(exc) from exc
+    except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
+        raise _ephemeris_unavailable(exc) from exc
+
+
+@router.post(
+    "/relationships",
+    response_model=ClassicalRelationshipsResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Evaluate natural, temporary, and compound Graha relationships",
+    responses={
+        422: {"description": "Invalid coordinates, timezone, or local civil time"},
+        503: {
+            "description": "Required licensed ephemeris configuration or data unavailable"
+        },
+    },
+)
+def varahamihira_relationships(
+    request: ClassicalRelationshipsRequest,
+) -> ClassicalRelationshipsResponse:
+    """Return the complete seven-Graha relationship matrix."""
+
+    try:
+        return calculate_varahamihira_relationships(request)
     except BirthTimeError as exc:
         raise _unprocessable(exc) from exc
     except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
