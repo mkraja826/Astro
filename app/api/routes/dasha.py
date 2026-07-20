@@ -14,7 +14,7 @@ router = APIRouter(prefix="/v1/dashas", tags=["Dasha"])
     "/vimshottari",
     response_model=VimshottariResponse,
     status_code=status.HTTP_200_OK,
-    summary="Calculate nested Vimshottari Dasha timelines",
+    summary="Calculate Vimshottari timelines through optional Sookshma Dasha",
     responses={
         422: {
             "description": "Invalid coordinates, timezone, or local civil time",
@@ -25,7 +25,7 @@ router = APIRouter(prefix="/v1/dashas", tags=["Dasha"])
     },
 )
 def vimshottari(request: VimshottariRequest) -> VimshottariResponse:
-    """Return Mahadasha, Antardasha and Pratyantardasha timelines."""
+    """Return birth balance and Vimshottari timelines to the requested depth."""
 
     try:
         return calculate_vimshottari(request)

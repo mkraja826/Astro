@@ -20,10 +20,12 @@ from app.engine.positions import (
 )
 from app.schemas.dasha import (
     AntardashaPeriod,
+    DashaDepth,
     DashaLord,
     DashaMoonPosition,
     MahadashaPeriod,
     PratyantardashaPeriod,
+    SookshmaDashaPeriod,
     VimshottariRequest,
     VimshottariResponse,
 )
@@ -76,12 +78,60 @@ def _birth_balance(
     )
 
 
+def _build_sookshmadashas(
+    pratyantardasha_lord_index: int,
+    pratyantardasha_duration_years: float,
+    pratyantardasha_start: datetime,
+    pratyantardasha_end: datetime,
+    birth_utc: datetime,
+) -> list[SookshmaDashaPeriod]:
+    """Build nine proportional fourth-level periods for one Pratyantardasha."""
+
+    periods: list[SookshmaDashaPeriod] = []
+    period_start = pratyantardasha_start
+
+    for offset in range(len(DASHA_LORDS)):
+        lord_index = (pratyantardasha_lord_index + offset) % len(DASHA_LORDS)
+        duration_years = (
+            pratyantardasha_duration_years
+            * DASHA_YEARS[lord_index]
+            / VIMSHOTTARI_CYCLE_YEARS
+        )
+        period_end = (
+            pratyantardasha_end
+            if offset == len(DASHA_LORDS) - 1
+            else period_start + _years_to_delta(duration_years)
+        )
+        active_at_birth, elapsed_years, remaining_years = _birth_balance(
+            period_start,
+            period_end,
+            birth_utc,
+        )
+
+        periods.append(
+            SookshmaDashaPeriod(
+                sequence_number=offset + 1,
+                lord=DASHA_LORDS[lord_index],
+                duration_years=round(duration_years, 15),
+                start_utc=period_start,
+                end_utc=period_end,
+                active_at_birth=active_at_birth,
+                elapsed_at_birth_years=elapsed_years,
+                remaining_at_birth_years=remaining_years,
+            )
+        )
+        period_start = period_end
+
+    return periods
+
+
 def _build_pratyantardashas(
     antardasha_lord_index: int,
     antardasha_duration_years: float,
     antardasha_start: datetime,
     antardasha_end: datetime,
     birth_utc: datetime,
+    include_sookshma: bool,
 ) -> list[PratyantardashaPeriod]:
     """Build nine proportional third-level periods for one Antardasha."""
 
@@ -116,6 +166,17 @@ def _build_pratyantardashas(
                 active_at_birth=active_at_birth,
                 elapsed_at_birth_years=elapsed_years,
                 remaining_at_birth_years=remaining_years,
+                sookshmadashas=(
+                    _build_sookshmadashas(
+                        lord_index,
+                        duration_years,
+                        period_start,
+                        period_end,
+                        birth_utc,
+                    )
+                    if include_sookshma
+                    else None
+                ),
             )
         )
         period_start = period_end
@@ -129,6 +190,7 @@ def _build_antardashas(
     mahadasha_start: datetime,
     mahadasha_end: datetime,
     birth_utc: datetime,
+    include_sookshma: bool,
 ) -> list[AntardashaPeriod]:
     """Build nine proportional and contiguous sub-periods for one Mahadasha."""
 
@@ -169,6 +231,7 @@ def _build_antardashas(
                     period_start,
                     period_end,
                     birth_utc,
+                    include_sookshma,
                 ),
             )
         )
@@ -178,7 +241,7 @@ def _build_antardashas(
 
 
 def calculate_vimshottari(request: VimshottariRequest) -> VimshottariResponse:
-    """Return Mahadasha, Antardasha and Pratyantardasha timelines."""
+    """Return Vimshottari timelines through the requested subdivision depth."""
 
     positions_request = PositionsRequest(
         birth=request.birth,
@@ -211,6 +274,7 @@ def calculate_vimshottari(request: VimshottariRequest) -> VimshottariResponse:
 
     first_start = utc_datetime - _years_to_delta(elapsed_years)
     first_end = first_start + _years_to_delta(birth_lord_years)
+    include_sookshma = request.depth == DashaDepth.SOOKSHMA
 
     periods: list[MahadashaPeriod] = []
     period_start = first_start
@@ -244,6 +308,7 @@ def calculate_vimshottari(request: VimshottariRequest) -> VimshottariResponse:
                     period_start,
                     period_end,
                     utc_datetime,
+                    include_sookshma,
                 ),
             )
         )

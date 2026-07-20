@@ -28,6 +28,13 @@ class DashaLord(StrEnum):
     MERCURY = "mercury"
 
 
+class DashaDepth(StrEnum):
+    """Deepest Vimshottari subdivision requested in the response."""
+
+    PRATYANTARDASHA = "pratyantardasha"
+    SOOKSHMA = "sookshma"
+
+
 class VimshottariRequest(BaseModel):
     """Birth data used to derive the Vimshottari Dasha cycle."""
 
@@ -36,6 +43,13 @@ class VimshottariRequest(BaseModel):
     birth: BirthInput
     calculation_profile: CalculationProfile = (
         CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_V1
+    )
+    depth: DashaDepth = Field(
+        default=DashaDepth.PRATYANTARDASHA,
+        description=(
+            "Deepest returned subdivision. Use 'sookshma' to include all 6,561 "
+            "fourth-level periods; the default preserves the existing three-level response."
+        ),
     )
 
 
@@ -49,6 +63,19 @@ class DashaMoonPosition(BaseModel):
     progress_percent: float
 
 
+class SookshmaDashaPeriod(BaseModel):
+    """One proportional fourth-level period inside a Pratyantardasha."""
+
+    sequence_number: int = Field(ge=1, le=9)
+    lord: DashaLord
+    duration_years: float
+    start_utc: datetime
+    end_utc: datetime
+    active_at_birth: bool
+    elapsed_at_birth_years: float | None = None
+    remaining_at_birth_years: float | None = None
+
+
 class PratyantardashaPeriod(BaseModel):
     """One proportional third-level period inside an Antardasha."""
 
@@ -60,6 +87,7 @@ class PratyantardashaPeriod(BaseModel):
     active_at_birth: bool
     elapsed_at_birth_years: float | None = None
     remaining_at_birth_years: float | None = None
+    sookshmadashas: list[SookshmaDashaPeriod] | None = None
 
 
 class AntardashaPeriod(BaseModel):
