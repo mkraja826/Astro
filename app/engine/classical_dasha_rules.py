@@ -150,7 +150,10 @@ def extend_varahamihira_profile(
             "endpoints": endpoints,
             "caveats": [
                 "Vimshottari timing is external to the Brihat Jataka source profile.",
-                "The endpoint composes existing condition, aspect, Chapter 9, and Chapter 10 facts.",
+                (
+                    "The endpoint composes existing condition, aspect, Chapter 9, "
+                    "and Chapter 10 facts."
+                ),
                 "Rahu and Ketu receive neutral placement context only.",
                 "No cancellation, strength weighting, or event prediction is applied.",
                 "The evaluator does not alter any existing calculation endpoint.",
