@@ -4,16 +4,21 @@ Commercial-grade Vedic and South Indian astrology API.
 
 ## Current milestone
 
-The repository currently provides the first API foundation:
+The repository currently provides:
 
 - FastAPI application factory
 - `GET /`
-- `GET /health`
-- OpenAPI documentation at `/docs`
-- Automated health endpoint tests
+- `GET /health` process liveness
+- `GET /health/ephemeris` calculation readiness
+- `POST /v1/positions`
+- Lahiri sidereal planetary positions and ascendant
+- Rashi, Nakshatra, Pada and whole-sign houses
+- True Rahu and opposite Ketu
+- Timezone, ambiguous-time and coordinate validation
+- Explicit Swiss Ephemeris source reporting
+- Production guard against silent low-precision fallback
+- Automated linting and tests
 - Docker and Google Cloud Run-ready configuration
-
-Astrology calculations will be added only after the API foundation and calculation standards are stable.
 
 ## Local setup
 
@@ -26,21 +31,32 @@ Windows PowerShell:
 ```powershell
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-pip install -e ".[dev]"
-uvicorn app.main:app --reload
+python -m pip install -e ".[dev]"
+python -m uvicorn app.main:app --reload
 ```
 
 Open:
 
 - API: http://127.0.0.1:8000
 - Health: http://127.0.0.1:8000/health
+- Ephemeris readiness: http://127.0.0.1:8000/health/ephemeris
 - Documentation: http://127.0.0.1:8000/docs
 
 ## Tests
 
 ```bash
-pytest
+python -m pytest
+python -m ruff check .
 ```
+
+## Swiss Ephemeris production requirement
+
+Local development may use the native engine fallback while the API contract is
+being built. A public production service must declare its Swiss Ephemeris
+license mode, deploy the required data files and enable strict source checking.
+The API then fails instead of silently accepting a fallback source.
+
+See [`docs/EPHEMERIS_DEPLOYMENT.md`](docs/EPHEMERIS_DEPLOYMENT.md).
 
 ## Docker
 
