@@ -13,7 +13,6 @@ router = APIRouter(prefix="/v1/dashas", tags=["Dasha"])
 @router.post(
     "/vimshottari",
     response_model=VimshottariResponse,
-    response_model_exclude_none=True,
     status_code=status.HTTP_200_OK,
     summary="Calculate Vimshottari timelines through optional Sookshma Dasha",
     responses={
