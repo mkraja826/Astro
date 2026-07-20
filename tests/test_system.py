@@ -30,6 +30,18 @@ def test_health_returns_healthy_status() -> None:
     assert payload["timestamp"].endswith("Z")
 
 
+def test_ephemeris_health_reports_degraded_until_configured() -> None:
+    response = client.get("/health/ephemeris")
+    payload = response.json()
+
+    assert response.status_code == 503
+    assert payload["status"] == "degraded"
+    assert payload["ready"] is False
+    assert payload["license_mode"] == "unset"
+    assert set(payload["required_files"]) == {"sepl_18.se1", "semo_18.se1"}
+    assert payload["issues"]
+
+
 def test_openapi_document_is_available() -> None:
     response = client.get("/openapi.json")
 
