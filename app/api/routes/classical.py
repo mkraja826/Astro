@@ -3,12 +3,13 @@
 from fastapi import APIRouter, HTTPException, status
 
 from app.core.ephemeris import EphemerisConfigurationError, EphemerisUnavailableError
-from app.engine.classical_aspects import calculate_varahamihira_aspects
-from app.engine.classical_career import calculate_varahamihira_career
-from app.engine.classical_career_rules import (
+from app.engine.classical_ashtakavarga import calculate_varahamihira_ashtakavarga
+from app.engine.classical_ashtakavarga_rules import (
     extend_varahamihira_profile,
     extend_varahamihira_rules,
 )
+from app.engine.classical_aspects import calculate_varahamihira_aspects
+from app.engine.classical_career import calculate_varahamihira_career
 from app.engine.classical_conditions import calculate_varahamihira_conditions
 from app.engine.classical_reference import (
     get_varahamihira_grahas,
@@ -22,6 +23,10 @@ from app.schemas.classical import (
     GrahaReferenceResponse,
     RashiReferenceResponse,
     RuleRegistryResponse,
+)
+from app.schemas.classical_ashtakavarga import (
+    AshtakavargaRequest,
+    AshtakavargaResponse,
 )
 from app.schemas.classical_aspects import (
     ClassicalAspectsRequest,
@@ -173,6 +178,31 @@ def varahamihira_career(
 
     try:
         return calculate_varahamihira_career(request)
+    except BirthTimeError as exc:
+        raise _unprocessable(exc) from exc
+    except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
+        raise _ephemeris_unavailable(exc) from exc
+
+
+@router.post(
+    "/ashtakavarga",
+    response_model=AshtakavargaResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Calculate Chapter 9 Bhinnashtakavarga and Sarvashtakavarga",
+    responses={
+        422: {"description": "Invalid coordinates, timezone, or local civil time"},
+        503: {
+            "description": "Required licensed ephemeris configuration or data unavailable"
+        },
+    },
+)
+def varahamihira_ashtakavarga(
+    request: AshtakavargaRequest,
+) -> AshtakavargaResponse:
+    """Return raw contributor rows, planetary bindus, and aggregate bindus."""
+
+    try:
+        return calculate_varahamihira_ashtakavarga(request)
     except BirthTimeError as exc:
         raise _unprocessable(exc) from exc
     except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
