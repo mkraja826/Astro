@@ -20,6 +20,7 @@ The repository currently provides:
 - Vimshottari birth balance and one complete 120-year Mahadasha cycle
 - Nine proportional Antardashas inside every Mahadasha
 - Nine proportional Pratyantardashas inside every Antardasha
+- Optional Sookshma Dasha expansion with 6,561 fourth-level periods
 - True Rahu and opposite Ketu
 - Timezone, ambiguous-time and coordinate validation
 - Explicit Swiss Ephemeris source reporting
@@ -48,6 +49,21 @@ Open:
 - Health: http://127.0.0.1:8000/health
 - Ephemeris readiness: http://127.0.0.1:8000/health/ephemeris
 - Documentation: http://127.0.0.1:8000/docs
+
+## Vimshottari response depth
+
+The default Dasha response ends at Pratyantardasha to preserve the existing API
+size and behavior. Add this field when the complete fourth-level timeline is
+required:
+
+```json
+{
+  "depth": "sookshma"
+}
+```
+
+That response contains 6,561 Sookshma Dasha periods, so it should be requested
+only by clients that need the expanded timeline.
 
 ## Tests
 
