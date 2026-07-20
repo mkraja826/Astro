@@ -1,8 +1,8 @@
 """External golden-chart case registry, snapshot builder, and comparator."""
 
+import json
 from datetime import datetime
 from hashlib import sha256
-import json
 from typing import Any
 
 from app.engine.charts import calculate_chart
@@ -325,6 +325,16 @@ def _compare_value(
     )
 
 
+def _missing_actual(path: str, reference: Any) -> FieldComparison:
+    return FieldComparison(
+        path=path,
+        status=ValidationFieldStatus.MISMATCH,
+        actual_value="<missing>",
+        reference_value=str(reference),
+        reason="The supplied reference path is not available in the normalized snapshot.",
+    )
+
+
 def compare_golden_chart(
     request: GoldenChartComparisonRequest,
 ) -> GoldenChartComparisonResponse:
@@ -342,11 +352,15 @@ def compare_golden_chart(
     actual_flat = _flatten(actual.model_dump())
     reference_flat = _flatten(reference_groups)
     comparisons = [
-        _compare_value(
-            path,
-            actual_flat[path],
-            reference_value,
-            request.tolerances,
+        (
+            _compare_value(
+                path,
+                actual_flat[path],
+                reference_value,
+                request.tolerances,
+            )
+            if path in actual_flat
+            else _missing_actual(path, reference_value)
         )
         for path, reference_value in reference_flat.items()
     ]
