@@ -14,7 +14,7 @@ from app.schemas.charts import ChartRequest, ChartType
 from app.schemas.classical_ashtakavarga import AshtakavargaRequest
 from app.schemas.classical_aspects import AspectRay, ClassicalAspectsRequest
 from app.schemas.classical_career import ClassicalCareerRequest
-from app.schemas.classical_conditions import ClassicalConditionsRequest, DignityState
+from app.schemas.classical_conditions import ClassicalConditionsRequest
 from app.schemas.classical_dasha import (
     ClassicalDashaRequest,
     ClassicalDashaResponse,
