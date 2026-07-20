@@ -18,7 +18,7 @@ def create_app() -> FastAPI:
         description=(
             "A versioned API for deterministic Jyothisyam calculations. "
             "It provides Lahiri sidereal planetary positions, sunrise-based "
-            "Panchanga, and Vimshottari Mahadasha timelines."
+            "Panchanga, and nested Vimshottari Dasha timelines."
         ),
         version=__version__,
         docs_url="/docs",
