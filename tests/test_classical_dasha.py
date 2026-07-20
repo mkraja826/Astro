@@ -65,7 +65,11 @@ def test_classical_dasha_matches_existing_timing_and_context_endpoints() -> None
 
     assert response.status_code == 200, result
     assert timing_response.status_code == 200, timing
-    assert result["timing"] == timing
+    embedded_timing = dict(result["timing"])
+    direct_timing = dict(timing)
+    embedded_timing.pop("request_id")
+    direct_timing.pop("request_id")
+    assert embedded_timing == direct_timing
     assert result["interpretation_mode"] == "evidence_only"
     assert result["prediction_applied"] is False
     assert result["cancellations_applied"] is False
