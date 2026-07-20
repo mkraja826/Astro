@@ -99,20 +99,26 @@ def test_vimshottari_returns_complete_birth_cycle() -> None:
         assert following["elapsed_at_birth_years"] is None
         assert following["remaining_at_birth_years"] is None
 
+    first_pratyantardasha = first["antardashas"][0]["pratyantardashas"][0]
+    assert "sookshmadashas" not in first_pratyantardasha
     assert payload["metadata"]["zodiac"] == "sidereal"
     assert payload["metadata"]["ayanamsha"] == "lahiri"
     assert payload["metadata"]["ephemeris_sources"]
 
 
 def test_vimshottari_returns_all_contiguous_subperiods() -> None:
-    response = client.post("/v1/dashas/vimshottari", json=_payload())
+    request_payload = _payload()
+    request_payload["depth"] = "sookshma"
+    response = client.post("/v1/dashas/vimshottari", json=request_payload)
     payload = response.json()
 
     assert response.status_code == 200, payload
     birth_utc = _parse_datetime(payload["time"]["utc_datetime"])
     active_antardashas: list[dict[str, object]] = []
     active_pratyantardashas: list[dict[str, object]] = []
+    active_sookshmadashas: list[dict[str, object]] = []
     pratyantardasha_count = 0
+    sookshmadasha_count = 0
 
     for mahadasha in payload["mahadashas"]:
         antardashas = mahadasha["antardashas"]
@@ -169,7 +175,38 @@ def test_vimshottari_returns_all_contiguous_subperiods() -> None:
                 item for item in pratyantardashas if item["active_at_birth"]
             )
 
+            for pratyantardasha in pratyantardashas:
+                sookshmadashas = pratyantardasha["sookshmadashas"]
+                sookshmadasha_count += len(sookshmadashas)
+                assert len(sookshmadashas) == 9
+                assert sookshmadashas[0]["start_utc"] == pratyantardasha["start_utc"]
+                assert sookshmadashas[-1]["end_utc"] == pratyantardasha["end_utc"]
+                assert sum(
+                    item["duration_years"] for item in sookshmadashas
+                ) == pytest.approx(pratyantardasha["duration_years"], abs=2e-10)
+
+                sookshma_start_index = LORDS.index(pratyantardasha["lord"])
+                expected_sookshma_sequence = [
+                    LORDS[(sookshma_start_index + offset) % len(LORDS)]
+                    for offset in range(9)
+                ]
+                assert [
+                    item["lord"] for item in sookshmadashas
+                ] == expected_sookshma_sequence
+
+                for current, following in zip(
+                    sookshmadashas[:-1],
+                    sookshmadashas[1:],
+                    strict=True,
+                ):
+                    assert current["end_utc"] == following["start_utc"]
+
+                active_sookshmadashas.extend(
+                    item for item in sookshmadashas if item["active_at_birth"]
+                )
+
     assert pratyantardasha_count == 729
+    assert sookshmadasha_count == 6_561
     assert len(active_antardashas) == 1
     active_antardasha = active_antardashas[0]
     assert _parse_datetime(active_antardasha["start_utc"]) <= birth_utc
@@ -188,6 +225,16 @@ def test_vimshottari_returns_all_contiguous_subperiods() -> None:
         active_pratyantardasha["elapsed_at_birth_years"]
         + active_pratyantardasha["remaining_at_birth_years"]
         == pytest.approx(active_pratyantardasha["duration_years"], abs=2e-8)
+    )
+
+    assert len(active_sookshmadashas) == 1
+    active_sookshmadasha = active_sookshmadashas[0]
+    assert _parse_datetime(active_sookshmadasha["start_utc"]) <= birth_utc
+    assert birth_utc < _parse_datetime(active_sookshmadasha["end_utc"])
+    assert (
+        active_sookshmadasha["elapsed_at_birth_years"]
+        + active_sookshmadasha["remaining_at_birth_years"]
+        == pytest.approx(active_sookshmadasha["duration_years"], abs=2e-8)
     )
 
 
