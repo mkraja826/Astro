@@ -10,7 +10,7 @@ from app.engine.classical_reference import (
     get_varahamihira_rashis,
 )
 from app.engine.positions import SIGNS
-from app.schemas.charts import ChartRequest, ChartType
+from app.schemas.charts import ChartPoint, ChartRequest, ChartType
 from app.schemas.classical import GrahaReference, NaturalTendency
 from app.schemas.classical_conditions import (
     ClassicalConditionsRequest,
@@ -100,11 +100,17 @@ def _resolve_moon_phase(
     if near_new_moon:
         phase = MoonPhaseState.NEW_MOON_BOUNDARY
         tendency = ResolvedTendency.CONDITIONAL
-        reason = "The Moon is at the exact new-Moon boundary, so no waxing/waning class is forced."
+        reason = (
+            "The Moon is at the exact new-Moon boundary, so no waxing/waning "
+            "class is forced."
+        )
     elif near_full_moon:
         phase = MoonPhaseState.FULL_MOON_BOUNDARY
         tendency = ResolvedTendency.BENEFIC
-        reason = "The Moon is at the exact full-Moon boundary and resolves on the waxing side."
+        reason = (
+            "The Moon is at the exact full-Moon boundary and resolves on the "
+            "waxing side."
+        )
     elif elongation < 180.0:
         phase = MoonPhaseState.WAXING
         tendency = ResolvedTendency.BENEFIC
@@ -124,18 +130,15 @@ def _resolve_moon_phase(
 
 
 def _resolve_mercury_association(
-    d1_points: dict[str, object],
+    d1_points: dict[str, ChartPoint],
     sign_ids: dict[str, str],
     resolved_tendencies: dict[str, ResolvedTendency],
 ) -> MercuryAssociationCondition:
-    mercury = d1_points["mercury"]
-    mercury_sign_index = mercury.sign_index  # type: ignore[attr-defined]
-
+    mercury_sign_index = d1_points["mercury"].sign_index
     associated = [
         name
         for name in _CLASSICAL_GRAHAS
-        if name != "mercury"
-        and d1_points[name].sign_index == mercury_sign_index  # type: ignore[attr-defined]
+        if name != "mercury" and d1_points[name].sign_index == mercury_sign_index
     ]
     benefic = [
         name
@@ -156,7 +159,10 @@ def _resolve_mercury_association(
     if not associated:
         state = MercuryAssociationState.UNASSOCIATED
         tendency = ResolvedTendency.CONDITIONAL
-        reason = "No same-sign classical Graha association was found; Mercury remains conditional."
+        reason = (
+            "No same-sign classical Graha association was found; Mercury "
+            "remains conditional."
+        )
     elif benefic and not malefic and not conditional:
         state = MercuryAssociationState.BENEFIC_ONLY
         tendency = ResolvedTendency.BENEFIC
@@ -195,6 +201,101 @@ def _fixed_tendency(reference: GrahaReference) -> ResolvedTendency:
     return ResolvedTendency.CONDITIONAL
 
 
+def _tendency_reason(
+    name: str,
+    reference: GrahaReference,
+    moon_phase: MoonPhaseCondition,
+    mercury_association: MercuryAssociationCondition,
+) -> str:
+    if name == "moon":
+        return moon_phase.reason
+    if name == "mercury":
+        return mercury_association.reason
+    return (
+        f"{reference.english_name} has a fixed "
+        f"{reference.natural_tendency.value} reference tendency."
+    )
+
+
+def _tendency_rule(name: str) -> str:
+    if name == "moon":
+        return "VM-BJ-C02-MOON-PHASE-EVAL-001"
+    if name == "mercury":
+        return "VM-BJ-C02-MERCURY-ASSOC-EVAL-001"
+    return "VM-BJ-C02-ATTRIBUTES-001"
+
+
+def _build_evidence(
+    reference: GrahaReference,
+    point: ChartPoint,
+    sign_id: str,
+    d9_sign_id: str,
+    dignity: DignityEvaluation,
+    vargottama: bool,
+    tendency_rule: str,
+    tendency_reason: str,
+) -> list[ConditionEvidence]:
+    return [
+        ConditionEvidence(
+            rule_id="VM-BJ-C01-OWN-SIGN-EVAL-001",
+            condition="own_sign",
+            applies=dignity.own_sign,
+            reason=(
+                f"{reference.english_name} occupies {point.sign}; owned signs are "
+                f"{', '.join(reference.owned_signs)}."
+            ),
+        ),
+        ConditionEvidence(
+            rule_id="VM-BJ-C02-DIGNITY-EVAL-001",
+            condition="exaltation_sign",
+            applies=dignity.in_exaltation_sign,
+            reason=(
+                f"D1 sign is {sign_id}; registered exaltation sign is "
+                f"{reference.exaltation_sign}."
+            ),
+        ),
+        ConditionEvidence(
+            rule_id="VM-BJ-C02-DIGNITY-EVAL-001",
+            condition="deep_exaltation_point",
+            applies=dignity.at_deep_exaltation_point,
+            reason=(
+                f"D1 degree is {point.degree_in_sign}; registered deep exaltation "
+                f"degree is {reference.exaltation_degree}."
+            ),
+        ),
+        ConditionEvidence(
+            rule_id="VM-BJ-C02-DIGNITY-EVAL-001",
+            condition="debilitation_sign",
+            applies=dignity.in_debilitation_sign,
+            reason=(
+                f"D1 sign is {sign_id}; registered debilitation sign is "
+                f"{reference.debilitation_sign}."
+            ),
+        ),
+        ConditionEvidence(
+            rule_id="VM-BJ-C02-DIGNITY-EVAL-001",
+            condition="deep_debilitation_point",
+            applies=dignity.at_deep_debilitation_point,
+            reason=(
+                f"D1 degree is {point.degree_in_sign}; registered deep debilitation "
+                f"degree is {reference.debilitation_degree}."
+            ),
+        ),
+        ConditionEvidence(
+            rule_id="VM-BJ-C01-VARGOTTAMA-EVAL-001",
+            condition="vargottama",
+            applies=vargottama,
+            reason=f"D1 sign is {sign_id}; D9 sign is {d9_sign_id}.",
+        ),
+        ConditionEvidence(
+            rule_id=tendency_rule,
+            condition="resolved_tendency",
+            applies=True,
+            reason=tendency_reason,
+        ),
+    ]
+
+
 def calculate_varahamihira_conditions(
     request: ClassicalConditionsRequest,
 ) -> ClassicalConditionsResponse:
@@ -218,16 +319,15 @@ def calculate_varahamihira_conditions(
         for point in d1.points
         if point.name in reference_by_name
     }
-
     sign_ids = {
         name: rashi_by_english[point.sign.lower()]
         for name, point in d1_points.items()
     }
+
     moon_phase = _resolve_moon_phase(
         d1_points["sun"].source_longitude,
         d1_points["moon"].source_longitude,
     )
-
     resolved_tendencies = {
         reference.canonical_id: _fixed_tendency(reference)
         for reference in references
@@ -252,87 +352,27 @@ def calculate_varahamihira_conditions(
         dignity = evaluate_dignity(sign_id, point.degree_in_sign, reference)
         d9_longitude = (point.source_longitude * 9.0) % 360.0
         d9_sign_index = int(d9_longitude // 30.0) + 1
-        d9_sign = SIGNS[d9_sign_index - 1]
-        d9_sign_id = rashi_by_english[d9_sign.lower()]
+        d9_sign_name = SIGNS[d9_sign_index - 1]
+        d9_sign_id = rashi_by_english[d9_sign_name.lower()]
         vargottama = sign_id == d9_sign_id
-        tendency_reason = (
-            moon_phase.reason
-            if name == "moon"
-            else mercury_association.reason
-            if name == "mercury"
-            else f"{reference.english_name} has a fixed {reference.natural_tendency.value} reference tendency."
+        tendency_reason = _tendency_reason(
+            name,
+            reference,
+            moon_phase,
+            mercury_association,
         )
         associations = (
             mercury_association.associated_grahas if name == "mercury" else []
         )
-
-        evidence = [
-            ConditionEvidence(
-                rule_id="VM-BJ-C01-OWN-SIGN-EVAL-001",
-                condition="own_sign",
-                applies=dignity.own_sign,
-                reason=(
-                    f"{reference.english_name} occupies {point.sign}; owned signs are "
-                    f"{', '.join(reference.owned_signs)}."
-                ),
-            ),
-            ConditionEvidence(
-                rule_id="VM-BJ-C02-DIGNITY-EVAL-001",
-                condition="exaltation_sign",
-                applies=dignity.in_exaltation_sign,
-                reason=(
-                    f"D1 sign is {sign_id}; registered exaltation sign is "
-                    f"{reference.exaltation_sign}."
-                ),
-            ),
-            ConditionEvidence(
-                rule_id="VM-BJ-C02-DIGNITY-EVAL-001",
-                condition="deep_exaltation_point",
-                applies=dignity.at_deep_exaltation_point,
-                reason=(
-                    f"D1 degree is {point.degree_in_sign}; registered deep exaltation "
-                    f"degree is {reference.exaltation_degree}."
-                ),
-            ),
-            ConditionEvidence(
-                rule_id="VM-BJ-C02-DIGNITY-EVAL-001",
-                condition="debilitation_sign",
-                applies=dignity.in_debilitation_sign,
-                reason=(
-                    f"D1 sign is {sign_id}; registered debilitation sign is "
-                    f"{reference.debilitation_sign}."
-                ),
-            ),
-            ConditionEvidence(
-                rule_id="VM-BJ-C02-DIGNITY-EVAL-001",
-                condition="deep_debilitation_point",
-                applies=dignity.at_deep_debilitation_point,
-                reason=(
-                    f"D1 degree is {point.degree_in_sign}; registered deep debilitation "
-                    f"degree is {reference.debilitation_degree}."
-                ),
-            ),
-            ConditionEvidence(
-                rule_id="VM-BJ-C01-VARGOTTAMA-EVAL-001",
-                condition="vargottama",
-                applies=vargottama,
-                reason=f"D1 sign is {sign_id}; D9 sign is {d9_sign_id}.",
-            ),
-        ]
-        tendency_rule = (
-            "VM-BJ-C02-MOON-PHASE-EVAL-001"
-            if name == "moon"
-            else "VM-BJ-C02-MERCURY-ASSOC-EVAL-001"
-            if name == "mercury"
-            else "VM-BJ-C02-ATTRIBUTES-001"
-        )
-        evidence.append(
-            ConditionEvidence(
-                rule_id=tendency_rule,
-                condition="resolved_tendency",
-                applies=True,
-                reason=tendency_reason,
-            )
+        evidence = _build_evidence(
+            reference,
+            point,
+            sign_id,
+            d9_sign_id,
+            dignity,
+            vargottama,
+            _tendency_rule(name),
+            tendency_reason,
         )
 
         conditions.append(
