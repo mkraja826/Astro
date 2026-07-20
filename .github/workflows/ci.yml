@@ -23,6 +23,22 @@ jobs:
           python-version: "3.12"
           cache: pip
 
+      - name: Cache JPL DE440s
+        id: cache-jpl
+        uses: actions/cache@v4
+        with:
+          path: app/data/jpl/de440s.bsp
+          key: jpl-de440s-v1
+
+      - name: Download JPL DE440s
+        if: steps.cache-jpl.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p app/data/jpl
+          curl --fail --location --retry 3 \
+            https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de440s.bsp \
+            --output app/data/jpl/de440s.bsp
+          test -s app/data/jpl/de440s.bsp
+
       - name: Install project
         run: |
           python -m pip install --quiet --upgrade pip
