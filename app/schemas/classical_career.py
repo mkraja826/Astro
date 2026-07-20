@@ -2,10 +2,15 @@
 
 from enum import StrEnum
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.classical import ClassicalProfileId
 from app.schemas.classical_conditions import DignityState
+from app.schemas.classical_relationships import (
+    CompoundRelationship,
+    NaturalRelationship,
+    TemporaryRelationship,
+)
 from app.schemas.positions import (
     BirthInput,
     CalculationProfile,
@@ -100,6 +105,22 @@ class IndicatorConditionSnapshot(BaseModel):
     conjunctions: list[str]
 
 
+class CareerRelationshipFact(BaseModel):
+    """Relationship from a channel's tenth lord to its derived indicator."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    tenth_lord: str
+    indicator_graha: str
+    available: bool
+    target_relative_house: int | None = Field(default=None, ge=1, le=12)
+    natural_relationship: NaturalRelationship | None = None
+    temporary_relationship: TemporaryRelationship | None = None
+    compound_relationship: CompoundRelationship | None = None
+    rule_ids: list[str]
+    reason: str
+
+
 class CareerChannel(BaseModel):
     """One Karmājīva derivation from Lagna, Moon, or Sun."""
 
@@ -120,6 +141,7 @@ class CareerChannel(BaseModel):
     tenth_lord_d9_sign: str
     tenth_lord_d9_degree_in_sign: float
     karmājīva_indicator_graha: str
+    tenth_lord_to_indicator_relationship: CareerRelationshipFact
     vocation_themes: list[VocationTheme]
     indicator_condition: IndicatorConditionSnapshot
     aspects_to_tenth_sign: list[CareerAspectFact]
