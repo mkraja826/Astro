@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 from math import floor
 from uuid import uuid4
 
@@ -19,6 +19,7 @@ from app.engine.positions import (
     _normalize_birth_time,
 )
 from app.schemas.dasha import (
+    AntardashaPeriod,
     DashaLord,
     DashaMoonPosition,
     MahadashaPeriod,
@@ -47,14 +48,74 @@ DASHA_LORDS = (
 DASHA_YEARS = (7.0, 20.0, 6.0, 10.0, 7.0, 18.0, 16.0, 19.0, 17.0)
 VIMSHOTTARI_CYCLE_YEARS = sum(DASHA_YEARS)
 DASHA_YEAR_DAYS = 365.25
+_SECONDS_PER_DAY = 86_400.0
 
 
 def _years_to_delta(years: float) -> timedelta:
     return timedelta(days=years * DASHA_YEAR_DAYS)
 
 
+def _delta_to_years(delta: timedelta) -> float:
+    return delta.total_seconds() / (_SECONDS_PER_DAY * DASHA_YEAR_DAYS)
+
+
+def _build_antardashas(
+    mahadasha_lord_index: int,
+    mahadasha_duration_years: float,
+    mahadasha_start: datetime,
+    mahadasha_end: datetime,
+    birth_utc: datetime,
+) -> list[AntardashaPeriod]:
+    """Build nine proportional and contiguous sub-periods for one Mahadasha."""
+
+    antardashas: list[AntardashaPeriod] = []
+    period_start = mahadasha_start
+
+    for offset in range(len(DASHA_LORDS)):
+        lord_index = (mahadasha_lord_index + offset) % len(DASHA_LORDS)
+        duration_years = (
+            mahadasha_duration_years
+            * DASHA_YEARS[lord_index]
+            / VIMSHOTTARI_CYCLE_YEARS
+        )
+        period_end = (
+            mahadasha_end
+            if offset == len(DASHA_LORDS) - 1
+            else period_start + _years_to_delta(duration_years)
+        )
+        active_at_birth = period_start <= birth_utc < period_end
+        elapsed_at_birth_years = None
+        remaining_at_birth_years = None
+
+        if active_at_birth:
+            elapsed_at_birth_years = round(
+                _delta_to_years(birth_utc - period_start),
+                9,
+            )
+            remaining_at_birth_years = round(
+                _delta_to_years(period_end - birth_utc),
+                9,
+            )
+
+        antardashas.append(
+            AntardashaPeriod(
+                sequence_number=offset + 1,
+                lord=DASHA_LORDS[lord_index],
+                duration_years=round(duration_years, 9),
+                start_utc=period_start,
+                end_utc=period_end,
+                active_at_birth=active_at_birth,
+                elapsed_at_birth_years=elapsed_at_birth_years,
+                remaining_at_birth_years=remaining_at_birth_years,
+            )
+        )
+        period_start = period_end
+
+    return antardashas
+
+
 def calculate_vimshottari(request: VimshottariRequest) -> VimshottariResponse:
-    """Return the birth balance and one complete Vimshottari Mahadasha cycle."""
+    """Return birth balance, Mahadashas and their Antardasha subdivisions."""
 
     positions_request = PositionsRequest(
         birth=request.birth,
@@ -113,6 +174,13 @@ def calculate_vimshottari(request: VimshottariRequest) -> VimshottariResponse:
                 ),
                 remaining_at_birth_years=(
                     round(remaining_years, 9) if active_at_birth else None
+                ),
+                antardashas=_build_antardashas(
+                    lord_index,
+                    duration_years,
+                    period_start,
+                    period_end,
+                    utc_datetime,
                 ),
             )
         )
