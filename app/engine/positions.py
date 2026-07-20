@@ -1,28 +1,11 @@
-"""Versioned sidereal position calculations with pluggable providers."""
+"""Sidereal position calculations backed exclusively by Skyfield/JPL."""
 
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from threading import RLock
-from uuid import uuid4
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-import swisseph as swe
-
-from app import __version__
-from app.core.ephemeris import configure_ephemeris, enforce_ephemeris_source
-from app.schemas.positions import (
-    CalculationProfile,
-    Coordinates,
-    EngineMetadata,
-    NormalizedTime,
-    PlanetPosition,
-    PositionsRequest,
-    PositionsResponse,
-    ZodiacPosition,
-)
-
-_ENGINE_LOCK = RLock()
+from app.schemas.positions import PositionsRequest, PositionsResponse
 
 SIGNS = (
     "Aries",
@@ -69,17 +52,6 @@ NAKSHATRAS = (
     "Revati",
 )
 
-PLANETS = (
-    ("sun", swe.SUN),
-    ("moon", swe.MOON),
-    ("mars", swe.MARS),
-    ("mercury", swe.MERCURY),
-    ("jupiter", swe.JUPITER),
-    ("venus", swe.VENUS),
-    ("saturn", swe.SATURN),
-    ("rahu", swe.TRUE_NODE),
-)
-
 
 class BirthTimeError(ValueError):
     """Raised when a supplied local civil time cannot be resolved safely."""
@@ -122,21 +94,30 @@ def _normalize_birth_time(request: PositionsRequest) -> tuple[int, datetime, dat
 
 
 def _julian_day_ut(utc_datetime: datetime) -> float:
-    hour = (
+    """Convert a proleptic Gregorian UTC datetime to a Julian day number."""
+
+    year = utc_datetime.year
+    month = utc_datetime.month
+    day = utc_datetime.day
+    a = (14 - month) // 12
+    y = year + 4800 - a
+    m = month + 12 * a - 3
+    julian_day_number = (
+        day
+        + (153 * m + 2) // 5
+        + 365 * y
+        + y // 4
+        - y // 100
+        + y // 400
+        - 32045
+    )
+    day_fraction = (
         utc_datetime.hour
-        + utc_datetime.minute / 60
-        + utc_datetime.second / 3600
-        + utc_datetime.microsecond / 3_600_000_000
-    )
-    return float(
-        swe.julday(
-            utc_datetime.year,
-            utc_datetime.month,
-            utc_datetime.day,
-            hour,
-            swe.GREG_CAL,
-        )
-    )
+        + utc_datetime.minute / 60.0
+        + utc_datetime.second / 3600.0
+        + utc_datetime.microsecond / 3_600_000_000.0
+    ) / 24.0
+    return float(julian_day_number) - 0.5 + day_fraction
 
 
 def _zodiac_position(longitude: float, ascendant_sign_index: int) -> dict[str, object]:
@@ -160,139 +141,9 @@ def _zodiac_position(longitude: float, ascendant_sign_index: int) -> dict[str, o
     }
 
 
-def _ephemeris_source(returned_flags: int) -> str:
-    if returned_flags & swe.FLG_JPLEPH:
-        return "jpl"
-    if returned_flags & swe.FLG_SWIEPH:
-        return "swiss"
-    if returned_flags & swe.FLG_MOSEPH:
-        return "moshier"
-    return "unknown"
-
-
-def _calculate_body(
-    julian_day: float,
-    body_id: int,
-    flags: int,
-) -> tuple[tuple[float, ...], int]:
-    """Normalize Swiss Ephemeris binding return formats."""
-
-    result = swe.calc_ut(julian_day, body_id, flags)
-    if len(result) == 3:
-        values, returned_flags, _message = result
-    elif len(result) == 2:
-        values, returned_flags = result
-    else:
-        raise RuntimeError("Unexpected Swiss Ephemeris calc_ut response")
-
-    return tuple(float(value) for value in values), int(returned_flags)
-
-
-def _calculate_swiss_positions(request: PositionsRequest) -> PositionsResponse:
-    """Calculate the original Swiss-backed immutable v1 profile."""
-
-    fold, local_datetime, utc_datetime = _normalize_birth_time(request)
-    julian_day = _julian_day_ut(utc_datetime)
-    flags = swe.FLG_SWIEPH | swe.FLG_SIDEREAL | swe.FLG_SPEED
-
-    with _ENGINE_LOCK:
-        settings = configure_ephemeris()
-        swe.set_sid_mode(swe.SIDM_LAHIRI)
-        ayanamsha = float(swe.get_ayanamsa_ut(julian_day))
-        _, ascendant_points = swe.houses_ex(
-            julian_day,
-            request.birth.latitude,
-            request.birth.longitude,
-            b"W",
-            swe.FLG_SIDEREAL,
-        )
-        ascendant_longitude = float(ascendant_points[0]) % 360.0
-        ascendant_sign_index = int(ascendant_longitude // 30.0) + 1
-        ascendant = ZodiacPosition(
-            **_zodiac_position(ascendant_longitude, ascendant_sign_index)
-        )
-
-        planets: list[PlanetPosition] = []
-        ephemeris_sources: set[str] = set()
-        rahu_values: tuple[float, ...] | None = None
-
-        for body_name, body_id in PLANETS:
-            values, returned_flags = _calculate_body(julian_day, body_id, flags)
-            source = _ephemeris_source(returned_flags)
-            enforce_ephemeris_source(source, body_name, settings)
-            ephemeris_sources.add(source)
-
-            if body_name == "rahu":
-                rahu_values = values
-
-            planets.append(
-                PlanetPosition(
-                    body=body_name,
-                    latitude=round(values[1], 8),
-                    distance_au=round(values[2], 10),
-                    speed_longitude=round(values[3], 10),
-                    retrograde=values[3] < 0,
-                    **_zodiac_position(values[0], ascendant_sign_index),
-                )
-            )
-
-        if rahu_values is None:
-            raise RuntimeError("Rahu calculation was not produced")
-
-        planets.append(
-            PlanetPosition(
-                body="ketu",
-                latitude=round(-rahu_values[1], 8),
-                distance_au=None,
-                speed_longitude=round(rahu_values[3], 10),
-                retrograde=rahu_values[3] < 0,
-                **_zodiac_position(rahu_values[0] + 180.0, ascendant_sign_index),
-            )
-        )
-
-    return PositionsResponse(
-        request_id=f"req_{uuid4().hex}",
-        calculation_profile=request.calculation_profile,
-        time=NormalizedTime(
-            local_datetime=local_datetime,
-            utc_datetime=utc_datetime,
-            timezone=request.birth.timezone,
-            fold=fold,
-            julian_day_ut=round(julian_day, 9),
-        ),
-        coordinates=Coordinates(
-            latitude=request.birth.latitude,
-            longitude=request.birth.longitude,
-            altitude_meters=request.birth.altitude_meters,
-        ),
-        ayanamsha_degrees=round(ayanamsha, 8),
-        ascendant=ascendant,
-        planets=planets,
-        metadata=EngineMetadata(
-            engine="jyothisyam-api",
-            engine_version=__version__,
-            astronomical_provider="swiss_ephemeris",
-            provider_version=str(swe.version),
-            ephemeris_model="swiss_ephemeris_files_or_moshier_fallback",
-            swiss_ephemeris_version=str(swe.version),
-            zodiac="sidereal",
-            ayanamsha="lahiri",
-            node_type="true",
-            house_system="whole_sign",
-            ephemeris_sources=sorted(ephemeris_sources),
-        ),
-    )
-
-
 def calculate_positions(request: PositionsRequest) -> PositionsResponse:
-    """Dispatch the immutable calculation profile to its astronomical provider."""
+    """Calculate every accepted profile through the production JPL provider."""
 
-    if (
-        request.calculation_profile
-        == CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_SKYFIELD_DE440S_V1
-    ):
-        from app.engine.skyfield_jpl import SkyfieldJplProvider
+    from app.engine.skyfield_jpl import SkyfieldJplProvider
 
-        return SkyfieldJplProvider().calculate(request)
-
-    return _calculate_swiss_positions(request)
+    return SkyfieldJplProvider().calculate(request)
