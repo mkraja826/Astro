@@ -5,7 +5,10 @@ from enum import StrEnum
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.classical import ClassicalProfileId
+from app.schemas.classical_career import ClassicalCareerResponse
+from app.schemas.classical_dasha import ClassicalDashaResponse, DashaInterpretationLevel
 from app.schemas.classical_strength import ClassicalStrengthResponse
+from app.schemas.dasha import DashaQueryTime
 from app.schemas.positions import (
     BirthInput,
     CalculationProfile,
@@ -33,6 +36,21 @@ class ClassicalWeightedStrengthRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     birth: BirthInput
+    calculation_profile: CalculationProfile = (
+        CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_V1
+    )
+    weighting_profile: WeightingProfileId = (
+        WeightingProfileId.TRANSPARENT_STRENGTH_WEIGHTING_V1
+    )
+
+
+class ClassicalWeightedDashaRequest(BaseModel):
+    """Active-chain query with an explicitly selected weighting convention."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    birth: BirthInput
+    as_of: DashaQueryTime
     calculation_profile: CalculationProfile = (
         CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_V1
     )
@@ -84,6 +102,36 @@ class WeightedGrahaStrength(BaseModel):
     cancellation_applied: bool
 
 
+class WeightedCareerChannelSummary(BaseModel):
+    """Controlled strength summaries attached to one Karmājīva channel."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    reference_point: str
+    tenth_lord: CompactStrengthSnapshot
+    indicator_graha: CompactStrengthSnapshot
+
+
+class WeightedCareerCandidateSummary(BaseModel):
+    """Controlled strength summary for one repeated career indicator candidate."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    graha: str
+    repetition_count: int = Field(ge=1, le=3)
+    strength: CompactStrengthSnapshot
+
+
+class WeightedDashaLevelSummary(BaseModel):
+    """Controlled strength summary for one active Vimshottari level lord."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    level: DashaInterpretationLevel
+    lord: str
+    strength: CompactStrengthSnapshot
+
+
 class WeightingProfileResponse(BaseModel):
     """Immutable metadata and formulas for one API weighting convention."""
 
@@ -130,4 +178,40 @@ class ClassicalWeightedStrengthResponse(BaseModel):
     cancellations_applied: bool
     prediction_applied: bool
     metadata: EngineMetadata
+    caveats: list[str]
+
+
+class ClassicalWeightedCareerResponse(BaseModel):
+    """Original career evidence plus controlled strength summaries."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    request_id: str
+    profile_id: ClassicalProfileId
+    weighting_profile: WeightingProfileId
+    career: ClassicalCareerResponse
+    weighted_strength: ClassicalWeightedStrengthResponse
+    channel_strengths: list[WeightedCareerChannelSummary] = Field(
+        min_length=3,
+        max_length=3,
+    )
+    candidate_strengths: list[WeightedCareerCandidateSummary]
+    career_ranking_applied: bool
+    prediction_applied: bool
+    caveats: list[str]
+
+
+class ClassicalWeightedDashaResponse(BaseModel):
+    """Original active-chain evidence plus controlled lord-strength summaries."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    request_id: str
+    profile_id: ClassicalProfileId
+    weighting_profile: WeightingProfileId
+    dasha: ClassicalDashaResponse
+    weighted_strength: ClassicalWeightedStrengthResponse
+    level_strengths: list[WeightedDashaLevelSummary] = Field(min_length=4, max_length=4)
+    event_prediction_applied: bool
+    cancellations_applied: bool
     caveats: list[str]
