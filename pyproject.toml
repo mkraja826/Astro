@@ -10,7 +10,9 @@ readme = "README.md"
 requires-python = ">=3.12,<3.14"
 dependencies = [
     "fastapi>=0.115,<1.0",
+    "numpy>=1.26,<3.0",
     "pysweph==2.10.3.6",
+    "skyfield>=1.51,<2.0",
     "tzdata==2026.3",
     "uvicorn[standard]>=0.30,<1.0",
 ]
@@ -26,7 +28,12 @@ dev = [
 include = ["app*"]
 
 [tool.setuptools.package-data]
-app = ["data/ephe/*.se1", "data/ephe/*.md"]
+app = [
+    "data/ephe/*.se1",
+    "data/ephe/*.md",
+    "data/jpl/*.bsp",
+    "data/jpl/*.md",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
