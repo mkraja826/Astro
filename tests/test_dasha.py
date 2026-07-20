@@ -104,13 +104,15 @@ def test_vimshottari_returns_complete_birth_cycle() -> None:
     assert payload["metadata"]["ephemeris_sources"]
 
 
-def test_vimshottari_returns_contiguous_antardashas() -> None:
+def test_vimshottari_returns_all_contiguous_subperiods() -> None:
     response = client.post("/v1/dashas/vimshottari", json=_payload())
     payload = response.json()
 
     assert response.status_code == 200, payload
     birth_utc = _parse_datetime(payload["time"]["utc_datetime"])
     active_antardashas: list[dict[str, object]] = []
+    active_pratyantardashas: list[dict[str, object]] = []
+    pratyantardasha_count = 0
 
     for mahadasha in payload["mahadashas"]:
         antardashas = mahadasha["antardashas"]
@@ -139,13 +141,53 @@ def test_vimshottari_returns_contiguous_antardashas() -> None:
             item for item in antardashas if item["active_at_birth"]
         )
 
+        for antardasha in antardashas:
+            pratyantardashas = antardasha["pratyantardashas"]
+            pratyantardasha_count += len(pratyantardashas)
+            assert len(pratyantardashas) == 9
+            assert pratyantardashas[0]["start_utc"] == antardasha["start_utc"]
+            assert pratyantardashas[-1]["end_utc"] == antardasha["end_utc"]
+            assert sum(
+                item["duration_years"] for item in pratyantardashas
+            ) == pytest.approx(antardasha["duration_years"], abs=2e-8)
+
+            sub_start_index = LORDS.index(antardasha["lord"])
+            expected_subsequence = [
+                LORDS[(sub_start_index + offset) % len(LORDS)]
+                for offset in range(9)
+            ]
+            assert [item["lord"] for item in pratyantardashas] == expected_subsequence
+
+            for current, following in zip(
+                pratyantardashas[:-1],
+                pratyantardashas[1:],
+                strict=True,
+            ):
+                assert current["end_utc"] == following["start_utc"]
+
+            active_pratyantardashas.extend(
+                item for item in pratyantardashas if item["active_at_birth"]
+            )
+
+    assert pratyantardasha_count == 729
     assert len(active_antardashas) == 1
-    active = active_antardashas[0]
-    assert _parse_datetime(active["start_utc"]) <= birth_utc
-    assert birth_utc < _parse_datetime(active["end_utc"])
+    active_antardasha = active_antardashas[0]
+    assert _parse_datetime(active_antardasha["start_utc"]) <= birth_utc
+    assert birth_utc < _parse_datetime(active_antardasha["end_utc"])
     assert (
-        active["elapsed_at_birth_years"] + active["remaining_at_birth_years"]
-        == pytest.approx(active["duration_years"], abs=2e-8)
+        active_antardasha["elapsed_at_birth_years"]
+        + active_antardasha["remaining_at_birth_years"]
+        == pytest.approx(active_antardasha["duration_years"], abs=2e-8)
+    )
+
+    assert len(active_pratyantardashas) == 1
+    active_pratyantardasha = active_pratyantardashas[0]
+    assert _parse_datetime(active_pratyantardasha["start_utc"]) <= birth_utc
+    assert birth_utc < _parse_datetime(active_pratyantardasha["end_utc"])
+    assert (
+        active_pratyantardasha["elapsed_at_birth_years"]
+        + active_pratyantardasha["remaining_at_birth_years"]
+        == pytest.approx(active_pratyantardasha["duration_years"], abs=2e-8)
     )
 
 

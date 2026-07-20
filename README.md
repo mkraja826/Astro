@@ -19,6 +19,7 @@ The repository currently provides:
 - Hindu sunrise and sunset in local and UTC time
 - Vimshottari birth balance and one complete 120-year Mahadasha cycle
 - Nine proportional Antardashas inside every Mahadasha
+- Nine proportional Pratyantardashas inside every Antardasha
 - True Rahu and opposite Ketu
 - Timezone, ambiguous-time and coordinate validation
 - Explicit Swiss Ephemeris source reporting
