@@ -20,6 +20,7 @@ The repository currently provides:
 - `GET /v1/classical/varahamihira_v1/rules`
 - `GET /v1/classical/varahamihira_v1/rashis`
 - `GET /v1/classical/varahamihira_v1/grahas`
+- `POST /v1/classical/varahamihira_v1/conditions`
 - Lahiri sidereal planetary positions and ascendant
 - D1 Rasi and D9 Navamsa divisional charts
 - Fixed South Indian 4-by-4 sign-grid metadata
@@ -33,6 +34,7 @@ The repository currently provides:
 - Compact active Mahadasha-to-Sookshma chain lookup for any supported instant
 - Varahamihira v1 source profile and rule registry
 - Deterministic Chapter 1 Rashi and Chapter 2 Graha reference data
+- Evidence-bearing dignity, Vargottama, Moon-phase, and Mercury-condition evaluation
 - True Rahu and opposite Ketu
 - Timezone, ambiguous-time and coordinate validation
 - Explicit Swiss Ephemeris source reporting
@@ -75,25 +77,28 @@ D1 uses the source Lahiri sidereal positions directly. D9 applies the standard
 Parashari ninefold Navamsa mapping and returns the divisional degree, sign,
 house from Navamsa Lagna, and fixed chart-grid coordinates.
 
-## Varahamihira reference profile
+## Varahamihira profile
 
-The first classical source layer is available through read-only endpoints:
+The classical source layer is available through:
 
 ```http
 GET /v1/classical/varahamihira_v1/profile
 GET /v1/classical/varahamihira_v1/rules
 GET /v1/classical/varahamihira_v1/rashis
 GET /v1/classical/varahamihira_v1/grahas
+POST /v1/classical/varahamihira_v1/conditions
 ```
 
 The profile pins a public-domain 1905 English edition of *Brihat Jataka* and
-currently covers Chapter 1 Rashi and Chapter 2 Graha reference data. It has no
-calculation-engine impact and does not modify D1, D9, Panchanga, or Vimshottari
-results.
+covers Chapter 1 Rashi and Chapter 2 Graha reference data. The condition
+endpoint combines those immutable tables with the existing D1/D9 longitudes to
+report own sign, exaltation, debilitation, exact deep dignity points,
+Vargottama, Moon phase, and a versioned Mercury association result.
 
-The reference layer is intentionally non-interpretive. Dignity, condition,
-aspect, career, Ashtakavarga, Dasha-interpretation, cancellation, and strength
-modules will be added as separate evidence-bearing evaluators.
+The evaluator is deterministic and non-predictive. It does not modify D1, D9,
+Panchanga, or Vimshottari results. Classical aspects, career, Ashtakavarga,
+Dasha interpretation, cancellations, and strength weighting remain separate
+future evaluators.
 
 ## Vimshottari response depth
 
@@ -163,6 +168,7 @@ See [`docs/EPHEMERIS_DEPLOYMENT.md`](docs/EPHEMERIS_DEPLOYMENT.md).
 - [`docs/VIMSHOTTARI_V1.md`](docs/VIMSHOTTARI_V1.md)
 - [`docs/VIMSHOTTARI_CURRENT_V1.md`](docs/VIMSHOTTARI_CURRENT_V1.md)
 - [`docs/VARAHAMIHIRA_REFERENCE_V1.md`](docs/VARAHAMIHIRA_REFERENCE_V1.md)
+- [`docs/CLASSICAL_CONDITIONS_V1.md`](docs/CLASSICAL_CONDITIONS_V1.md)
 
 ## Docker
 
