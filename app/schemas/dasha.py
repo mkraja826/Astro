@@ -29,7 +29,7 @@ class DashaLord(StrEnum):
 
 
 class VimshottariRequest(BaseModel):
-    """Birth data used to derive the Vimshottari Mahadasha cycle."""
+    """Birth data used to derive the Vimshottari Dasha cycle."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -49,8 +49,8 @@ class DashaMoonPosition(BaseModel):
     progress_percent: float
 
 
-class MahadashaPeriod(BaseModel):
-    """One major Vimshottari period on the canonical UTC timeline."""
+class AntardashaPeriod(BaseModel):
+    """One proportional sub-period inside a Vimshottari Mahadasha."""
 
     sequence_number: int = Field(ge=1, le=9)
     lord: DashaLord
@@ -62,8 +62,22 @@ class MahadashaPeriod(BaseModel):
     remaining_at_birth_years: float | None = None
 
 
+class MahadashaPeriod(BaseModel):
+    """One major Vimshottari period on the canonical UTC timeline."""
+
+    sequence_number: int = Field(ge=1, le=9)
+    lord: DashaLord
+    duration_years: float
+    start_utc: datetime
+    end_utc: datetime
+    active_at_birth: bool
+    elapsed_at_birth_years: float | None = None
+    remaining_at_birth_years: float | None = None
+    antardashas: list[AntardashaPeriod]
+
+
 class VimshottariResponse(BaseModel):
-    """Complete birth balance and one 120-year Mahadasha cycle."""
+    """Complete birth balance and one 120-year Vimshottari cycle."""
 
     request_id: str
     calculation_profile: CalculationProfile
