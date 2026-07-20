@@ -106,15 +106,13 @@ def extend_varahamihira_profile(
     return extended.model_copy(
         update={
             "profile_version": "1.7.0",
-            "strength_framework_enabled": True,
-            "cancellation_rules_enabled": False,
             "endpoints": endpoints,
             "caveats": [
                 "Strength factors remain categorical and unweighted.",
                 "No strongest-planet ranking is produced.",
                 "No debilitation cancellation is activated without a registered source rule.",
                 "Later cross-text Neecha Bhanga conventions are outside varahamihira_v1.",
-                "No prediction, health, birth-risk, or longevity judgment is applied.",
+                "No prediction, birth-risk, or longevity judgment is applied.",
             ],
         }
     )
