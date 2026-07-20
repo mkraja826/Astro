@@ -10,6 +10,8 @@ from app.schemas.classical import ClassicalProfileResponse, RuleRegistryResponse
 
 WEIGHTING_PROFILE_ENDPOINT = "/v1/classical/varahamihira_v1/weighting/profile"
 WEIGHTED_STRENGTH_ENDPOINT = "/v1/classical/varahamihira_v1/strength/weighted"
+WEIGHTED_CAREER_ENDPOINT = "/v1/classical/varahamihira_v1/career/weighted"
+WEIGHTED_DASHA_ENDPOINT = "/v1/classical/varahamihira_v1/dasha/current/weighted"
 
 
 def extend_varahamihira_profile(
@@ -19,7 +21,13 @@ def extend_varahamihira_profile(
 
     extended = extend_strength_profile(profile)
     endpoints = list(extended.endpoints)
-    for endpoint in (WEIGHTING_PROFILE_ENDPOINT, WEIGHTED_STRENGTH_ENDPOINT):
+    weighting_endpoints = (
+        WEIGHTING_PROFILE_ENDPOINT,
+        WEIGHTED_STRENGTH_ENDPOINT,
+        WEIGHTED_CAREER_ENDPOINT,
+        WEIGHTED_DASHA_ENDPOINT,
+    )
+    for endpoint in weighting_endpoints:
         if endpoint not in endpoints:
             endpoints.append(endpoint)
 
@@ -30,6 +38,7 @@ def extend_varahamihira_profile(
             "caveats": [
                 "The controlled weighting profile is an API convention, not a textual rule.",
                 "Every weighted result embeds its raw unweighted strength evidence.",
+                "Career and Dasha weighting use additive endpoints; original contracts remain unchanged.",
                 "Rahu and Ketu are excluded from seven-Graha ranking.",
                 "Cancellation adjustments and predictions remain disabled.",
                 "External multi-software golden-chart validation remains incomplete.",
