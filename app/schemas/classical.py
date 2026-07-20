@@ -123,6 +123,7 @@ class ClassicalProfileResponse(BaseModel):
     house_influence_evaluator_enabled: bool = False
     career_analysis_enabled: bool = False
     ashtakavarga_enabled: bool = False
+    dasha_interpretation_enabled: bool = False
     endpoints: list[str]
     caveats: list[str]
 

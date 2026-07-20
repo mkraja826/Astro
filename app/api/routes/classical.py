@@ -4,19 +4,21 @@ from fastapi import APIRouter, HTTPException, status
 
 from app.core.ephemeris import EphemerisConfigurationError, EphemerisUnavailableError
 from app.engine.classical_ashtakavarga import calculate_varahamihira_ashtakavarga
-from app.engine.classical_ashtakavarga_rules import (
-    extend_varahamihira_profile,
-    extend_varahamihira_rules,
-)
 from app.engine.classical_aspects import calculate_varahamihira_aspects
 from app.engine.classical_career import calculate_varahamihira_career
 from app.engine.classical_conditions import calculate_varahamihira_conditions
+from app.engine.classical_dasha import calculate_varahamihira_dasha_context
+from app.engine.classical_dasha_rules import (
+    extend_varahamihira_profile,
+    extend_varahamihira_rules,
+)
 from app.engine.classical_reference import (
     get_varahamihira_grahas,
     get_varahamihira_profile,
     get_varahamihira_rashis,
     get_varahamihira_rules,
 )
+from app.engine.current_dasha import DashaQueryError
 from app.engine.positions import BirthTimeError
 from app.schemas.classical import (
     ClassicalProfileResponse,
@@ -39,6 +41,10 @@ from app.schemas.classical_career import (
 from app.schemas.classical_conditions import (
     ClassicalConditionsRequest,
     ClassicalConditionsResponse,
+)
+from app.schemas.classical_dasha import (
+    ClassicalDashaRequest,
+    ClassicalDashaResponse,
 )
 
 router = APIRouter(
@@ -204,6 +210,36 @@ def varahamihira_ashtakavarga(
     try:
         return calculate_varahamihira_ashtakavarga(request)
     except BirthTimeError as exc:
+        raise _unprocessable(exc) from exc
+    except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
+        raise _ephemeris_unavailable(exc) from exc
+
+
+@router.post(
+    "/dasha/current",
+    response_model=ClassicalDashaResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Annotate the active Vimshottari chain with classical evidence",
+    responses={
+        422: {
+            "description": (
+                "Invalid birth/query time, ambiguous civil time, or instant outside "
+                "the first 120-year cycle"
+            )
+        },
+        503: {
+            "description": "Required licensed ephemeris configuration or data unavailable"
+        },
+    },
+)
+def varahamihira_dasha_current(
+    request: ClassicalDashaRequest,
+) -> ClassicalDashaResponse:
+    """Return current Dasha timing with unweighted classical context."""
+
+    try:
+        return calculate_varahamihira_dasha_context(request)
+    except (BirthTimeError, DashaQueryError) as exc:
         raise _unprocessable(exc) from exc
     except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
         raise _ephemeris_unavailable(exc) from exc
