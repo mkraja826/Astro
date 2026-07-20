@@ -1,7 +1,25 @@
 # Jyothisyam API
 
 Commercial-grade Vedic and South Indian astrology calculation API built with
-FastAPI.
+FastAPI, Skyfield, and JPL DE440s.
+
+## Production astronomy engine
+
+Jyothisyam now uses a single astronomical runtime:
+
+```text
+Skyfield + local JPL DE440s
+```
+
+Canonical calculation profile:
+
+```text
+south_indian_drik_lahiri_jpl_de440s_v1
+```
+
+The earlier profile strings remain accepted for client compatibility, but they
+resolve to the same JPL engine. The runtime contains no Swiss Ephemeris package,
+data files, license switch, comparison route, or fallback path.
 
 ## Current capabilities
 
@@ -9,10 +27,9 @@ FastAPI.
 
 - `GET /`
 - `GET /health`
-- `GET /health/ephemeris` — Swiss Ephemeris readiness
-- `GET /health/ephemeris/jpl` — local Skyfield/JPL DE440s readiness
+- `GET /health/ephemeris`
+- `GET /health/ephemeris/jpl`
 - `POST /v1/positions`
-- `POST /v1/positions/providers/compare`
 - `POST /v1/charts/d1`
 - `POST /v1/charts/d9`
 - `POST /v1/panchanga`
@@ -42,61 +59,18 @@ FastAPI.
 
 ### Calculation features
 
-- Lahiri sidereal planetary positions and Lagna
-- True Rahu and opposite Ketu
+- JPL DE440s apparent geocentric planetary positions
+- Chitrapaksha ayanamsha anchored to apparent Spica
+- independently calculated sidereal Lagna
+- osculating true Rahu and exactly opposite Ketu
 - Rashi, Nakshatra, Pada, and whole-sign houses
 - D1 Rasi and D9 Navamsa charts
-- Fixed South Indian 4-by-4 sign-grid metadata
-- Sunrise-based Vara, Tithi, Nakshatra, Yoga, and Karana
-- Vimshottari Mahadasha, Antardasha, Pratyantardasha, and optional Sookshma
-- Compact active Mahadasha-to-Sookshma lookup
-- Chapter 1 Rashi and Chapter 2 Graha reference data
-- Dignity, Vargottama, Moon-phase, and Mercury-condition evidence
-- Fractional and special full Graha aspects
-- Same-sign conjunctions and whole-sign house influence
-- Chapter 9 Bhinnashtakavarga and Sarvashtakavarga
-- Natural, temporary, and compound Graha relationships
-- Chapter 10 Karmājīva vocation channels
-- Transparent unweighted strength evidence
-- Separately versioned controlled strength weighting
-- Twelve frozen external-validation chart inputs
-- Partial snapshot comparison with field-specific tolerances
-
-## Astronomical providers
-
-### Existing Swiss profile
-
-```text
-south_indian_drik_lahiri_v1
-```
-
-This remains the default profile. A public closed-source service using Swiss
-Ephemeris must satisfy the applicable Swiss Ephemeris licensing requirements and
-deploy the required data files. The API prevents silent low-precision fallback
-when strict production mode is enabled.
-
-### Skyfield/JPL migration profile
-
-```text
-south_indian_drik_lahiri_skyfield_de440s_v1
-```
-
-This optional profile uses:
-
-- Skyfield
-- NumPy
-- a local JPL DE440s SPK kernel
-- an apparent Spica-based Chitrapaksha ayanamsha convention
-- an osculating lunar ascending node for Rahu
-- a locally calculated true-ecliptic Lagna
-
-The service never downloads the JPL kernel during a request. Missing data returns
-HTTP 503 with a clear readiness error.
-
-Swiss remains the production default until all frozen golden charts and boundary
-cases are reviewed. Panchanga sunrise and sunset have not yet been migrated;
-`POST /v1/panchanga` rejects the Skyfield profile rather than silently using the
-Swiss implementation.
+- geometric sunrise and sunset with no atmospheric refraction
+- Vara, Tithi, Nakshatra, Yoga, and Karana at sunrise
+- Vimshottari Mahadasha through optional Sookshma
+- Varahamihira dignity, aspects, Aṣṭakavarga, relationships, career, and strength
+- controlled transparent weighting
+- twelve frozen golden-chart inputs and discrepancy reporting
 
 ## Local setup
 
@@ -110,63 +84,45 @@ python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
 ```
 
-Run tests:
-
-```powershell
-python -m pytest
-python -m ruff check .
-```
-
-Start the API:
-
-```powershell
-python -m uvicorn app.main:app --reload
-```
-
-Open:
-
-- API: `http://127.0.0.1:8000`
-- Swagger: `http://127.0.0.1:8000/docs`
-- General health: `http://127.0.0.1:8000/health`
-- Swiss readiness: `http://127.0.0.1:8000/health/ephemeris`
-- JPL readiness: `http://127.0.0.1:8000/health/ephemeris/jpl`
-
-## Install the local DE440s kernel
-
-Create the data directory:
+## Install JPL DE440s
 
 ```powershell
 New-Item -ItemType Directory -Force app\data\jpl
-```
-
-Download the official JPL kernel:
-
-```powershell
 Invoke-WebRequest `
   -Uri "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de440s.bsp" `
   -OutFile "app\data\jpl\de440s.bsp"
 ```
 
-The default path is:
+Default path:
 
 ```text
 app/data/jpl/de440s.bsp
 ```
 
-An absolute path can be selected with:
+Optional absolute-path override:
 
 ```powershell
 $env:JYOTHISYAM_JPL_EPHEMERIS_PATH = "C:\ephemeris\de440s.bsp"
 ```
 
-The `.bsp` kernel is intentionally ignored by Git and must be mounted or copied
-into each deployment separately.
+The kernel is ignored by Git. It must be copied or mounted into every deployment.
+Application requests never download it automatically.
 
-## Calculate with Skyfield/JPL
+## Run and verify
 
-```http
-POST /v1/positions
+```powershell
+python -m pytest
+python -m ruff check .
+python -m uvicorn app.main:app --reload
 ```
+
+Open:
+
+- Swagger: `http://127.0.0.1:8000/docs`
+- General health: `http://127.0.0.1:8000/health`
+- Ephemeris readiness: `http://127.0.0.1:8000/health/ephemeris`
+
+## Positions request
 
 ```json
 {
@@ -177,70 +133,34 @@ POST /v1/positions
     "longitude": 79.312,
     "altitude_meters": 120
   },
-  "calculation_profile": "south_indian_drik_lahiri_skyfield_de440s_v1"
+  "calculation_profile": "south_indian_drik_lahiri_jpl_de440s_v1"
 }
 ```
 
-The same profile can flow through D1, D9, Vimshottari, and classical evaluators
-that depend on the shared positions engine.
+## Panchanga convention
 
-## Compare Swiss and Skyfield
+`POST /v1/panchanga` searches the requested local calendar date for the Sun's
+geometric center crossing local altitude 0°. It applies no atmospheric
+refraction and no upper-limb correction. Sun and Moon sidereal longitudes are
+evaluated geocentrically at sunrise. Polar dates without a real crossing return
+HTTP 422 instead of a fabricated result.
 
-```http
-POST /v1/positions/providers/compare
+## Docker
+
+The Dockerfile expects the kernel at:
+
+```text
+/app/app/data/jpl/de440s.bsp
 ```
 
-```json
-{
-  "birth": {
-    "local_datetime": "1998-10-26T10:28:00",
-    "timezone": "Asia/Kolkata",
-    "latitude": 16.575,
-    "longitude": 79.312,
-    "altitude_meters": 120
-  },
-  "longitude_tolerance_degrees": 0.05,
-  "ascendant_tolerance_degrees": 0.1,
-  "ayanamsha_tolerance_degrees": 0.02
-}
+Build after placing the kernel in `app/data/jpl`, or mount it read-only:
+
+```bash
+docker build -t jyothisyam-api .
+docker run --rm -p 8080:8080 \
+  -v /absolute/path/de440s.bsp:/app/app/data/jpl/de440s.bsp:ro \
+  jyothisyam-api
 ```
-
-The response reports:
-
-- signed and absolute ayanamsha difference
-- signed and absolute Lagna difference
-- longitude differences for all supported planets and nodes
-- sign agreement
-- retrograde agreement
-- per-field tolerance results
-- `production_default_changed: false`
-
-The comparison endpoint never changes configuration or chooses a winner.
-
-## Divisional charts
-
-```http
-POST /v1/charts/d1
-POST /v1/charts/d9
-```
-
-D1 uses source sidereal positions directly. D9 applies the versioned Parashari
-ninefold Navamsa mapping and returns divisional degrees, signs, houses from
-Navamsa Lagna, and fixed South Indian grid coordinates.
-
-## Vimshottari response depth
-
-The default Vimshottari response ends at Pratyantardasha. Request the complete
-fourth-level timeline with:
-
-```json
-{
-  "depth": "sookshma"
-}
-```
-
-A full response contains 6,561 Sookshma periods and should only be requested by
-clients that need the expanded timeline.
 
 ## Classical-source boundaries
 
@@ -249,12 +169,11 @@ Jataka*. Classical facts retain source and rule identifiers. Controlled numeric
 weights are an API convention, not a textual Varahamihira rule.
 
 The API does not silently import unsupported debilitation-cancellation formulas,
-node dignities, or guaranteed event predictions. Sensitive birth-risk and
-longevity judgments remain outside the implemented scope.
+node dignities, guaranteed event predictions, birth-risk judgments, or longevity
+claims.
 
 ## Calculation contracts
 
-- [`docs/CALCULATION_PROFILE_V1.md`](docs/CALCULATION_PROFILE_V1.md)
 - [`docs/SKYFIELD_JPL_PROVIDER_V1.md`](docs/SKYFIELD_JPL_PROVIDER_V1.md)
 - [`docs/EPHEMERIS_DEPLOYMENT.md`](docs/EPHEMERIS_DEPLOYMENT.md)
 - [`docs/CHARTS_D1_D9_V1.md`](docs/CHARTS_D1_D9_V1.md)
@@ -273,21 +192,10 @@ longevity judgments remain outside the implemented scope.
 - [`docs/GOLDEN_CHART_VALIDATION_V1.md`](docs/GOLDEN_CHART_VALIDATION_V1.md)
 - [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)
 
-## Docker
+## Next validation milestone
 
-```bash
-docker build -t jyothisyam-api .
-docker run --rm -p 8080:8080 jyothisyam-api
-```
-
-For the Skyfield profile, mount the kernel and set its absolute path in the
-container. Do not bake an unreviewed third-party kernel into a public image.
-
-## Project direction
-
-1. Validate Skyfield/JPL positions against all frozen golden charts.
-2. Review ayanamsha, Lagna, node, sign-boundary, and retrograde differences.
-3. Migrate Hindu sunrise and sunset calculations.
-4. Freeze a validated Skyfield calculation profile.
-5. Switch production only after the migration gate passes.
-6. Add authentication, metering, and commercial API plans.
+1. Freeze JPL results for all twelve golden cases.
+2. Import two independent external snapshots per case.
+3. Review Lagna, node, sign, Nakshatra, Pada, and Navamsa boundaries.
+4. Version any future astronomical-convention change instead of silently altering v1.
+5. Add authentication, metering, and commercial API plans.
