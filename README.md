@@ -1,223 +1,171 @@
 # Jyothisyam API
 
-Commercial-grade Vedic and South Indian astrology API.
+Commercial-grade Vedic and South Indian astrology calculation API built with
+FastAPI.
 
-## Current milestone
+## Current capabilities
 
-The repository currently provides:
+### System and astronomy
 
-- FastAPI application factory
 - `GET /`
-- `GET /health` process liveness
-- `GET /health/ephemeris` calculation readiness
+- `GET /health`
+- `GET /health/ephemeris` — Swiss Ephemeris readiness
+- `GET /health/ephemeris/jpl` — local Skyfield/JPL DE440s readiness
 - `POST /v1/positions`
+- `POST /v1/positions/providers/compare`
 - `POST /v1/charts/d1`
 - `POST /v1/charts/d9`
 - `POST /v1/panchanga`
 - `POST /v1/dashas/vimshottari`
 - `POST /v1/dashas/vimshottari/current`
+
+### Classical Varahamihira profile
+
 - `GET /v1/classical/varahamihira_v1/profile`
 - `GET /v1/classical/varahamihira_v1/rules`
-- `GET /v1/classical/varahamihira_v1/weighting/profile`
-- `GET /v1/classical/varahamihira_v1/validation/profile`
-- `GET /v1/classical/varahamihira_v1/validation/cases`
-- `POST /v1/classical/varahamihira_v1/validation/compare`
 - `GET /v1/classical/varahamihira_v1/rashis`
 - `GET /v1/classical/varahamihira_v1/grahas`
 - `POST /v1/classical/varahamihira_v1/conditions`
 - `POST /v1/classical/varahamihira_v1/aspects`
-- `POST /v1/classical/varahamihira_v1/career`
-- `POST /v1/classical/varahamihira_v1/career/weighted`
 - `POST /v1/classical/varahamihira_v1/ashtakavarga`
 - `POST /v1/classical/varahamihira_v1/relationships`
 - `POST /v1/classical/varahamihira_v1/strength`
 - `POST /v1/classical/varahamihira_v1/strength/weighted`
+- `POST /v1/classical/varahamihira_v1/career`
+- `POST /v1/classical/varahamihira_v1/career/weighted`
 - `POST /v1/classical/varahamihira_v1/dasha/current`
 - `POST /v1/classical/varahamihira_v1/dasha/current/weighted`
-- Lahiri sidereal planetary positions and ascendant
-- D1 Rasi and D9 Navamsa divisional charts
-- Fixed South Indian 4-by-4 sign-grid metadata
-- Rashi, Nakshatra, Pada and whole-sign houses
-- Sunrise-based Vara, Tithi, Nakshatra, Yoga and Karana
-- Hindu sunrise and sunset in local and UTC time
-- Vimshottari birth balance and one complete 120-year Mahadasha cycle
-- Nine proportional Antardashas inside every Mahadasha
-- Nine proportional Pratyantardashas inside every Antardasha
-- Optional Sookshma Dasha expansion with 6,561 fourth-level periods
-- Compact active Mahadasha-to-Sookshma chain lookup for any supported instant
-- Varahamihira v1 source profile and rule registry
-- Deterministic Chapter 1 Rashi and Chapter 2 Graha reference data
-- Evidence-bearing dignity, Vargottama, Moon-phase, and Mercury-condition evaluation
-- Brihat Jataka 2.13 fractional and special full Graha aspects
-- Same-sign conjunction records and twelve whole-sign house-influence summaries
-- Chapter 10 Karmājīva channels from Lagna, Moon, and Sun
-- Unweighted vocation themes, income-source indications, and supporting facts
-- Chapter 9 raw Bhinnashtakavarga contributor rows and planetary bindu arrays
-- Twelve-sign Sarvashtakavarga totals with a fixed total of 337
-- Chapter 2 natural, temporary, and compound seven-Graha relationships
-- Transparent unweighted strength-factor inventories for all seven classical Grahas
-- Source-strict cancellation boundaries without importing unregistered rules
-- Separately versioned controlled strength weighting with visible formulas
-- Additive weighted Karmājīva and active-Dasha summaries
-- Three frozen formula-level golden fixtures
-- Twelve frozen globally diverse external-validation chart inputs
-- Partial snapshot comparison with field-specific tolerances and discrepancy reports
-- Active Vimshottari timing annotated with ownership, condition, aspect, bindu, career, and relationship facts
-- Explicit neutral Rahu and Ketu coverage without invented classical dignity rules
+- `GET /v1/classical/varahamihira_v1/weighting/profile`
+- `GET /v1/classical/varahamihira_v1/validation/profile`
+- `GET /v1/classical/varahamihira_v1/validation/cases`
+- `POST /v1/classical/varahamihira_v1/validation/compare`
+
+### Calculation features
+
+- Lahiri sidereal planetary positions and Lagna
 - True Rahu and opposite Ketu
-- Timezone, ambiguous-time and coordinate validation
-- Explicit Swiss Ephemeris source reporting
-- Production guard against silent low-precision fallback
-- Automated linting and tests
-- Docker and Google Cloud Run-ready configuration
+- Rashi, Nakshatra, Pada, and whole-sign houses
+- D1 Rasi and D9 Navamsa charts
+- Fixed South Indian 4-by-4 sign-grid metadata
+- Sunrise-based Vara, Tithi, Nakshatra, Yoga, and Karana
+- Vimshottari Mahadasha, Antardasha, Pratyantardasha, and optional Sookshma
+- Compact active Mahadasha-to-Sookshma lookup
+- Chapter 1 Rashi and Chapter 2 Graha reference data
+- Dignity, Vargottama, Moon-phase, and Mercury-condition evidence
+- Fractional and special full Graha aspects
+- Same-sign conjunctions and whole-sign house influence
+- Chapter 9 Bhinnashtakavarga and Sarvashtakavarga
+- Natural, temporary, and compound Graha relationships
+- Chapter 10 Karmājīva vocation channels
+- Transparent unweighted strength evidence
+- Separately versioned controlled strength weighting
+- Twelve frozen external-validation chart inputs
+- Partial snapshot comparison with field-specific tolerances
+
+## Astronomical providers
+
+### Existing Swiss profile
+
+```text
+south_indian_drik_lahiri_v1
+```
+
+This remains the default profile. A public closed-source service using Swiss
+Ephemeris must satisfy the applicable Swiss Ephemeris licensing requirements and
+deploy the required data files. The API prevents silent low-precision fallback
+when strict production mode is enabled.
+
+### Skyfield/JPL migration profile
+
+```text
+south_indian_drik_lahiri_skyfield_de440s_v1
+```
+
+This optional profile uses:
+
+- Skyfield
+- NumPy
+- a local JPL DE440s SPK kernel
+- an apparent Spica-based Chitrapaksha ayanamsha convention
+- an osculating lunar ascending node for Rahu
+- a locally calculated true-ecliptic Lagna
+
+The service never downloads the JPL kernel during a request. Missing data returns
+HTTP 503 with a clear readiness error.
+
+Swiss remains the production default until all frozen golden charts and boundary
+cases are reviewed. Panchanga sunrise and sunset have not yet been migrated;
+`POST /v1/panchanga` rejects the Skyfield profile rather than silently using the
+Swiss implementation.
 
 ## Local setup
 
-```bash
-python -m venv .venv
-```
-
-Windows PowerShell:
+Python 3.12 is recommended.
 
 ```powershell
+cd C:\Astro
+py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
+```
+
+Run tests:
+
+```powershell
+python -m pytest
+python -m ruff check .
+```
+
+Start the API:
+
+```powershell
 python -m uvicorn app.main:app --reload
 ```
 
 Open:
 
-- API: http://127.0.0.1:8000
-- Health: http://127.0.0.1:8000/health
-- Ephemeris readiness: http://127.0.0.1:8000/health/ephemeris
-- Documentation: http://127.0.0.1:8000/docs
+- API: `http://127.0.0.1:8000`
+- Swagger: `http://127.0.0.1:8000/docs`
+- General health: `http://127.0.0.1:8000/health`
+- Swiss readiness: `http://127.0.0.1:8000/health/ephemeris`
+- JPL readiness: `http://127.0.0.1:8000/health/ephemeris/jpl`
 
-## Divisional charts
+## Install the local DE440s kernel
 
-Use these endpoints for chart-ready South Indian sign grids:
+Create the data directory:
 
-```http
-POST /v1/charts/d1
-POST /v1/charts/d9
+```powershell
+New-Item -ItemType Directory -Force app\data\jpl
 ```
 
-D1 uses the source Lahiri sidereal positions directly. D9 applies the standard
-Parashari ninefold Navamsa mapping and returns the divisional degree, sign,
-house from Navamsa Lagna, and fixed chart-grid coordinates.
+Download the official JPL kernel:
 
-## Varahamihira profile
-
-The classical source layer is available through:
-
-```http
-GET  /v1/classical/varahamihira_v1/profile
-GET  /v1/classical/varahamihira_v1/rules
-GET  /v1/classical/varahamihira_v1/weighting/profile
-GET  /v1/classical/varahamihira_v1/validation/profile
-GET  /v1/classical/varahamihira_v1/validation/cases
-POST /v1/classical/varahamihira_v1/validation/compare
-GET  /v1/classical/varahamihira_v1/rashis
-GET  /v1/classical/varahamihira_v1/grahas
-POST /v1/classical/varahamihira_v1/conditions
-POST /v1/classical/varahamihira_v1/aspects
-POST /v1/classical/varahamihira_v1/career
-POST /v1/classical/varahamihira_v1/career/weighted
-POST /v1/classical/varahamihira_v1/ashtakavarga
-POST /v1/classical/varahamihira_v1/relationships
-POST /v1/classical/varahamihira_v1/strength
-POST /v1/classical/varahamihira_v1/strength/weighted
-POST /v1/classical/varahamihira_v1/dasha/current
-POST /v1/classical/varahamihira_v1/dasha/current/weighted
+```powershell
+Invoke-WebRequest `
+  -Uri "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de440s.bsp" `
+  -OutFile "app\data\jpl\de440s.bsp"
 ```
 
-The profile pins a public-domain 1905 English edition of *Brihat Jataka* and
-covers Chapter 1 Rashi and Chapter 2 Graha reference data. The condition
-endpoint combines those immutable tables with the existing D1/D9 longitudes to
-report own sign, exaltation, debilitation, exact deep dignity points,
-Vargottama, Moon phase, and a versioned Mercury association result.
+The default path is:
 
-The aspects endpoint implements Chapter 2, stanza 13 at verse precision. It
-retains quarter, half, three-quarter, and full aspect strengths for all seven
-classical Grahas, then applies the special full aspects of Mars, Jupiter, and
-Saturn. It also reports same-sign conjunction pairs, house lords, lord
-placements, occupants, and all aspect rays received by each whole-sign house.
-
-The career endpoint implements Chapter 10, verses 10.1–10.4. It returns all
-three Karmājīva derivations from Lagna, Moon, and Sun; tenth-house occupants and
-income-source relations; the Navamsa lord of each tenth lord; classical vocation
-themes; unweighted dignity, conjunction, and aspect facts; and the directional
-relationship from each tenth lord to its derived indicator.
-
-The Ashtakavarga endpoint implements the raw Chapter 9 contributor tables. It
-returns eight contributor rows for each of the seven planetary
-Bhinnashtakavargas, twelve bindu and rekha values per Graha, and the sign-wise
-Sarvashtakavarga sum. The fixed planetary totals are 48, 49, 39, 54, 56, 52,
-and 39, producing a raw Sarvashtakavarga total of 337.
-
-The relationship endpoint implements Chapter 2, verses 2.16–2.18. It returns 42
-directed natural and compound relationships plus 21 mutual temporary-pair
-summaries. Natural and compound relations remain directional; temporary
-friendship is derived from whole-sign natal separation. Rahu and Ketu are not
-inserted into the seven-Graha table, and no numeric score is applied.
-
-The strength endpoint assembles dignity, Vargottama, retrograde, sign-lord
-relationship, raw bindu, aspect, and conjunction facts for each classical
-Graha. Every factor is categorized but unweighted. The endpoint returns no
-strongest-planet ranking and refuses to cancel debilitation without a registered
-source rule.
-
-The separately versioned weighting profile is an API convention rather than a
-classical textual rule. `/strength/weighted` embeds the raw strength response,
-shows six formula components per Graha, and applies a controlled seven-Graha
-ranking. `/career/weighted` and `/dasha/current/weighted` add compact score
-summaries while preserving the original evidence-only responses unchanged.
-Rahu and Ketu remain unavailable for scoring. Cancellation and event prediction
-remain disabled.
-
-Three internal golden fixtures freeze the weighting arithmetic. The external
-validation harness separately freezes twelve diverse birth inputs and compares
-partial snapshots from independent programs. Every supplied field is reported
-as a match or mismatch using documented tolerances; omitted groups are skipped.
-No external snapshots are approved yet, so external multi-software validation
-remains explicitly incomplete.
-
-The classical Dasha endpoint preserves the existing current Vimshottari timing
-response and annotates each active lord with D1 placement, house ownership,
-dignity, Vargottama, aspects, conjunctions, raw Chapter 9 bindus, matching
-Karmājīva channels, and all directed relationships among the four active level
-lords. Vimshottari supplies timing; the API does not claim that *Brihat Jataka*
-defines that timing system. Rahu and Ketu receive neutral natal placement and
-aggregate sign context without invented dignity or friendship rules.
-
-The evaluators do not modify D1, D9, Panchanga, or Vimshottari results. The
-unweighted career output remains plural and non-exclusive. The controlled
-weighting convention ranks Grahas only; it does not select a profession or
-predict an event. Ashtakavarga returns raw arithmetic, and cross-text
-cancellation rules remain outside `varahamihira_v1`.
-
-## Vimshottari response depth
-
-The default Dasha response ends at Pratyantardasha to preserve the existing API
-size and behavior. Add this field when the complete fourth-level timeline is
-required:
-
-```json
-{
-  "depth": "sookshma"
-}
+```text
+app/data/jpl/de440s.bsp
 ```
 
-That response contains 6,561 Sookshma Dasha periods, so it should be requested
-only by clients that need the expanded timeline.
+An absolute path can be selected with:
 
-## Current Vimshottari chain
+```powershell
+$env:JYOTHISYAM_JPL_EPHEMERIS_PATH = "C:\ephemeris\de440s.bsp"
+```
 
-Use the compact endpoint when an application needs only the periods active at a
-specific instant:
+The `.bsp` kernel is intentionally ignored by Git and must be mounted or copied
+into each deployment separately.
+
+## Calculate with Skyfield/JPL
 
 ```http
-POST /v1/dashas/vimshottari/current
+POST /v1/positions
 ```
 
 ```json
@@ -229,36 +177,86 @@ POST /v1/dashas/vimshottari/current
     "longitude": 79.312,
     "altitude_meters": 120
   },
-  "as_of": {
-    "local_datetime": "2026-07-20T12:00:00",
-    "timezone": "Asia/Kolkata"
-  },
-  "calculation_profile": "south_indian_drik_lahiri_v1"
+  "calculation_profile": "south_indian_drik_lahiri_skyfield_de440s_v1"
 }
 ```
 
-The response contains one Mahadasha, Antardasha, Pratyantardasha and Sookshma
-period, including UTC boundaries, elapsed time, remaining time and progress.
+The same profile can flow through D1, D9, Vimshottari, and classical evaluators
+that depend on the shared positions engine.
 
-## Tests
+## Compare Swiss and Skyfield
 
-```bash
-python -m pytest
-python -m ruff check .
+```http
+POST /v1/positions/providers/compare
 ```
 
-## Swiss Ephemeris production requirement
+```json
+{
+  "birth": {
+    "local_datetime": "1998-10-26T10:28:00",
+    "timezone": "Asia/Kolkata",
+    "latitude": 16.575,
+    "longitude": 79.312,
+    "altitude_meters": 120
+  },
+  "longitude_tolerance_degrees": 0.05,
+  "ascendant_tolerance_degrees": 0.1,
+  "ayanamsha_tolerance_degrees": 0.02
+}
+```
 
-Local development may use the native engine fallback while the API contract is
-being built. A public production service must declare its Swiss Ephemeris
-license mode, deploy the required data files and enable strict source checking.
-The API then fails instead of silently accepting a fallback source.
+The response reports:
 
-See [`docs/EPHEMERIS_DEPLOYMENT.md`](docs/EPHEMERIS_DEPLOYMENT.md).
+- signed and absolute ayanamsha difference
+- signed and absolute Lagna difference
+- longitude differences for all supported planets and nodes
+- sign agreement
+- retrograde agreement
+- per-field tolerance results
+- `production_default_changed: false`
+
+The comparison endpoint never changes configuration or chooses a winner.
+
+## Divisional charts
+
+```http
+POST /v1/charts/d1
+POST /v1/charts/d9
+```
+
+D1 uses source sidereal positions directly. D9 applies the versioned Parashari
+ninefold Navamsa mapping and returns divisional degrees, signs, houses from
+Navamsa Lagna, and fixed South Indian grid coordinates.
+
+## Vimshottari response depth
+
+The default Vimshottari response ends at Pratyantardasha. Request the complete
+fourth-level timeline with:
+
+```json
+{
+  "depth": "sookshma"
+}
+```
+
+A full response contains 6,561 Sookshma periods and should only be requested by
+clients that need the expanded timeline.
+
+## Classical-source boundaries
+
+The Varahamihira profile pins a public-domain 1905 English edition of *Brihat
+Jataka*. Classical facts retain source and rule identifiers. Controlled numeric
+weights are an API convention, not a textual Varahamihira rule.
+
+The API does not silently import unsupported debilitation-cancellation formulas,
+node dignities, or guaranteed event predictions. Sensitive birth-risk and
+longevity judgments remain outside the implemented scope.
 
 ## Calculation contracts
 
 - [`docs/CALCULATION_PROFILE_V1.md`](docs/CALCULATION_PROFILE_V1.md)
+- [`docs/SKYFIELD_JPL_PROVIDER_V1.md`](docs/SKYFIELD_JPL_PROVIDER_V1.md)
+- [`docs/EPHEMERIS_DEPLOYMENT.md`](docs/EPHEMERIS_DEPLOYMENT.md)
 - [`docs/CHARTS_D1_D9_V1.md`](docs/CHARTS_D1_D9_V1.md)
 - [`docs/PANCHANGA_V1.md`](docs/PANCHANGA_V1.md)
 - [`docs/VIMSHOTTARI_V1.md`](docs/VIMSHOTTARI_V1.md)
@@ -273,6 +271,7 @@ See [`docs/EPHEMERIS_DEPLOYMENT.md`](docs/EPHEMERIS_DEPLOYMENT.md).
 - [`docs/CLASSICAL_STRENGTH_V1.md`](docs/CLASSICAL_STRENGTH_V1.md)
 - [`docs/CONTROLLED_STRENGTH_WEIGHTING_V1.md`](docs/CONTROLLED_STRENGTH_WEIGHTING_V1.md)
 - [`docs/GOLDEN_CHART_VALIDATION_V1.md`](docs/GOLDEN_CHART_VALIDATION_V1.md)
+- [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)
 
 ## Docker
 
@@ -281,16 +280,14 @@ docker build -t jyothisyam-api .
 docker run --rm -p 8080:8080 jyothisyam-api
 ```
 
-Then open http://127.0.0.1:8080/health.
+For the Skyfield profile, mount the kernel and set its absolute path in the
+container. Do not bake an unreviewed third-party kernel into a public image.
 
 ## Project direction
 
-The engine will be developed in layers:
-
-1. API and deployment foundation
-2. Time and location normalization
-3. Astronomical positions
-4. Sidereal and ayanamsha profiles
-5. Rasi, Lagna, Nakshatra and Panchanga
-6. Vargas, Vimshottari Dasha and classical/regional rule layers
-7. Authentication, metering and commercial API plans
+1. Validate Skyfield/JPL positions against all frozen golden charts.
+2. Review ayanamsha, Lagna, node, sign-boundary, and retrograde differences.
+3. Migrate Hindu sunrise and sunset calculations.
+4. Freeze a validated Skyfield calculation profile.
+5. Switch production only after the migration gate passes.
+6. Add authentication, metering, and commercial API plans.
