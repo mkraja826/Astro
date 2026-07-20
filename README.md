@@ -11,10 +11,14 @@ The repository currently provides:
 - `GET /health` process liveness
 - `GET /health/ephemeris` calculation readiness
 - `POST /v1/positions`
+- `POST /v1/charts/d1`
+- `POST /v1/charts/d9`
 - `POST /v1/panchanga`
 - `POST /v1/dashas/vimshottari`
 - `POST /v1/dashas/vimshottari/current`
 - Lahiri sidereal planetary positions and ascendant
+- D1 Rasi and D9 Navamsa divisional charts
+- Fixed South Indian 4-by-4 sign-grid metadata
 - Rashi, Nakshatra, Pada and whole-sign houses
 - Sunrise-based Vara, Tithi, Nakshatra, Yoga and Karana
 - Hindu sunrise and sunset in local and UTC time
@@ -51,6 +55,19 @@ Open:
 - Health: http://127.0.0.1:8000/health
 - Ephemeris readiness: http://127.0.0.1:8000/health/ephemeris
 - Documentation: http://127.0.0.1:8000/docs
+
+## Divisional charts
+
+Use these endpoints for chart-ready South Indian sign grids:
+
+```http
+POST /v1/charts/d1
+POST /v1/charts/d9
+```
+
+D1 uses the source Lahiri sidereal positions directly. D9 applies the standard
+Parashari ninefold Navamsa mapping and returns the divisional degree, sign,
+house from Navamsa Lagna, and fixed chart-grid coordinates.
 
 ## Vimshottari response depth
 
@@ -115,6 +132,7 @@ See [`docs/EPHEMERIS_DEPLOYMENT.md`](docs/EPHEMERIS_DEPLOYMENT.md).
 ## Calculation contracts
 
 - [`docs/CALCULATION_PROFILE_V1.md`](docs/CALCULATION_PROFILE_V1.md)
+- [`docs/CHARTS_D1_D9_V1.md`](docs/CHARTS_D1_D9_V1.md)
 - [`docs/PANCHANGA_V1.md`](docs/PANCHANGA_V1.md)
 - [`docs/VIMSHOTTARI_V1.md`](docs/VIMSHOTTARI_V1.md)
 - [`docs/VIMSHOTTARI_CURRENT_V1.md`](docs/VIMSHOTTARI_CURRENT_V1.md)
