@@ -3,7 +3,7 @@
 ## Skyfield
 
 Skyfield is the astronomical calculation library used by the production
-` south_indian_drik_lahiri_jpl_de440s_v1` profile.
+`south_indian_drik_lahiri_jpl_de440s_v1` profile.
 
 Project: `https://github.com/skyfielders/python-skyfield`
 
