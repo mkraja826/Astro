@@ -18,15 +18,19 @@ The repository currently provides:
 - `POST /v1/dashas/vimshottari/current`
 - `GET /v1/classical/varahamihira_v1/profile`
 - `GET /v1/classical/varahamihira_v1/rules`
+- `GET /v1/classical/varahamihira_v1/weighting/profile`
 - `GET /v1/classical/varahamihira_v1/rashis`
 - `GET /v1/classical/varahamihira_v1/grahas`
 - `POST /v1/classical/varahamihira_v1/conditions`
 - `POST /v1/classical/varahamihira_v1/aspects`
 - `POST /v1/classical/varahamihira_v1/career`
+- `POST /v1/classical/varahamihira_v1/career/weighted`
 - `POST /v1/classical/varahamihira_v1/ashtakavarga`
 - `POST /v1/classical/varahamihira_v1/relationships`
 - `POST /v1/classical/varahamihira_v1/strength`
+- `POST /v1/classical/varahamihira_v1/strength/weighted`
 - `POST /v1/classical/varahamihira_v1/dasha/current`
+- `POST /v1/classical/varahamihira_v1/dasha/current/weighted`
 - Lahiri sidereal planetary positions and ascendant
 - D1 Rasi and D9 Navamsa divisional charts
 - Fixed South Indian 4-by-4 sign-grid metadata
@@ -50,6 +54,9 @@ The repository currently provides:
 - Chapter 2 natural, temporary, and compound seven-Graha relationships
 - Transparent unweighted strength-factor inventories for all seven classical Grahas
 - Source-strict cancellation boundaries without importing unregistered rules
+- Separately versioned controlled strength weighting with visible formulas
+- Additive weighted Karmājīva and active-Dasha summaries
+- Three frozen formula-level golden fixtures
 - Active Vimshottari timing annotated with ownership, condition, aspect, bindu, career, and relationship facts
 - Explicit neutral Rahu and Ketu coverage without invented classical dignity rules
 - True Rahu and opposite Ketu
@@ -99,17 +106,21 @@ house from Navamsa Lagna, and fixed chart-grid coordinates.
 The classical source layer is available through:
 
 ```http
-GET /v1/classical/varahamihira_v1/profile
-GET /v1/classical/varahamihira_v1/rules
-GET /v1/classical/varahamihira_v1/rashis
-GET /v1/classical/varahamihira_v1/grahas
+GET  /v1/classical/varahamihira_v1/profile
+GET  /v1/classical/varahamihira_v1/rules
+GET  /v1/classical/varahamihira_v1/weighting/profile
+GET  /v1/classical/varahamihira_v1/rashis
+GET  /v1/classical/varahamihira_v1/grahas
 POST /v1/classical/varahamihira_v1/conditions
 POST /v1/classical/varahamihira_v1/aspects
 POST /v1/classical/varahamihira_v1/career
+POST /v1/classical/varahamihira_v1/career/weighted
 POST /v1/classical/varahamihira_v1/ashtakavarga
 POST /v1/classical/varahamihira_v1/relationships
 POST /v1/classical/varahamihira_v1/strength
+POST /v1/classical/varahamihira_v1/strength/weighted
 POST /v1/classical/varahamihira_v1/dasha/current
+POST /v1/classical/varahamihira_v1/dasha/current/weighted
 ```
 
 The profile pins a public-domain 1905 English edition of *Brihat Jataka* and
@@ -148,6 +159,18 @@ Graha. Every factor is categorized but unweighted. The endpoint returns no
 strongest-planet ranking and refuses to cancel debilitation without a registered
 source rule.
 
+The separately versioned weighting profile is an API convention rather than a
+classical textual rule. `/strength/weighted` embeds the raw strength response,
+shows six formula components per Graha, and applies a controlled seven-Graha
+ranking. `/career/weighted` and `/dasha/current/weighted` add compact score
+summaries while preserving the original evidence-only responses unchanged.
+Rahu and Ketu remain unavailable for scoring. Cancellation and event prediction
+remain disabled.
+
+Three internal golden fixtures freeze the weighting arithmetic. External
+multi-software chart validation is still incomplete and is reported as such by
+the weighting-profile endpoint.
+
 The classical Dasha endpoint preserves the existing current Vimshottari timing
 response and annotates each active lord with D1 placement, house ownership,
 dignity, Vargottama, aspects, conjunctions, raw Chapter 9 bindus, matching
@@ -156,12 +179,11 @@ lords. Vimshottari supplies timing; the API does not claim that *Brihat Jataka*
 defines that timing system. Rahu and Ketu receive neutral natal placement and
 aggregate sign context without invented dignity or friendship rules.
 
-The evaluators do not modify D1, D9, Panchanga, or Vimshottari results. Career
-output is plural and non-exclusive: `primary_indicator` remains null until a
-separately validated weighting system exists. Ashtakavarga returns raw
-arithmetic only. Relationship labels and strength factors remain categorical.
-Classical Dasha output applies no event prediction, threshold, cancellation, or
-final strength score.
+The evaluators do not modify D1, D9, Panchanga, or Vimshottari results. The
+unweighted career output remains plural and non-exclusive. The controlled
+weighting convention ranks Grahas only; it does not select a profession or
+predict an event. Ashtakavarga returns raw arithmetic, and cross-text
+cancellation rules remain outside `varahamihira_v1`.
 
 ## Vimshottari response depth
 
@@ -238,6 +260,7 @@ See [`docs/EPHEMERIS_DEPLOYMENT.md`](docs/EPHEMERIS_DEPLOYMENT.md).
 - [`docs/CLASSICAL_DASHA_CONTEXT_V1.md`](docs/CLASSICAL_DASHA_CONTEXT_V1.md)
 - [`docs/CLASSICAL_RELATIONSHIPS_V1.md`](docs/CLASSICAL_RELATIONSHIPS_V1.md)
 - [`docs/CLASSICAL_STRENGTH_V1.md`](docs/CLASSICAL_STRENGTH_V1.md)
+- [`docs/CONTROLLED_STRENGTH_WEIGHTING_V1.md`](docs/CONTROLLED_STRENGTH_WEIGHTING_V1.md)
 
 ## Docker
 
