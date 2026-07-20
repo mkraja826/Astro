@@ -28,15 +28,8 @@ jobs:
           python -m pip install --quiet --upgrade pip
           pip install --quiet -e ".[dev]"
 
-      - name: Apply Ruff import fix
-        run: ruff check --fix app/engine/dasha.py
+      - name: Lint
+        run: ruff check .
 
-      - name: Upload Ruff-corrected file
-        uses: actions/upload-artifact@v4
-        with:
-          name: ruff-corrected-dasha
-          path: app/engine/dasha.py
-          retention-days: 3
-
-      - name: Test corrected branch
+      - name: Test
         run: pytest
