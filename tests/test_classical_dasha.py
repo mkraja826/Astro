@@ -20,7 +20,10 @@ def _birth() -> dict[str, object]:
     }
 
 
-def _payload(as_of: str = "2026-07-20T12:00:00", timezone: str = "Asia/Kolkata") -> dict[str, object]:
+def _payload(
+    as_of: str = "2026-07-20T12:00:00",
+    timezone: str = "Asia/Kolkata",
+) -> dict[str, object]:
     return {
         "birth": _birth(),
         "as_of": {
