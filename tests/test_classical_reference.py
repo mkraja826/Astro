@@ -16,7 +16,7 @@ def test_varahamihira_profile_is_source_pinned_and_versioned() -> None:
 
     assert response.status_code == 200, payload
     assert payload["profile_id"] == "varahamihira_v1"
-    assert payload["profile_version"] == "1.7.0"
+    assert payload["profile_version"] == "1.8.0"
     assert payload["status"] == "reference_foundation"
     assert payload["source"]["archive_identifier"] == "brihatjataka00varaiala"
     assert payload["source"]["publication_year"] == 1905
@@ -37,14 +37,18 @@ def test_varahamihira_profile_is_source_pinned_and_versioned() -> None:
     assert payload["ashtakavarga_enabled"] is True
     assert payload["dasha_interpretation_enabled"] is True
     assert payload["relationships_enabled"] is True
-    assert len(payload["endpoints"]) == 11
+    assert len(payload["endpoints"]) == 15
     assert f"{BASE_PATH}/conditions" in payload["endpoints"]
     assert f"{BASE_PATH}/aspects" in payload["endpoints"]
     assert f"{BASE_PATH}/career" in payload["endpoints"]
+    assert f"{BASE_PATH}/career/weighted" in payload["endpoints"]
     assert f"{BASE_PATH}/ashtakavarga" in payload["endpoints"]
     assert f"{BASE_PATH}/dasha/current" in payload["endpoints"]
+    assert f"{BASE_PATH}/dasha/current/weighted" in payload["endpoints"]
     assert f"{BASE_PATH}/relationships" in payload["endpoints"]
     assert f"{BASE_PATH}/strength" in payload["endpoints"]
+    assert f"{BASE_PATH}/strength/weighted" in payload["endpoints"]
+    assert f"{BASE_PATH}/weighting/profile" in payload["endpoints"]
 
 
 def test_rule_registry_has_unique_traceable_chapter_rules() -> None:
@@ -266,12 +270,16 @@ def test_openapi_lists_all_classical_routes() -> None:
 
     assert f"{BASE_PATH}/profile" in paths
     assert f"{BASE_PATH}/rules" in paths
+    assert f"{BASE_PATH}/weighting/profile" in paths
     assert f"{BASE_PATH}/rashis" in paths
     assert f"{BASE_PATH}/grahas" in paths
     assert f"{BASE_PATH}/conditions" in paths
     assert f"{BASE_PATH}/aspects" in paths
     assert f"{BASE_PATH}/career" in paths
+    assert f"{BASE_PATH}/career/weighted" in paths
     assert f"{BASE_PATH}/ashtakavarga" in paths
     assert f"{BASE_PATH}/dasha/current" in paths
+    assert f"{BASE_PATH}/dasha/current/weighted" in paths
     assert f"{BASE_PATH}/relationships" in paths
     assert f"{BASE_PATH}/strength" in paths
+    assert f"{BASE_PATH}/strength/weighted" in paths
