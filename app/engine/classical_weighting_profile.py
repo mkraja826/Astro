@@ -38,7 +38,10 @@ def extend_varahamihira_profile(
             "caveats": [
                 "The controlled weighting profile is an API convention, not a textual rule.",
                 "Every weighted result embeds its raw unweighted strength evidence.",
-                "Career and Dasha weighting use additive endpoints; original contracts remain unchanged.",
+                (
+                    "Career and Dasha weighting use additive endpoints; original "
+                    "contracts remain unchanged."
+                ),
                 "Rahu and Ketu are excluded from seven-Graha ranking.",
                 "Cancellation adjustments and predictions remain disabled.",
                 "External multi-software golden-chart validation remains incomplete.",
