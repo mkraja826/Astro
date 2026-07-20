@@ -83,7 +83,7 @@ class BirthTimeError(ValueError):
     """Raised when a supplied local civil time cannot be resolved safely."""
 
 
-def _normalize_birth_time(request: PositionsRequest) -> tuple[datetime, datetime, int]:
+def _normalize_birth_time(request: PositionsRequest) -> tuple[int, datetime, datetime]:
     birth = request.birth
 
     try:
@@ -168,6 +168,30 @@ def _ephemeris_source(returned_flags: int) -> str:
     return "unknown"
 
 
+def _calculate_body(
+    julian_day: float,
+    body_id: int,
+    flags: int,
+) -> tuple[tuple[float, ...], int]:
+    """Normalize Swiss Ephemeris binding return formats.
+
+    The maintained ``pysweph`` binding returns ``(values, flags, message)``.
+    Older compatible bindings return ``(values, flags)``. The diagnostic message
+    is intentionally not used as a calculation result; the returned flags remain
+    the source of truth for the ephemeris actually used.
+    """
+
+    result = swe.calc_ut(julian_day, body_id, flags)
+    if len(result) == 3:
+        values, returned_flags, _message = result
+    elif len(result) == 2:
+        values, returned_flags = result
+    else:
+        raise RuntimeError("Unexpected Swiss Ephemeris calc_ut response")
+
+    return tuple(float(value) for value in values), int(returned_flags)
+
+
 def calculate_positions(request: PositionsRequest) -> PositionsResponse:
     """Calculate Lahiri sidereal positions for the supported South Indian profile."""
 
@@ -196,9 +220,8 @@ def calculate_positions(request: PositionsRequest) -> PositionsResponse:
         rahu_values: tuple[float, ...] | None = None
 
         for body_name, body_id in PLANETS:
-            values, returned_flags = swe.calc_ut(julian_day, body_id, flags)
+            values, returned_flags = _calculate_body(julian_day, body_id, flags)
             ephemeris_sources.add(_ephemeris_source(returned_flags))
-            values = tuple(float(value) for value in values)
 
             if body_name == "rahu":
                 rahu_values = values
