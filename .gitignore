@@ -15,6 +15,10 @@ venv/
 .env.*
 !.env.example
 
+# Local astronomical data
+app/data/jpl/*.bsp
+!app/data/jpl/README.md
+
 # Build artifacts
 build/
 dist/

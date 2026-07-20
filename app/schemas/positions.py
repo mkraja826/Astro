@@ -10,6 +10,9 @@ class CalculationProfile(StrEnum):
     """Immutable calculation profiles supported by the public API."""
 
     SOUTH_INDIAN_DRIK_LAHIRI_V1 = "south_indian_drik_lahiri_v1"
+    SOUTH_INDIAN_DRIK_LAHIRI_SKYFIELD_DE440S_V1 = (
+        "south_indian_drik_lahiri_skyfield_de440s_v1"
+    )
 
 
 class BirthInput(BaseModel):
@@ -104,7 +107,10 @@ class EngineMetadata(BaseModel):
 
     engine: str
     engine_version: str
-    swiss_ephemeris_version: str
+    astronomical_provider: str = "swiss_ephemeris"
+    provider_version: str | None = None
+    ephemeris_model: str | None = None
+    swiss_ephemeris_version: str | None = None
     zodiac: str
     ayanamsha: str
     node_type: str

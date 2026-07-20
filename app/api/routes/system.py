@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from app import __version__
 from app.core.ephemeris import inspect_ephemeris
+from app.core.jpl_ephemeris import inspect_jpl_ephemeris
 
 router = APIRouter(tags=["System"])
 
@@ -30,7 +31,7 @@ class HealthResponse(BaseModel):
 
 
 class EphemerisHealthResponse(BaseModel):
-    """Readiness response for licensed high-precision calculations."""
+    """Readiness response for licensed Swiss Ephemeris calculations."""
 
     status: str
     ready: bool
@@ -40,6 +41,20 @@ class EphemerisHealthResponse(BaseModel):
     data_directory_exists: bool
     required_files: tuple[str, ...]
     detected_files: tuple[str, ...]
+    issues: tuple[str, ...]
+
+
+class JplEphemerisHealthResponse(BaseModel):
+    """Readiness response for the local Skyfield/JPL kernel."""
+
+    status: str
+    ready: bool
+    provider: str
+    model: str
+    configured_path: str
+    file_exists: bool
+    file_size_bytes: int | None
+    automatic_download_enabled: bool
     issues: tuple[str, ...]
 
 
@@ -70,11 +85,11 @@ def health_check() -> HealthResponse:
 @router.get(
     "/health/ephemeris",
     response_model=EphemerisHealthResponse,
-    summary="Ephemeris readiness check",
+    summary="Swiss Ephemeris readiness check",
     responses={503: {"description": "Licensed Swiss Ephemeris data is not ready"}},
 )
 def ephemeris_health_check(response: Response) -> EphemerisHealthResponse:
-    """Report whether the calculation engine is ready for public production use."""
+    """Report whether the original Swiss calculation profile is production-ready."""
 
     report = inspect_ephemeris()
     if not report.ready:
@@ -89,5 +104,31 @@ def ephemeris_health_check(response: Response) -> EphemerisHealthResponse:
         data_directory_exists=report.data_directory_exists,
         required_files=report.required_files,
         detected_files=report.detected_files,
+        issues=report.issues,
+    )
+
+
+@router.get(
+    "/health/ephemeris/jpl",
+    response_model=JplEphemerisHealthResponse,
+    summary="Skyfield/JPL ephemeris readiness check",
+    responses={503: {"description": "Local JPL DE440s kernel is not ready"}},
+)
+def jpl_ephemeris_health_check(response: Response) -> JplEphemerisHealthResponse:
+    """Report whether the local DE440s kernel is available without downloading it."""
+
+    report = inspect_jpl_ephemeris()
+    if not report.ready:
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+
+    return JplEphemerisHealthResponse(
+        status=report.status,
+        ready=report.ready,
+        provider=report.provider,
+        model=report.model,
+        configured_path=report.configured_path,
+        file_exists=report.file_exists,
+        file_size_bytes=report.file_size_bytes,
+        automatic_download_enabled=report.automatic_download_enabled,
         issues=report.issues,
     )
