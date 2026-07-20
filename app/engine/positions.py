@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 import swisseph as swe
 
 from app import __version__
+from app.core.ephemeris import configure_ephemeris, enforce_ephemeris_source
 from app.schemas.positions import (
     Coordinates,
     EngineMetadata,
@@ -200,6 +201,7 @@ def calculate_positions(request: PositionsRequest) -> PositionsResponse:
     flags = swe.FLG_SWIEPH | swe.FLG_SIDEREAL | swe.FLG_SPEED
 
     with _ENGINE_LOCK:
+        settings = configure_ephemeris()
         swe.set_sid_mode(swe.SIDM_LAHIRI)
         ayanamsha = float(swe.get_ayanamsa_ut(julian_day))
         _, ascendant_points = swe.houses_ex(
@@ -221,7 +223,9 @@ def calculate_positions(request: PositionsRequest) -> PositionsResponse:
 
         for body_name, body_id in PLANETS:
             values, returned_flags = _calculate_body(julian_day, body_id, flags)
-            ephemeris_sources.add(_ephemeris_source(returned_flags))
+            source = _ephemeris_source(returned_flags)
+            enforce_ephemeris_source(source, body_name, settings)
+            ephemeris_sources.add(source)
 
             if body_name == "rahu":
                 rahu_values = values

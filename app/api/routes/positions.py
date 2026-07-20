@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter, HTTPException, status
 
+from app.core.ephemeris import EphemerisConfigurationError, EphemerisUnavailableError
 from app.engine.positions import BirthTimeError, calculate_positions
 from app.schemas.positions import PositionsRequest, PositionsResponse
 
@@ -16,7 +17,10 @@ router = APIRouter(prefix="/v1", tags=["Astronomy"])
     responses={
         422: {
             "description": "Invalid coordinates, timezone, or local civil time",
-        }
+        },
+        503: {
+            "description": "Required licensed ephemeris configuration or data unavailable",
+        },
     },
 )
 def positions(request: PositionsRequest) -> PositionsResponse:
@@ -27,5 +31,10 @@ def positions(request: PositionsRequest) -> PositionsResponse:
     except BirthTimeError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail=str(exc),
+        ) from exc
+    except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=str(exc),
         ) from exc
