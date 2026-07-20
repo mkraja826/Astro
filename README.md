@@ -12,10 +12,12 @@ The repository currently provides:
 - `GET /health/ephemeris` calculation readiness
 - `POST /v1/positions`
 - `POST /v1/panchanga`
+- `POST /v1/dashas/vimshottari`
 - Lahiri sidereal planetary positions and ascendant
 - Rashi, Nakshatra, Pada and whole-sign houses
 - Sunrise-based Vara, Tithi, Nakshatra, Yoga and Karana
 - Hindu sunrise and sunset in local and UTC time
+- Vimshottari birth balance and one complete 120-year Mahadasha cycle
 - True Rahu and opposite Ketu
 - Timezone, ambiguous-time and coordinate validation
 - Explicit Swiss Ephemeris source reporting
@@ -65,6 +67,7 @@ See [`docs/EPHEMERIS_DEPLOYMENT.md`](docs/EPHEMERIS_DEPLOYMENT.md).
 
 - [`docs/CALCULATION_PROFILE_V1.md`](docs/CALCULATION_PROFILE_V1.md)
 - [`docs/PANCHANGA_V1.md`](docs/PANCHANGA_V1.md)
+- [`docs/VIMSHOTTARI_V1.md`](docs/VIMSHOTTARI_V1.md)
 
 ## Docker
 
