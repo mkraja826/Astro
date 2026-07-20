@@ -3,7 +3,6 @@
 from fastapi import APIRouter, HTTPException, status
 
 from app.core.ephemeris import EphemerisConfigurationError, EphemerisUnavailableError
-from app.core.swe_compat import ensure_rise_trans_constants
 from app.engine.panchanga import (
     PanchangaTimeError,
     SolarEventError,
@@ -24,14 +23,13 @@ router = APIRouter(prefix="/v1", tags=["Panchanga"])
             "description": "Invalid timezone, coordinates, date, or unavailable solar event",
         },
         503: {
-            "description": "Required licensed ephemeris configuration or data unavailable",
+            "description": "Required local JPL ephemeris data is unavailable",
         },
     },
 )
 def panchanga(request: PanchangaRequest) -> PanchangaResponse:
     """Return Vara, Tithi, Nakshatra, Yoga and Karana at local sunrise."""
 
-    ensure_rise_trans_constants()
     try:
         return calculate_panchanga(request)
     except (PanchangaTimeError, SolarEventError) as exc:
