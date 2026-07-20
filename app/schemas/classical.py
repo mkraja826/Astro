@@ -121,6 +121,7 @@ class ClassicalProfileResponse(BaseModel):
     dignity_evaluator_enabled: bool
     aspects_evaluator_enabled: bool = False
     house_influence_evaluator_enabled: bool = False
+    career_analysis_enabled: bool = False
     endpoints: list[str]
     caveats: list[str]
 
