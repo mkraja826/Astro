@@ -20,6 +20,10 @@ from app.engine.classical_weighting import (
     calculate_varahamihira_weighted_strength,
     get_weighting_profile,
 )
+from app.engine.classical_weighting_integrations import (
+    calculate_varahamihira_weighted_career,
+    calculate_varahamihira_weighted_dasha,
+)
 from app.engine.classical_weighting_profile import (
     extend_varahamihira_profile,
     extend_varahamihira_rules,
@@ -61,6 +65,9 @@ from app.schemas.classical_strength import (
     ClassicalStrengthResponse,
 )
 from app.schemas.classical_weighting import (
+    ClassicalWeightedCareerResponse,
+    ClassicalWeightedDashaRequest,
+    ClassicalWeightedDashaResponse,
     ClassicalWeightedStrengthRequest,
     ClassicalWeightedStrengthResponse,
     WeightingProfileResponse,
@@ -222,6 +229,31 @@ def varahamihira_career(
 
 
 @router.post(
+    "/career/weighted",
+    response_model=ClassicalWeightedCareerResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Attach controlled Graha-strength summaries to Karmājīva channels",
+    responses={
+        422: {"description": "Invalid coordinates, timezone, or local civil time"},
+        503: {
+            "description": "Required licensed ephemeris configuration or data unavailable"
+        },
+    },
+)
+def varahamihira_weighted_career(
+    request: ClassicalWeightedStrengthRequest,
+) -> ClassicalWeightedCareerResponse:
+    """Return original career evidence plus transparent convention summaries."""
+
+    try:
+        return calculate_varahamihira_weighted_career(request)
+    except BirthTimeError as exc:
+        raise _unprocessable(exc) from exc
+    except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
+        raise _ephemeris_unavailable(exc) from exc
+
+
+@router.post(
     "/ashtakavarga",
     response_model=AshtakavargaResponse,
     status_code=status.HTTP_200_OK,
@@ -345,6 +377,36 @@ def varahamihira_dasha_current(
 
     try:
         return calculate_varahamihira_dasha_context(request)
+    except (BirthTimeError, DashaQueryError) as exc:
+        raise _unprocessable(exc) from exc
+    except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
+        raise _ephemeris_unavailable(exc) from exc
+
+
+@router.post(
+    "/dasha/current/weighted",
+    response_model=ClassicalWeightedDashaResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Attach controlled natal-strength summaries to the active Dasha chain",
+    responses={
+        422: {
+            "description": (
+                "Invalid birth/query time, ambiguous civil time, or instant outside "
+                "the first 120-year cycle"
+            )
+        },
+        503: {
+            "description": "Required licensed ephemeris configuration or data unavailable"
+        },
+    },
+)
+def varahamihira_weighted_dasha_current(
+    request: ClassicalWeightedDashaRequest,
+) -> ClassicalWeightedDashaResponse:
+    """Return original active-chain evidence plus transparent strength summaries."""
+
+    try:
+        return calculate_varahamihira_weighted_dasha(request)
     except (BirthTimeError, DashaQueryError) as exc:
         raise _unprocessable(exc) from exc
     except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
