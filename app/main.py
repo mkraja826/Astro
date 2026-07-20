@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from app import __version__
 from app.api.routes.charts import router as charts_router
 from app.api.routes.classical import router as classical_router
+from app.api.routes.classical_validation import router as classical_validation_router
 from app.api.routes.dasha import router as dasha_router
 from app.api.routes.panchanga import router as panchanga_router
 from app.api.routes.positions import router as positions_router
@@ -34,6 +35,7 @@ def create_app() -> FastAPI:
     application.include_router(panchanga_router)
     application.include_router(dasha_router)
     application.include_router(classical_router)
+    application.include_router(classical_validation_router)
     return application
 
 
