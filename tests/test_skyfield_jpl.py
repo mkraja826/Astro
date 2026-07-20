@@ -1,4 +1,4 @@
-"""Tests for the Skyfield/JPL DE440s provider foundation."""
+"""Tests for the Skyfield/JPL DE440s production provider."""
 
 from datetime import UTC, datetime
 from math import radians
@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from app.engine.positions import _calculate_swiss_positions, calculate_positions
+from app.engine.positions import calculate_positions
 from app.engine.skyfield_jpl import (
     SkyfieldJplProvider,
     _ascendant_from_sidereal_time,
@@ -18,7 +18,7 @@ from app.main import app
 from app.schemas.positions import PositionsRequest
 
 client = TestClient(app)
-PROFILE = "south_indian_drik_lahiri_skyfield_de440s_v1"
+PROFILE = "south_indian_drik_lahiri_jpl_de440s_v1"
 
 
 def _payload() -> dict[str, object]:
@@ -34,17 +34,31 @@ def _payload() -> dict[str, object]:
     }
 
 
-def test_skyfield_profile_dispatches_to_the_new_provider(monkeypatch: pytest.MonkeyPatch) -> None:
-    request = PositionsRequest.model_validate(_payload())
-    sentinel = object()
+def test_default_profile_is_the_canonical_jpl_profile() -> None:
+    request = PositionsRequest.model_validate({"birth": _payload()["birth"]})
 
+    assert request.calculation_profile.value == PROFILE
+
+
+def test_every_accepted_profile_dispatches_to_jpl(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    sentinel = object()
     monkeypatch.setattr(
         SkyfieldJplProvider,
         "calculate",
         lambda _self, _request: sentinel,
     )
 
-    assert calculate_positions(request) is sentinel
+    for profile in (
+        PROFILE,
+        "south_indian_drik_lahiri_v1",
+        "south_indian_drik_lahiri_skyfield_de440s_v1",
+    ):
+        payload = _payload()
+        payload["calculation_profile"] = profile
+        request = PositionsRequest.model_validate(payload)
+        assert calculate_positions(request) is sentinel
 
 
 def test_julian_day_converter_matches_j2000_noon() -> None:
@@ -72,7 +86,7 @@ def test_jpl_health_is_degraded_when_kernel_is_missing(
     missing = tmp_path / "missing-de440s.bsp"
     monkeypatch.setenv("JYOTHISYAM_JPL_EPHEMERIS_PATH", str(missing))
 
-    response = client.get("/health/ephemeris/jpl")
+    response = client.get("/health/ephemeris")
     payload = response.json()
 
     assert response.status_code == 503
@@ -97,44 +111,7 @@ def test_positions_fail_clearly_when_jpl_kernel_is_missing(
     assert "DE440s kernel is missing" in response.json()["detail"]
 
 
-def test_provider_comparison_route_is_additive_and_does_not_change_default(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setattr(
-        SkyfieldJplProvider,
-        "calculate",
-        lambda _self, request: _calculate_swiss_positions(request),
-    )
+def test_removed_provider_comparison_route_is_not_exposed() -> None:
+    response = client.get("/openapi.json")
 
-    response = client.post(
-        "/v1/positions/providers/compare",
-        json={"birth": _payload()["birth"]},
-    )
-    payload = response.json()
-
-    assert response.status_code == 200, payload
-    assert payload["passed"] is True
-    assert payload["compared_point_count"] == 9
-    assert payload["longitude_match_count"] == 9
-    assert payload["sign_match_count"] == 9
-    assert payload["retrograde_match_count"] == 9
-    assert payload["production_default_changed"] is False
-
-
-def test_panchanga_rejects_unmigrated_jpl_profile() -> None:
-    response = client.post(
-        "/v1/panchanga",
-        json={
-            "location": {
-                "local_date": "2026-07-21",
-                "timezone": "Asia/Kolkata",
-                "latitude": 16.575,
-                "longitude": 79.312,
-                "altitude_meters": 120,
-            },
-            "calculation_profile": PROFILE,
-        },
-    )
-
-    assert response.status_code == 422
-    assert "Skyfield/JPL Panchanga is not implemented yet" in str(response.json())
+    assert "/v1/positions/providers/compare" not in response.json()["paths"]

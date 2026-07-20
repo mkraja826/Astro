@@ -1,10 +1,11 @@
-"""Integration tests for the first astrology calculation endpoint."""
+"""Integration tests for the sidereal positions endpoint."""
 
 from fastapi.testclient import TestClient
 
 from app.main import app
 
 client = TestClient(app)
+PROFILE = "south_indian_drik_lahiri_jpl_de440s_v1"
 
 
 def _birth_payload() -> dict[str, object]:
@@ -16,7 +17,7 @@ def _birth_payload() -> dict[str, object]:
             "longitude": 79.312,
             "altitude_meters": 120,
         },
-        "calculation_profile": "south_indian_drik_lahiri_v1",
+        "calculation_profile": PROFILE,
     }
 
 
@@ -26,7 +27,7 @@ def test_positions_returns_sidereal_chart_foundation() -> None:
 
     assert response.status_code == 200, payload
     assert payload["request_id"].startswith("req_")
-    assert payload["calculation_profile"] == "south_indian_drik_lahiri_v1"
+    assert payload["calculation_profile"] == PROFILE
     assert payload["time"]["timezone"] == "Asia/Kolkata"
     assert payload["time"]["utc_datetime"].startswith("1998-10-26T04:58:00")
     assert 2450000 < payload["time"]["julian_day_ut"] < 2460000
@@ -61,11 +62,26 @@ def test_positions_returns_sidereal_chart_foundation() -> None:
     ketu = planets["ketu"]["longitude"]
     assert abs(((ketu - rahu) % 360) - 180) < 1e-7
 
-    assert payload["metadata"]["zodiac"] == "sidereal"
-    assert payload["metadata"]["ayanamsha"] == "lahiri"
-    assert payload["metadata"]["node_type"] == "true"
-    assert payload["metadata"]["house_system"] == "whole_sign"
-    assert payload["metadata"]["ephemeris_sources"]
+    metadata = payload["metadata"]
+    assert metadata["astronomical_provider"] == "skyfield_jpl"
+    assert metadata["ephemeris_model"] == "de440s"
+    assert metadata["swiss_ephemeris_version"] is None
+    assert metadata["zodiac"] == "sidereal"
+    assert metadata["ayanamsha"] == "lahiri_chitrapaksha_spica_apparent_v1"
+    assert metadata["node_type"] == "true_osculating"
+    assert metadata["house_system"] == "whole_sign"
+    assert metadata["ephemeris_sources"] == ["jpl_de440s"]
+
+
+def test_legacy_profile_string_is_calculated_by_jpl() -> None:
+    payload = _birth_payload()
+    payload["calculation_profile"] = "south_indian_drik_lahiri_v1"
+
+    response = client.post("/v1/positions", json=payload)
+
+    assert response.status_code == 200, response.json()
+    assert response.json()["calculation_profile"] == "south_indian_drik_lahiri_v1"
+    assert response.json()["metadata"]["astronomical_provider"] == "skyfield_jpl"
 
 
 def test_positions_rejects_unknown_timezone() -> None:

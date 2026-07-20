@@ -6,7 +6,6 @@ from fastapi.testclient import TestClient
 from app.main import app
 
 client = TestClient(app)
-
 EXPECTED_GRID = {
     1: (1, 2),
     2: (1, 3),
@@ -88,7 +87,10 @@ def test_d1_returns_south_indian_rasi_chart() -> None:
     ) % 360
     assert node_separation == pytest.approx(180.0, abs=1e-7)
     assert payload["metadata"]["zodiac"] == "sidereal"
-    assert payload["metadata"]["ayanamsha"] == "lahiri"
+    assert (
+        payload["metadata"]["ayanamsha"]
+        == "lahiri_chitrapaksha_spica_apparent_v1"
+    )
     assert payload["metadata"]["house_system"] == "whole_sign_divisional"
 
 

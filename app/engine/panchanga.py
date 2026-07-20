@@ -1,22 +1,22 @@
-"""Sunrise-based South Indian Panchanga calculations."""
+"""Sunrise-based South Indian Panchanga calculations using Skyfield/JPL."""
 
 from __future__ import annotations
 
 from datetime import UTC, datetime, time, timedelta
 from math import floor
+from typing import Any
 from uuid import uuid4
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-import swisseph as swe
+import skyfield
+from skyfield import almanac
+from skyfield.api import wgs84
+from skyfield.framelib import ecliptic_frame
 
 from app import __version__
-from app.core.ephemeris import configure_ephemeris, enforce_ephemeris_source
-from app.engine.positions import (
-    NAKSHATRAS,
-    _calculate_body,
-    _ephemeris_source,
-    _julian_day_ut,
-)
+from app.core.jpl_ephemeris import JPL_EPHEMERIS_MODEL, require_jpl_ephemeris
+from app.engine.positions import NAKSHATRAS
+from app.engine.skyfield_jpl import _lahiri_ayanamsha, _load_kernel, _timescale
 from app.schemas.panchanga import (
     KaranaElement,
     NakshatraElement,
@@ -113,11 +113,11 @@ MOVABLE_KARANAS = (
 
 
 class PanchangaTimeError(ValueError):
-    """Raised when timezone or solar events cannot be resolved for a date."""
+    """Raised when a timezone or requested local date cannot be resolved."""
 
 
 class SolarEventError(RuntimeError):
-    """Raised when sunrise or sunset is unavailable at the requested location."""
+    """Raised when geometric sunrise or sunset is unavailable at the location."""
 
 
 def _timezone(name: str) -> ZoneInfo:
@@ -127,56 +127,91 @@ def _timezone(name: str) -> ZoneInfo:
         raise PanchangaTimeError(f"Unknown IANA timezone: {name}") from exc
 
 
-def _julian_day_to_utc(julian_day: float) -> datetime:
-    epoch = datetime(1970, 1, 1, tzinfo=UTC)
-    return epoch + timedelta(days=julian_day - 2440587.5)
+def _utc_datetime(event_time: Any) -> datetime:
+    value = event_time.utc_datetime()
+    if value.tzinfo is None:
+        return value.replace(tzinfo=UTC)
+    return value.astimezone(UTC)
 
 
-def _normalize_rise_trans_result(result: tuple[object, ...]) -> tuple[int, tuple[float, ...]]:
-    if len(result) == 3:
-        status_code, times, _message = result
-    elif len(result) == 2:
-        status_code, times = result
-    else:
-        raise SolarEventError("Unexpected Swiss Ephemeris rise_trans response")
+def _select_local_event(
+    times: Any,
+    real_crossings: Any,
+    timezone: ZoneInfo,
+    requested_date: Any,
+    label: str,
+) -> tuple[datetime, datetime, Any]:
+    for event_time, real_crossing in zip(times, real_crossings, strict=True):
+        if not bool(real_crossing):
+            continue
+        utc_datetime = _utc_datetime(event_time)
+        local_datetime = utc_datetime.astimezone(timezone)
+        if local_datetime.date() == requested_date:
+            return local_datetime, utc_datetime, event_time
 
-    return int(status_code), tuple(float(value) for value in times)
+    raise SolarEventError(
+        f"{label} is unavailable on the requested local date at this location"
+    )
 
 
-def _solar_event(
-    start_julian_day: float,
+def _solar_times(
     request: PanchangaRequest,
     timezone: ZoneInfo,
-    event_flag: int,
-    label: str,
-) -> tuple[datetime, datetime, float]:
+    kernel: Any,
+) -> tuple[datetime, datetime, datetime, datetime, Any]:
     location = request.location
-    geopos = (location.longitude, location.latitude, location.altitude_meters)
-    hindu_rising = getattr(
-        swe,
-        "BIT_HINDU_RISING",
-        swe.BIT_DISC_CENTER | swe.BIT_NO_REFRACTION | swe.BIT_GEOCTR_NO_ECL_LAT,
+    local_midnight = datetime.combine(location.local_date, time.min, tzinfo=timezone)
+    next_midnight = datetime.combine(
+        location.local_date + timedelta(days=1),
+        time.min,
+        tzinfo=timezone,
     )
-    result = swe.rise_trans(
-        start_julian_day,
-        swe.SUN,
-        event_flag | hindu_rising,
-        geopos,
-        0.0,
-        0.0,
-        swe.FLG_SWIEPH,
+    timescale = _timescale()
+    start = timescale.from_datetime(local_midnight.astimezone(UTC))
+    end = timescale.from_datetime(next_midnight.astimezone(UTC))
+    observer = kernel[399] + wgs84.latlon(
+        location.latitude,
+        location.longitude,
+        elevation_m=location.altitude_meters,
     )
-    status_code, times = _normalize_rise_trans_result(result)
-    if status_code != 0 or not times:
-        raise SolarEventError(f"{label} is unavailable for the requested date and location")
+    sun = kernel[10]
 
-    julian_day = times[0]
-    utc_datetime = _julian_day_to_utc(julian_day)
-    local_datetime = utc_datetime.astimezone(timezone)
-    if local_datetime.date() != location.local_date:
-        raise SolarEventError(f"{label} is unavailable on the requested local date")
+    rising_times, rising_crossings = almanac.find_risings(
+        observer,
+        sun,
+        start,
+        end,
+        horizon_degrees=0.0,
+    )
+    setting_times, setting_crossings = almanac.find_settings(
+        observer,
+        sun,
+        start,
+        end,
+        horizon_degrees=0.0,
+    )
 
-    return local_datetime, utc_datetime, julian_day
+    sunrise_local, sunrise_utc, sunrise_time = _select_local_event(
+        rising_times,
+        rising_crossings,
+        timezone,
+        location.local_date,
+        "Sunrise",
+    )
+    sunset_local, sunset_utc, _sunset_time = _select_local_event(
+        setting_times,
+        setting_crossings,
+        timezone,
+        location.local_date,
+        "Sunset",
+    )
+    return sunrise_local, sunrise_utc, sunset_local, sunset_utc, sunrise_time
+
+
+def _sidereal_longitude(earth: Any, target: Any, event_time: Any, ayanamsha: float) -> float:
+    apparent = earth.at(event_time).observe(target).apparent()
+    _latitude, longitude, _distance = apparent.frame_latlon(ecliptic_frame)
+    return (float(longitude.degrees) - ayanamsha) % 360.0
 
 
 def _element(index: int, names: tuple[str, ...], progress: float) -> PanchangaElement:
@@ -208,42 +243,22 @@ def _karana(half_tithi_index: int, progress: float) -> KaranaElement:
 
 
 def calculate_panchanga(request: PanchangaRequest) -> PanchangaResponse:
-    """Calculate five limbs of Panchanga at Hindu sunrise for a local date."""
+    """Calculate five limbs of Panchanga at geometric local sunrise."""
 
     location = request.location
     timezone = _timezone(location.timezone)
-    local_midnight = datetime.combine(location.local_date, time.min, tzinfo=timezone)
-    start_utc = local_midnight.astimezone(UTC)
-    start_julian_day = _julian_day_ut(start_utc)
-    flags = swe.FLG_SWIEPH | swe.FLG_SIDEREAL | swe.FLG_SPEED
-
-    settings = configure_ephemeris()
-    swe.set_sid_mode(swe.SIDM_LAHIRI)
-
-    sunrise_local, sunrise_utc, sunrise_jd = _solar_event(
-        start_julian_day,
+    settings = require_jpl_ephemeris()
+    kernel = _load_kernel(str(settings.data_path))
+    sunrise_local, sunrise_utc, sunset_local, sunset_utc, sunrise_time = _solar_times(
         request,
         timezone,
-        swe.CALC_RISE,
-        "Sunrise",
-    )
-    sunset_local, sunset_utc, _sunset_jd = _solar_event(
-        sunrise_jd + 1e-6,
-        request,
-        timezone,
-        swe.CALC_SET,
-        "Sunset",
+        kernel,
     )
 
-    sun_values, sun_flags = _calculate_body(sunrise_jd, swe.SUN, flags)
-    moon_values, moon_flags = _calculate_body(sunrise_jd, swe.MOON, flags)
-    sun_source = _ephemeris_source(sun_flags)
-    moon_source = _ephemeris_source(moon_flags)
-    enforce_ephemeris_source(sun_source, "sun", settings)
-    enforce_ephemeris_source(moon_source, "moon", settings)
-
-    sun_longitude = sun_values[0] % 360.0
-    moon_longitude = moon_values[0] % 360.0
+    earth = kernel[399]
+    ayanamsha = _lahiri_ayanamsha(earth, sunrise_time)
+    sun_longitude = _sidereal_longitude(earth, kernel[10], sunrise_time, ayanamsha)
+    moon_longitude = _sidereal_longitude(earth, kernel[301], sunrise_time, ayanamsha)
     tithi_angle = (moon_longitude - sun_longitude) % 360.0
 
     tithi_zero_index = min(floor(tithi_angle / 12.0), 29)
@@ -262,7 +277,6 @@ def calculate_panchanga(request: PanchangaRequest) -> PanchangaResponse:
 
     half_tithi_index = min(floor(tithi_angle / 6.0), 59)
     karana_progress = (tithi_angle % 6.0) / 6.0 * 100.0
-    ayanamsha = float(swe.get_ayanamsa_ut(sunrise_jd))
 
     return PanchangaResponse(
         request_id=f"req_{uuid4().hex}",
@@ -279,7 +293,10 @@ def calculate_panchanga(request: PanchangaRequest) -> PanchangaResponse:
             sunrise_utc=sunrise_utc,
             sunset_local=sunset_local,
             sunset_utc=sunset_utc,
-            method="Swiss Ephemeris Hindu rising: disc center, no refraction",
+            method=(
+                "Skyfield/JPL geometric solar-center horizon crossing: "
+                "0 degrees, no refraction"
+            ),
         ),
         vara=PanchangaElement(
             index=location.local_date.weekday() + 1,
@@ -306,11 +323,14 @@ def calculate_panchanga(request: PanchangaRequest) -> PanchangaResponse:
         metadata=EngineMetadata(
             engine="jyothisyam-api",
             engine_version=__version__,
-            swiss_ephemeris_version=str(swe.version),
+            astronomical_provider="skyfield_jpl",
+            provider_version=str(skyfield.__version__),
+            ephemeris_model=JPL_EPHEMERIS_MODEL,
+            swiss_ephemeris_version=None,
             zodiac="sidereal",
-            ayanamsha="lahiri",
+            ayanamsha="lahiri_chitrapaksha_spica_apparent_v1",
             node_type="not_applicable",
             house_system="not_applicable",
-            ephemeris_sources=sorted({sun_source, moon_source}),
+            ephemeris_sources=["jpl_de440s"],
         ),
     )

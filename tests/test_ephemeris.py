@@ -1,113 +1,95 @@
-"""Tests for Swiss Ephemeris production-readiness policies."""
+"""Tests for local JPL ephemeris readiness policies."""
 
 from pathlib import Path
 
 import pytest
 
-from app.core.ephemeris import (
-    REQUIRED_V1_FILES,
-    EphemerisConfigurationError,
-    EphemerisSettings,
-    EphemerisUnavailableError,
-    configure_ephemeris,
-    enforce_ephemeris_source,
-    inspect_ephemeris,
-)
+from app.core.ephemeris import EphemerisUnavailableError
+from app.core.jpl_ephemeris import inspect_jpl_ephemeris, require_jpl_ephemeris
 
 
-def _set_environment(
-    monkeypatch: pytest.MonkeyPatch,
-    data_path: Path,
-    *,
-    environment: str,
-    license_mode: str,
-    require_swiss: str,
-) -> None:
-    monkeypatch.setenv("APP_ENV", environment)
-    monkeypatch.setenv("JYOTHISYAM_EPHEMERIS_PATH", str(data_path))
-    monkeypatch.setenv("JYOTHISYAM_SWISS_LICENSE_MODE", license_mode)
-    monkeypatch.setenv("JYOTHISYAM_REQUIRE_SWISS_EPHEMERIS", require_swiss)
-
-
-def test_readiness_reports_missing_license_and_data(
+def test_readiness_reports_missing_kernel(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    data_path = tmp_path / "missing"
-    _set_environment(
-        monkeypatch,
-        data_path,
-        environment="development",
-        license_mode="unset",
-        require_swiss="false",
-    )
+    missing = tmp_path / "missing-de440s.bsp"
+    monkeypatch.setenv("JYOTHISYAM_JPL_EPHEMERIS_PATH", str(missing))
 
-    report = inspect_ephemeris()
+    report = inspect_jpl_ephemeris()
 
     assert report.ready is False
     assert report.status == "degraded"
-    assert report.data_directory_exists is False
-    assert any("license mode" in issue for issue in report.issues)
-    assert any("does not exist" in issue for issue in report.issues)
+    assert report.provider == "skyfield_jpl"
+    assert report.model == "de440s"
+    assert report.file_exists is False
+    assert report.automatic_download_enabled is False
+    assert report.issues
 
 
-def test_readiness_accepts_declared_license_and_required_files(
+def test_readiness_accepts_nonempty_bsp_kernel(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    for filename in REQUIRED_V1_FILES:
-        (tmp_path / filename).write_bytes(b"test fixture")
+    kernel = tmp_path / "de440s.bsp"
+    kernel.write_bytes(b"test fixture")
+    monkeypatch.setenv("JYOTHISYAM_JPL_EPHEMERIS_PATH", str(kernel))
 
-    _set_environment(
-        monkeypatch,
-        tmp_path,
-        environment="production",
-        license_mode="professional",
-        require_swiss="true",
-    )
-
-    report = inspect_ephemeris()
+    report = inspect_jpl_ephemeris()
 
     assert report.ready is True
     assert report.status == "ready"
-    assert report.strict_source_required is True
-    assert set(REQUIRED_V1_FILES).issubset(report.detected_files)
+    assert report.file_exists is True
+    assert report.file_size_bytes == len(b"test fixture")
+    assert report.issues == ()
 
 
-def test_production_configuration_requires_declared_license(
+def test_readiness_rejects_wrong_extension(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    _set_environment(
-        monkeypatch,
-        tmp_path,
-        environment="production",
-        license_mode="unset",
-        require_swiss="true",
-    )
+    kernel = tmp_path / "de440s.dat"
+    kernel.write_bytes(b"test fixture")
+    monkeypatch.setenv("JYOTHISYAM_JPL_EPHEMERIS_PATH", str(kernel))
 
-    with pytest.raises(EphemerisConfigurationError, match="Production requires"):
-        configure_ephemeris()
+    report = inspect_jpl_ephemeris()
+
+    assert report.ready is False
+    assert any(".bsp" in issue for issue in report.issues)
 
 
-def test_strict_mode_rejects_silent_moshier_fallback(tmp_path: Path) -> None:
-    settings = EphemerisSettings(
-        environment="production",
-        data_path=tmp_path,
-        require_swiss=True,
-        license_mode="professional",
-    )
+def test_readiness_rejects_empty_kernel(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    kernel = tmp_path / "de440s.bsp"
+    kernel.write_bytes(b"")
+    monkeypatch.setenv("JYOTHISYAM_JPL_EPHEMERIS_PATH", str(kernel))
 
-    with pytest.raises(EphemerisUnavailableError, match="moshier"):
-        enforce_ephemeris_source("moshier", "sun", settings)
+    report = inspect_jpl_ephemeris()
+
+    assert report.ready is False
+    assert any("empty" in issue for issue in report.issues)
 
 
-def test_non_strict_development_mode_allows_fallback(tmp_path: Path) -> None:
-    settings = EphemerisSettings(
-        environment="development",
-        data_path=tmp_path,
-        require_swiss=False,
-        license_mode="unset",
-    )
+def test_require_jpl_fails_before_skyfield_opens_missing_data(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    missing = tmp_path / "missing-de440s.bsp"
+    monkeypatch.setenv("JYOTHISYAM_JPL_EPHEMERIS_PATH", str(missing))
 
-    enforce_ephemeris_source("moshier", "sun", settings)
+    with pytest.raises(EphemerisUnavailableError, match="DE440s kernel is missing"):
+        require_jpl_ephemeris()
+
+
+def test_legacy_swiss_environment_variables_do_not_affect_jpl_readiness(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    kernel = tmp_path / "de440s.bsp"
+    kernel.write_bytes(b"test fixture")
+    monkeypatch.setenv("JYOTHISYAM_JPL_EPHEMERIS_PATH", str(kernel))
+    monkeypatch.setenv("JYOTHISYAM_SWISS_LICENSE_MODE", "unset")
+    monkeypatch.setenv("JYOTHISYAM_REQUIRE_SWISS_EPHEMERIS", "true")
+
+    assert inspect_jpl_ephemeris().ready is True

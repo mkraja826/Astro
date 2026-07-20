@@ -102,8 +102,11 @@ def test_vimshottari_returns_complete_birth_cycle() -> None:
     first_pratyantardasha = first["antardashas"][0]["pratyantardashas"][0]
     assert first_pratyantardasha["sookshmadashas"] is None
     assert payload["metadata"]["zodiac"] == "sidereal"
-    assert payload["metadata"]["ayanamsha"] == "lahiri"
-    assert payload["metadata"]["ephemeris_sources"]
+    assert (
+        payload["metadata"]["ayanamsha"]
+        == "lahiri_chitrapaksha_spica_apparent_v1"
+    )
+    assert payload["metadata"]["ephemeris_sources"] == ["jpl_de440s"]
 
 
 def test_vimshottari_returns_all_contiguous_subperiods() -> None:

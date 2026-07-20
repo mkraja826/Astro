@@ -66,8 +66,11 @@ def test_current_vimshottari_returns_only_active_nested_chain() -> None:
         assert _parse_datetime(child["end_utc"]) <= _parse_datetime(parent["end_utc"])
 
     assert payload["metadata"]["zodiac"] == "sidereal"
-    assert payload["metadata"]["ayanamsha"] == "lahiri"
-    assert payload["metadata"]["ephemeris_sources"]
+    assert (
+        payload["metadata"]["ayanamsha"]
+        == "lahiri_chitrapaksha_spica_apparent_v1"
+    )
+    assert payload["metadata"]["ephemeris_sources"] == ["jpl_de440s"]
 
 
 def test_current_vimshottari_matches_birth_active_full_tree() -> None:

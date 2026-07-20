@@ -1,5 +1,8 @@
 """Tests for public system endpoints."""
 
+from pathlib import Path
+
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -30,16 +33,37 @@ def test_health_returns_healthy_status() -> None:
     assert payload["timestamp"].endswith("Z")
 
 
-def test_ephemeris_health_reports_degraded_until_configured() -> None:
+def test_ephemeris_health_reports_missing_jpl_kernel(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    missing = tmp_path / "missing-de440s.bsp"
+    monkeypatch.setenv("JYOTHISYAM_JPL_EPHEMERIS_PATH", str(missing))
+
     response = client.get("/health/ephemeris")
     payload = response.json()
 
     assert response.status_code == 503
     assert payload["status"] == "degraded"
     assert payload["ready"] is False
-    assert payload["license_mode"] == "unset"
-    assert set(payload["required_files"]) == {"sepl_18.se1", "semo_18.se1"}
+    assert payload["provider"] == "skyfield_jpl"
+    assert payload["model"] == "de440s"
+    assert payload["automatic_download_enabled"] is False
     assert payload["issues"]
+
+
+def test_jpl_specific_health_url_remains_an_alias(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    missing = tmp_path / "missing-de440s.bsp"
+    monkeypatch.setenv("JYOTHISYAM_JPL_EPHEMERIS_PATH", str(missing))
+
+    canonical = client.get("/health/ephemeris")
+    alias = client.get("/health/ephemeris/jpl")
+
+    assert alias.status_code == canonical.status_code
+    assert alias.json() == canonical.json()
 
 
 def test_openapi_document_is_available() -> None:
