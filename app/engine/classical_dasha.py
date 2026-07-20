@@ -9,6 +9,13 @@ from app.engine.classical_aspects import calculate_varahamihira_aspects
 from app.engine.classical_career import calculate_varahamihira_career
 from app.engine.classical_conditions import calculate_varahamihira_conditions
 from app.engine.classical_reference import PROFILE_ID, get_varahamihira_rashis
+from app.engine.classical_relationships import (
+    CLASSICAL_GRAHAS,
+    COMPOUND_RULE_ID,
+    NATURAL_RULE_ID,
+    TEMPORARY_RULE_ID,
+    evaluate_relationship,
+)
 from app.engine.current_dasha import calculate_current_vimshottari
 from app.schemas.charts import ChartRequest, ChartType
 from app.schemas.classical_ashtakavarga import AshtakavargaRequest
@@ -23,19 +30,12 @@ from app.schemas.classical_dasha import (
     DashaEvidence,
     DashaEvidenceCategory,
     DashaInterpretationLevel,
+    DashaLevelRelationship,
     DashaLordInterpretation,
 )
 from app.schemas.dasha import ActiveDashaPeriod, CurrentVimshottariRequest
 
-_CLASSICAL_GRAHAS = {
-    "sun",
-    "moon",
-    "mars",
-    "mercury",
-    "jupiter",
-    "venus",
-    "saturn",
-}
+_CLASSICAL_GRAHAS = set(CLASSICAL_GRAHAS)
 
 _LEVELS = (
     DashaInterpretationLevel.MAHADASHA,
@@ -81,6 +81,86 @@ def _aspect_fact(ray: AspectRay) -> DashaAspectFact:
         is_special_full=ray.is_special_full,
         rule_ids=list(ray.rule_ids),
     )
+
+
+def _active_level_relationships(
+    periods: tuple[ActiveDashaPeriod, ...],
+    points: dict[str, object],
+) -> list[DashaLevelRelationship]:
+    """Return all twelve directed relationships among four active levels."""
+
+    results: list[DashaLevelRelationship] = []
+    for source_index, source_period in enumerate(periods):
+        source_level = _LEVELS[source_index]
+        source_lord = source_period.lord.value
+        for target_index, target_period in enumerate(periods):
+            if source_index == target_index:
+                continue
+            target_level = _LEVELS[target_index]
+            target_lord = target_period.lord.value
+
+            if source_lord == target_lord:
+                results.append(
+                    DashaLevelRelationship(
+                        source_level=source_level,
+                        source_lord=source_lord,
+                        target_level=target_level,
+                        target_lord=target_lord,
+                        available=False,
+                        rule_ids=[NATURAL_RULE_ID],
+                        reason=(
+                            "Both active levels have the same lord; the Chapter 2 "
+                            "relationship table applies between different Grahas."
+                        ),
+                    )
+                )
+                continue
+
+            if source_lord not in _CLASSICAL_GRAHAS or target_lord not in _CLASSICAL_GRAHAS:
+                results.append(
+                    DashaLevelRelationship(
+                        source_level=source_level,
+                        source_lord=source_lord,
+                        target_level=target_level,
+                        target_lord=target_lord,
+                        available=False,
+                        rule_ids=[_INTEGRATION_RULE_IDS["node"]],
+                        reason=(
+                            "The seven-Graha relationship table does not assign natural "
+                            "friendship to Rahu or Ketu."
+                        ),
+                    )
+                )
+                continue
+
+            source_point = points[source_lord]
+            target_point = points[target_lord]
+            natural, temporary, compound, target_house = evaluate_relationship(
+                source_lord,
+                target_lord,
+                source_point.sign_index,
+                target_point.sign_index,
+            )
+            results.append(
+                DashaLevelRelationship(
+                    source_level=source_level,
+                    source_lord=source_lord,
+                    target_level=target_level,
+                    target_lord=target_lord,
+                    available=True,
+                    target_relative_house=target_house,
+                    natural_relationship=natural,
+                    temporary_relationship=temporary,
+                    compound_relationship=compound,
+                    rule_ids=[NATURAL_RULE_ID, TEMPORARY_RULE_ID, COMPOUND_RULE_ID],
+                    reason=(
+                        f"{source_lord} treats {target_lord} as {natural.value} "
+                        f"naturally and {temporary.value} temporarily, producing "
+                        f"{compound.value}."
+                    ),
+                )
+            )
+    return results
 
 
 def calculate_varahamihira_dasha_context(
@@ -406,6 +486,7 @@ def calculate_varahamihira_dasha_context(
     counts = Counter(lord_sequence)
     unique_lords = list(dict.fromkeys(lord_sequence))
     repeated_lords = [lord for lord in unique_lords if counts[lord] > 1]
+    level_relationships = _active_level_relationships(periods, points)
 
     return ClassicalDashaResponse(
         request_id=f"req_{uuid4().hex}",
@@ -413,6 +494,7 @@ def calculate_varahamihira_dasha_context(
         calculation_profile=request.calculation_profile,
         timing=timing,
         levels=levels,
+        relationships_between_levels=level_relationships,
         unique_lords=unique_lords,
         repeated_lords=repeated_lords,
         interpretation_mode="evidence_only",
@@ -422,6 +504,7 @@ def calculate_varahamihira_dasha_context(
         caveats=[
             "Vimshottari supplies timing; Brihat Jataka context does not redefine it.",
             "Supporting and challenging labels are unweighted condition buckets.",
+            "Active-lord relationship labels are categorical and unweighted.",
             "Raw Ashtakavarga bindus are returned without thresholds or transit judgment.",
             "Rahu and Ketu receive neutral placement context, not invented dignity rules.",
             "No event, profession, health, relationship, or longevity outcome is predicted.",
