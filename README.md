@@ -21,6 +21,7 @@ The repository currently provides:
 - `GET /v1/classical/varahamihira_v1/rashis`
 - `GET /v1/classical/varahamihira_v1/grahas`
 - `POST /v1/classical/varahamihira_v1/conditions`
+- `POST /v1/classical/varahamihira_v1/aspects`
 - Lahiri sidereal planetary positions and ascendant
 - D1 Rasi and D9 Navamsa divisional charts
 - Fixed South Indian 4-by-4 sign-grid metadata
@@ -35,6 +36,8 @@ The repository currently provides:
 - Varahamihira v1 source profile and rule registry
 - Deterministic Chapter 1 Rashi and Chapter 2 Graha reference data
 - Evidence-bearing dignity, Vargottama, Moon-phase, and Mercury-condition evaluation
+- Brihat Jataka 2.13 fractional and special full Graha aspects
+- Same-sign conjunction records and twelve whole-sign house-influence summaries
 - True Rahu and opposite Ketu
 - Timezone, ambiguous-time and coordinate validation
 - Explicit Swiss Ephemeris source reporting
@@ -87,6 +90,7 @@ GET /v1/classical/varahamihira_v1/rules
 GET /v1/classical/varahamihira_v1/rashis
 GET /v1/classical/varahamihira_v1/grahas
 POST /v1/classical/varahamihira_v1/conditions
+POST /v1/classical/varahamihira_v1/aspects
 ```
 
 The profile pins a public-domain 1905 English edition of *Brihat Jataka* and
@@ -95,10 +99,16 @@ endpoint combines those immutable tables with the existing D1/D9 longitudes to
 report own sign, exaltation, debilitation, exact deep dignity points,
 Vargottama, Moon phase, and a versioned Mercury association result.
 
-The evaluator is deterministic and non-predictive. It does not modify D1, D9,
-Panchanga, or Vimshottari results. Classical aspects, career, Ashtakavarga,
-Dasha interpretation, cancellations, and strength weighting remain separate
-future evaluators.
+The aspects endpoint implements Chapter 2, stanza 13 at verse precision. It
+retains quarter, half, three-quarter, and full aspect strengths for all seven
+classical Grahas, then applies the special full aspects of Mars, Jupiter, and
+Saturn. It also reports same-sign conjunction pairs, house lords, lord
+placements, occupants, and all aspect rays received by each whole-sign house.
+
+The evaluators are deterministic and non-predictive. They do not modify D1, D9,
+Panchanga, or Vimshottari results. Career analysis, Ashtakavarga, Dasha
+interpretation, cancellations, and strength weighting remain separate future
+evaluators.
 
 ## Vimshottari response depth
 
@@ -169,6 +179,7 @@ See [`docs/EPHEMERIS_DEPLOYMENT.md`](docs/EPHEMERIS_DEPLOYMENT.md).
 - [`docs/VIMSHOTTARI_CURRENT_V1.md`](docs/VIMSHOTTARI_CURRENT_V1.md)
 - [`docs/VARAHAMIHIRA_REFERENCE_V1.md`](docs/VARAHAMIHIRA_REFERENCE_V1.md)
 - [`docs/CLASSICAL_CONDITIONS_V1.md`](docs/CLASSICAL_CONDITIONS_V1.md)
+- [`docs/CLASSICAL_ASPECTS_V1.md`](docs/CLASSICAL_ASPECTS_V1.md)
 
 ## Docker
 
