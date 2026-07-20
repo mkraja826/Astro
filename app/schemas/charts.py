@@ -4,7 +4,13 @@ from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict
 
-from app.schemas.positions import BirthInput, CalculationProfile, Coordinates, EngineMetadata, NormalizedTime
+from app.schemas.positions import (
+    BirthInput,
+    CalculationProfile,
+    Coordinates,
+    EngineMetadata,
+    NormalizedTime,
+)
 
 
 class ChartType(StrEnum):
@@ -19,7 +25,9 @@ class ChartRequest(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     birth: BirthInput
-    calculation_profile: CalculationProfile = CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_V1
+    calculation_profile: CalculationProfile = (
+        CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_V1
+    )
 
 
 class ChartPoint(BaseModel):
