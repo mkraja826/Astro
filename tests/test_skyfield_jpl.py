@@ -2,11 +2,12 @@
 
 from datetime import UTC, datetime
 from math import radians
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
-from app.engine.positions import calculate_positions
+from app.engine.positions import _calculate_swiss_positions, calculate_positions
 from app.engine.skyfield_jpl import (
     SkyfieldJplProvider,
     _ascendant_from_sidereal_time,
@@ -66,7 +67,7 @@ def test_ascendant_helper_selects_the_eastern_horizon_intersection() -> None:
 
 def test_jpl_health_is_degraded_when_kernel_is_missing(
     monkeypatch: pytest.MonkeyPatch,
-    tmp_path: pytest.TempPathFactory,
+    tmp_path: Path,
 ) -> None:
     missing = tmp_path / "missing-de440s.bsp"
     monkeypatch.setenv("JYOTHISYAM_JPL_EPHEMERIS_PATH", str(missing))
@@ -85,7 +86,7 @@ def test_jpl_health_is_degraded_when_kernel_is_missing(
 
 def test_positions_fail_clearly_when_jpl_kernel_is_missing(
     monkeypatch: pytest.MonkeyPatch,
-    tmp_path: pytest.TempPathFactory,
+    tmp_path: Path,
 ) -> None:
     missing = tmp_path / "missing-de440s.bsp"
     monkeypatch.setenv("JYOTHISYAM_JPL_EPHEMERIS_PATH", str(missing))
@@ -94,6 +95,30 @@ def test_positions_fail_clearly_when_jpl_kernel_is_missing(
 
     assert response.status_code == 503
     assert "DE440s kernel is missing" in response.json()["detail"]
+
+
+def test_provider_comparison_route_is_additive_and_does_not_change_default(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        SkyfieldJplProvider,
+        "calculate",
+        lambda _self, request: _calculate_swiss_positions(request),
+    )
+
+    response = client.post(
+        "/v1/positions/providers/compare",
+        json={"birth": _payload()["birth"]},
+    )
+    payload = response.json()
+
+    assert response.status_code == 200, payload
+    assert payload["passed"] is True
+    assert payload["compared_point_count"] == 9
+    assert payload["longitude_match_count"] == 9
+    assert payload["sign_match_count"] == 9
+    assert payload["retrograde_match_count"] == 9
+    assert payload["production_default_changed"] is False
 
 
 def test_panchanga_rejects_unmigrated_jpl_profile() -> None:
