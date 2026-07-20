@@ -3,6 +3,7 @@
 from fastapi import FastAPI
 
 from app import __version__
+from app.api.routes.positions import router as positions_router
 from app.api.routes.system import router as system_router
 
 
@@ -13,9 +14,9 @@ def create_app() -> FastAPI:
         title="Jyothisyam API",
         summary="Vedic and South Indian astrology calculation platform",
         description=(
-            "A versioned API foundation for deterministic Jyothisyam calculations. "
-            "The current release contains system endpoints; calculation modules will "
-            "be introduced behind explicit versioned routes."
+            "A versioned API for deterministic Jyothisyam calculations. "
+            "The first calculation endpoint returns Lahiri sidereal planetary positions, "
+            "ascendant, signs, nakshatras, padas, and whole-sign houses."
         ),
         version=__version__,
         docs_url="/docs",
@@ -23,6 +24,7 @@ def create_app() -> FastAPI:
         openapi_url="/openapi.json",
     )
     application.include_router(system_router)
+    application.include_router(positions_router)
     return application
 
 
