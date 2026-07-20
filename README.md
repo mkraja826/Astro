@@ -22,6 +22,7 @@ The repository currently provides:
 - `GET /v1/classical/varahamihira_v1/grahas`
 - `POST /v1/classical/varahamihira_v1/conditions`
 - `POST /v1/classical/varahamihira_v1/aspects`
+- `POST /v1/classical/varahamihira_v1/career`
 - Lahiri sidereal planetary positions and ascendant
 - D1 Rasi and D9 Navamsa divisional charts
 - Fixed South Indian 4-by-4 sign-grid metadata
@@ -38,6 +39,8 @@ The repository currently provides:
 - Evidence-bearing dignity, Vargottama, Moon-phase, and Mercury-condition evaluation
 - Brihat Jataka 2.13 fractional and special full Graha aspects
 - Same-sign conjunction records and twelve whole-sign house-influence summaries
+- Chapter 10 Karmājīva channels from Lagna, Moon, and Sun
+- Unweighted vocation themes, income-source indications, and supporting facts
 - True Rahu and opposite Ketu
 - Timezone, ambiguous-time and coordinate validation
 - Explicit Swiss Ephemeris source reporting
@@ -91,6 +94,7 @@ GET /v1/classical/varahamihira_v1/rashis
 GET /v1/classical/varahamihira_v1/grahas
 POST /v1/classical/varahamihira_v1/conditions
 POST /v1/classical/varahamihira_v1/aspects
+POST /v1/classical/varahamihira_v1/career
 ```
 
 The profile pins a public-domain 1905 English edition of *Brihat Jataka* and
@@ -105,10 +109,15 @@ classical Grahas, then applies the special full aspects of Mars, Jupiter, and
 Saturn. It also reports same-sign conjunction pairs, house lords, lord
 placements, occupants, and all aspect rays received by each whole-sign house.
 
-The evaluators are deterministic and non-predictive. They do not modify D1, D9,
-Panchanga, or Vimshottari results. Career analysis, Ashtakavarga, Dasha
-interpretation, cancellations, and strength weighting remain separate future
-evaluators.
+The career endpoint implements Chapter 10, verses 10.1–10.4. It returns all
+three Karmājīva derivations from Lagna, Moon, and Sun; tenth-house occupants and
+income-source relations; the Navamsa lord of each tenth lord; classical vocation
+themes; and unweighted dignity, conjunction, and aspect support facts.
+
+The evaluators do not modify D1, D9, Panchanga, or Vimshottari results. Career
+output is plural and non-exclusive: `primary_indicator` remains null until
+friendship, cancellation, and strength weighting are validated. Ashtakavarga
+and Dasha interpretation remain separate future evaluators.
 
 ## Vimshottari response depth
 
@@ -180,6 +189,7 @@ See [`docs/EPHEMERIS_DEPLOYMENT.md`](docs/EPHEMERIS_DEPLOYMENT.md).
 - [`docs/VARAHAMIHIRA_REFERENCE_V1.md`](docs/VARAHAMIHIRA_REFERENCE_V1.md)
 - [`docs/CLASSICAL_CONDITIONS_V1.md`](docs/CLASSICAL_CONDITIONS_V1.md)
 - [`docs/CLASSICAL_ASPECTS_V1.md`](docs/CLASSICAL_ASPECTS_V1.md)
+- [`docs/CLASSICAL_CAREER_V1.md`](docs/CLASSICAL_CAREER_V1.md)
 
 ## Docker
 
