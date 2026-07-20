@@ -52,7 +52,7 @@ class ExternalReferenceSource(BaseModel):
     source_name: str = Field(min_length=1, max_length=100)
     source_version: str = Field(min_length=1, max_length=100)
     source_kind: ValidationSourceKind
-    calculation_notes: list[str] = []
+    calculation_notes: list[str] = Field(default_factory=list)
 
 
 class GoldenChartSnapshot(BaseModel):
@@ -103,7 +103,7 @@ class GoldenChartComparisonRequest(BaseModel):
     calculation_profile: CalculationProfile = (
         CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_V1
     )
-    tolerances: ValidationTolerances = ValidationTolerances()
+    tolerances: ValidationTolerances = Field(default_factory=ValidationTolerances)
 
 
 class FieldComparison(BaseModel):
