@@ -49,6 +49,19 @@ class DashaMoonPosition(BaseModel):
     progress_percent: float
 
 
+class PratyantardashaPeriod(BaseModel):
+    """One proportional third-level period inside an Antardasha."""
+
+    sequence_number: int = Field(ge=1, le=9)
+    lord: DashaLord
+    duration_years: float
+    start_utc: datetime
+    end_utc: datetime
+    active_at_birth: bool
+    elapsed_at_birth_years: float | None = None
+    remaining_at_birth_years: float | None = None
+
+
 class AntardashaPeriod(BaseModel):
     """One proportional sub-period inside a Vimshottari Mahadasha."""
 
@@ -60,6 +73,7 @@ class AntardashaPeriod(BaseModel):
     active_at_birth: bool
     elapsed_at_birth_years: float | None = None
     remaining_at_birth_years: float | None = None
+    pratyantardashas: list[PratyantardashaPeriod]
 
 
 class MahadashaPeriod(BaseModel):
