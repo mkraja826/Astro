@@ -14,11 +14,12 @@ from app.engine.classical_reference import (
     get_varahamihira_rashis,
     get_varahamihira_rules,
 )
-from app.engine.classical_relationship_rules import (
+from app.engine.classical_relationships import calculate_varahamihira_relationships
+from app.engine.classical_strength import calculate_varahamihira_strength
+from app.engine.classical_strength_rules import (
     extend_varahamihira_profile,
     extend_varahamihira_rules,
 )
-from app.engine.classical_relationships import calculate_varahamihira_relationships
 from app.engine.current_dasha import DashaQueryError
 from app.engine.positions import BirthTimeError
 from app.schemas.classical import (
@@ -50,6 +51,10 @@ from app.schemas.classical_dasha import (
 from app.schemas.classical_relationships import (
     ClassicalRelationshipsRequest,
     ClassicalRelationshipsResponse,
+)
+from app.schemas.classical_strength import (
+    ClassicalStrengthRequest,
+    ClassicalStrengthResponse,
 )
 
 router = APIRouter(
@@ -239,6 +244,31 @@ def varahamihira_relationships(
 
     try:
         return calculate_varahamihira_relationships(request)
+    except BirthTimeError as exc:
+        raise _unprocessable(exc) from exc
+    except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
+        raise _ephemeris_unavailable(exc) from exc
+
+
+@router.post(
+    "/strength",
+    response_model=ClassicalStrengthResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Assemble transparent strength factors and cancellation boundaries",
+    responses={
+        422: {"description": "Invalid coordinates, timezone, or local civil time"},
+        503: {
+            "description": "Required licensed ephemeris configuration or data unavailable"
+        },
+    },
+)
+def varahamihira_strength(
+    request: ClassicalStrengthRequest,
+) -> ClassicalStrengthResponse:
+    """Return unweighted strength evidence without a strongest-planet ranking."""
+
+    try:
+        return calculate_varahamihira_strength(request)
     except BirthTimeError as exc:
         raise _unprocessable(exc) from exc
     except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
