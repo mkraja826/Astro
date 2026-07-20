@@ -60,7 +60,18 @@ def test_d1_returns_south_indian_rasi_chart() -> None:
         occupants.extend(cell["occupants"])
 
     assert sorted(occupants) == sorted(
-        ["ascendant", "sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn", "rahu", "ketu"]
+        [
+            "ascendant",
+            "sun",
+            "moon",
+            "mars",
+            "mercury",
+            "jupiter",
+            "venus",
+            "saturn",
+            "rahu",
+            "ketu",
+        ]
     )
 
     assert payload["ascendant"]["chart_longitude"] == pytest.approx(
@@ -72,7 +83,10 @@ def test_d1_returns_south_indian_rasi_chart() -> None:
         )
 
     points = _points_by_name(payload)
-    assert (points["ketu"]["chart_longitude"] - points["rahu"]["chart_longitude"]) % 360 == pytest.approx(180.0, abs=1e-7)
+    node_separation = (
+        points["ketu"]["chart_longitude"] - points["rahu"]["chart_longitude"]
+    ) % 360
+    assert node_separation == pytest.approx(180.0, abs=1e-7)
     assert payload["metadata"]["zodiac"] == "sidereal"
     assert payload["metadata"]["ayanamsha"] == "lahiri"
     assert payload["metadata"]["house_system"] == "whole_sign_divisional"
@@ -110,7 +124,11 @@ def test_d9_uses_parashari_navamsa_mapping() -> None:
         ) + 1
         assert point["house"] == expected_house
 
-    assert (d9_points["ketu"]["chart_longitude"] - d9_points["rahu"]["chart_longitude"]) % 360 == pytest.approx(180.0, abs=1e-7)
+    node_separation = (
+        d9_points["ketu"]["chart_longitude"]
+        - d9_points["rahu"]["chart_longitude"]
+    ) % 360
+    assert node_separation == pytest.approx(180.0, abs=1e-7)
 
 
 def test_chart_rejects_unknown_timezone() -> None:
