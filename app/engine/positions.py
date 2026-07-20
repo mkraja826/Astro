@@ -1,4 +1,4 @@
-"""Swiss Ephemeris-backed sidereal position calculations."""
+"""Versioned sidereal position calculations with pluggable providers."""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ import swisseph as swe
 from app import __version__
 from app.core.ephemeris import configure_ephemeris, enforce_ephemeris_source
 from app.schemas.positions import (
+    CalculationProfile,
     Coordinates,
     EngineMetadata,
     NormalizedTime,
@@ -174,13 +175,7 @@ def _calculate_body(
     body_id: int,
     flags: int,
 ) -> tuple[tuple[float, ...], int]:
-    """Normalize Swiss Ephemeris binding return formats.
-
-    The maintained ``pysweph`` binding returns ``(values, flags, message)``.
-    Older compatible bindings return ``(values, flags)``. The diagnostic message
-    is intentionally not used as a calculation result; the returned flags remain
-    the source of truth for the ephemeris actually used.
-    """
+    """Normalize Swiss Ephemeris binding return formats."""
 
     result = swe.calc_ut(julian_day, body_id, flags)
     if len(result) == 3:
@@ -193,8 +188,8 @@ def _calculate_body(
     return tuple(float(value) for value in values), int(returned_flags)
 
 
-def calculate_positions(request: PositionsRequest) -> PositionsResponse:
-    """Calculate Lahiri sidereal positions for the supported South Indian profile."""
+def _calculate_swiss_positions(request: PositionsRequest) -> PositionsResponse:
+    """Calculate the original Swiss-backed immutable v1 profile."""
 
     fold, local_datetime, utc_datetime = _normalize_birth_time(request)
     julian_day = _julian_day_ut(utc_datetime)
@@ -276,6 +271,9 @@ def calculate_positions(request: PositionsRequest) -> PositionsResponse:
         metadata=EngineMetadata(
             engine="jyothisyam-api",
             engine_version=__version__,
+            astronomical_provider="swiss_ephemeris",
+            provider_version=str(swe.version),
+            ephemeris_model="swiss_ephemeris_files_or_moshier_fallback",
             swiss_ephemeris_version=str(swe.version),
             zodiac="sidereal",
             ayanamsha="lahiri",
@@ -284,3 +282,17 @@ def calculate_positions(request: PositionsRequest) -> PositionsResponse:
             ephemeris_sources=sorted(ephemeris_sources),
         ),
     )
+
+
+def calculate_positions(request: PositionsRequest) -> PositionsResponse:
+    """Dispatch the immutable calculation profile to its astronomical provider."""
+
+    if (
+        request.calculation_profile
+        == CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_SKYFIELD_DE440S_V1
+    ):
+        from app.engine.skyfield_jpl import SkyfieldJplProvider
+
+        return SkyfieldJplProvider().calculate(request)
+
+    return _calculate_swiss_positions(request)
