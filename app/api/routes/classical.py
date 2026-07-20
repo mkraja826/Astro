@@ -3,11 +3,12 @@
 from fastapi import APIRouter, HTTPException, status
 
 from app.core.ephemeris import EphemerisConfigurationError, EphemerisUnavailableError
-from app.engine.classical_aspect_rules import (
+from app.engine.classical_aspects import calculate_varahamihira_aspects
+from app.engine.classical_career import calculate_varahamihira_career
+from app.engine.classical_career_rules import (
     extend_varahamihira_profile,
     extend_varahamihira_rules,
 )
-from app.engine.classical_aspects import calculate_varahamihira_aspects
 from app.engine.classical_conditions import calculate_varahamihira_conditions
 from app.engine.classical_reference import (
     get_varahamihira_grahas,
@@ -26,6 +27,10 @@ from app.schemas.classical_aspects import (
     ClassicalAspectsRequest,
     ClassicalAspectsResponse,
 )
+from app.schemas.classical_career import (
+    ClassicalCareerRequest,
+    ClassicalCareerResponse,
+)
 from app.schemas.classical_conditions import (
     ClassicalConditionsRequest,
     ClassicalConditionsResponse,
@@ -35,6 +40,20 @@ router = APIRouter(
     prefix="/v1/classical/varahamihira_v1",
     tags=["Classical Reference"],
 )
+
+
+def _unprocessable(exc: Exception) -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        detail=str(exc),
+    )
+
+
+def _ephemeris_unavailable(exc: Exception) -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        detail=str(exc),
+    )
 
 
 @router.get(
@@ -56,7 +75,7 @@ def varahamihira_profile() -> ClassicalProfileResponse:
     summary="Read the Varahamihira v1 rule registry",
 )
 def varahamihira_rules() -> RuleRegistryResponse:
-    """Return source-traceable Chapter 1 and Chapter 2 rule registrations."""
+    """Return all source-traceable rules implemented by the profile."""
 
     return extend_varahamihira_rules(get_varahamihira_rules())
 
@@ -91,11 +110,9 @@ def varahamihira_grahas() -> GrahaReferenceResponse:
     status_code=status.HTTP_200_OK,
     summary="Evaluate classical dignity and planetary conditions",
     responses={
-        422: {
-            "description": "Invalid coordinates, timezone, or local civil time",
-        },
+        422: {"description": "Invalid coordinates, timezone, or local civil time"},
         503: {
-            "description": "Required licensed ephemeris configuration or data unavailable",
+            "description": "Required licensed ephemeris configuration or data unavailable"
         },
     },
 )
@@ -107,15 +124,9 @@ def varahamihira_conditions(
     try:
         return calculate_varahamihira_conditions(request)
     except BirthTimeError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-            detail=str(exc),
-        ) from exc
+        raise _unprocessable(exc) from exc
     except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=str(exc),
-        ) from exc
+        raise _ephemeris_unavailable(exc) from exc
 
 
 @router.post(
@@ -124,11 +135,9 @@ def varahamihira_conditions(
     status_code=status.HTTP_200_OK,
     summary="Evaluate classical aspects and whole-sign house influence",
     responses={
-        422: {
-            "description": "Invalid coordinates, timezone, or local civil time",
-        },
+        422: {"description": "Invalid coordinates, timezone, or local civil time"},
         503: {
-            "description": "Required licensed ephemeris configuration or data unavailable",
+            "description": "Required licensed ephemeris configuration or data unavailable"
         },
     },
 )
@@ -140,12 +149,31 @@ def varahamihira_aspects(
     try:
         return calculate_varahamihira_aspects(request)
     except BirthTimeError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-            detail=str(exc),
-        ) from exc
+        raise _unprocessable(exc) from exc
     except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=str(exc),
-        ) from exc
+        raise _ephemeris_unavailable(exc) from exc
+
+
+@router.post(
+    "/career",
+    response_model=ClassicalCareerResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Evaluate Chapter 10 Karmājīva vocation channels",
+    responses={
+        422: {"description": "Invalid coordinates, timezone, or local civil time"},
+        503: {
+            "description": "Required licensed ephemeris configuration or data unavailable"
+        },
+    },
+)
+def varahamihira_career(
+    request: ClassicalCareerRequest,
+) -> ClassicalCareerResponse:
+    """Return unweighted Lagna, Moon, and Sun Karmājīva channels."""
+
+    try:
+        return calculate_varahamihira_career(request)
+    except BirthTimeError as exc:
+        raise _unprocessable(exc) from exc
+    except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
+        raise _ephemeris_unavailable(exc) from exc
