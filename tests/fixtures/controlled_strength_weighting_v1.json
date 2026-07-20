@@ -1,0 +1,60 @@
+{
+  "profile": "transparent_strength_weighting_v1",
+  "version": "1.0.0",
+  "fixtures": [
+    {
+      "fixture_id": "exalted_vargottama_friendly",
+      "dignity": "exaltation_sign",
+      "deep_dignity": "deep_exaltation",
+      "vargottama": true,
+      "relationship": "great_friend",
+      "bhinnashtakavarga_bindus": 7,
+      "sarvashtakavarga_bindus": 35,
+      "expected_components": {
+        "dignity": 4.0,
+        "deep_dignity": 1.0,
+        "vargottama": 2.0,
+        "occupied_sign_lord_relationship": 2.0,
+        "bhinnashtakavarga": 1.5,
+        "sarvashtakavarga": 1.0
+      },
+      "expected_total": 11.5
+    },
+    {
+      "fixture_id": "debilitated_hostile",
+      "dignity": "debilitation_sign",
+      "deep_dignity": "deep_debilitation",
+      "vargottama": false,
+      "relationship": "great_enemy",
+      "bhinnashtakavarga_bindus": 1,
+      "sarvashtakavarga_bindus": 20,
+      "expected_components": {
+        "dignity": -4.0,
+        "deep_dignity": -1.0,
+        "vargottama": 0.0,
+        "occupied_sign_lord_relationship": -2.0,
+        "bhinnashtakavarga": -1.5,
+        "sarvashtakavarga": -1.142857
+      },
+      "expected_total": -9.642857
+    },
+    {
+      "fixture_id": "own_sign_neutral_context",
+      "dignity": "own_sign",
+      "deep_dignity": "none",
+      "vargottama": false,
+      "relationship": "self",
+      "bhinnashtakavarga_bindus": 4,
+      "sarvashtakavarga_bindus": 28,
+      "expected_components": {
+        "dignity": 3.0,
+        "deep_dignity": 0.0,
+        "vargottama": 0.0,
+        "occupied_sign_lord_relationship": 0.0,
+        "bhinnashtakavarga": 0.0,
+        "sarvashtakavarga": 0.0
+      },
+      "expected_total": 3.0
+    }
+  ]
+}
