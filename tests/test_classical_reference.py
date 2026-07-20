@@ -1,4 +1,4 @@
-"""Integration tests for the Varahamihira classical reference foundation."""
+"""Integration tests for the Varahamihira classical source profile."""
 
 from collections import defaultdict
 
@@ -7,17 +7,16 @@ from fastapi.testclient import TestClient
 from app.main import app
 
 client = TestClient(app)
-
 BASE_PATH = "/v1/classical/varahamihira_v1"
 
 
-def test_varahamihira_profile_is_source_pinned_and_non_calculating() -> None:
+def test_varahamihira_profile_is_source_pinned_and_versioned() -> None:
     response = client.get(f"{BASE_PATH}/profile")
     payload = response.json()
 
     assert response.status_code == 200, payload
     assert payload["profile_id"] == "varahamihira_v1"
-    assert payload["profile_version"] == "1.0.0"
+    assert payload["profile_version"] == "1.1.0"
     assert payload["status"] == "reference_foundation"
     assert payload["source"]["archive_identifier"] == "brihatjataka00varaiala"
     assert payload["source"]["publication_year"] == 1905
@@ -25,8 +24,9 @@ def test_varahamihira_profile_is_source_pinned_and_non_calculating() -> None:
     assert payload["astronomical_profile_dependency"] == "south_indian_drik_lahiri_v1"
     assert payload["calculation_engine_impact"] == "none"
     assert payload["interpretation_enabled"] is False
-    assert payload["dignity_evaluator_enabled"] is False
-    assert len(payload["endpoints"]) == 4
+    assert payload["dignity_evaluator_enabled"] is True
+    assert len(payload["endpoints"]) == 5
+    assert f"{BASE_PATH}/conditions" in payload["endpoints"]
 
 
 def test_rule_registry_has_unique_traceable_chapter_rules() -> None:
@@ -38,15 +38,21 @@ def test_rule_registry_has_unique_traceable_chapter_rules() -> None:
     rules = payload["rules"]
     rule_ids = [rule["rule_id"] for rule in rules]
 
-    assert len(rules) == 7
+    assert len(rules) == 12
     assert len(rule_ids) == len(set(rule_ids))
     assert {rule["chapter"] for rule in rules} == {1, 2}
     assert {rule["source_id"] for rule in rules} == {
         "brihat_jataka_chidambaram_aiyar_1905"
     }
     assert {rule["citation_precision"] for rule in rules} == {"chapter"}
-    assert {rule["implementation_status"] for rule in rules} == {"reference_data"}
+    assert {rule["implementation_status"] for rule in rules} == {
+        "reference_data",
+        "implemented_evaluator",
+    }
     assert all(rule["data_keys"] for rule in rules)
+    assert "VM-BJ-C02-DIGNITY-EVAL-001" in rule_ids
+    assert "VM-BJ-C02-MOON-PHASE-EVAL-001" in rule_ids
+    assert "VM-BJ-C02-MERCURY-ASSOC-EVAL-001" in rule_ids
 
 
 def test_chapter_one_returns_complete_rashi_reference_table() -> None:
@@ -152,7 +158,7 @@ def test_exaltation_and_debilitation_points_are_opposite() -> None:
         assert graha["debilitation_degree"] == graha["exaltation_degree"]
 
 
-def test_openapi_lists_all_classical_reference_routes() -> None:
+def test_openapi_lists_all_classical_routes() -> None:
     payload = client.get("/openapi.json").json()
     paths = payload["paths"]
 
@@ -160,3 +166,4 @@ def test_openapi_lists_all_classical_reference_routes() -> None:
     assert f"{BASE_PATH}/rules" in paths
     assert f"{BASE_PATH}/rashis" in paths
     assert f"{BASE_PATH}/grahas" in paths
+    assert f"{BASE_PATH}/conditions" in paths
