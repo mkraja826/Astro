@@ -2,7 +2,7 @@
 
 from datetime import date, datetime
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.schemas.positions import CalculationProfile, Coordinates, EngineMetadata
 
@@ -28,6 +28,21 @@ class PanchangaRequest(BaseModel):
     calculation_profile: CalculationProfile = (
         CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_V1
     )
+
+    @field_validator("calculation_profile")
+    @classmethod
+    def require_supported_panchanga_profile(
+        cls,
+        value: CalculationProfile,
+    ) -> CalculationProfile:
+        """Reject profiles whose sunrise implementation has not been migrated yet."""
+
+        if value != CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_V1:
+            raise ValueError(
+                "Skyfield/JPL Panchanga is not implemented yet; use "
+                "south_indian_drik_lahiri_v1 for this endpoint"
+            )
+        return value
 
 
 class SolarTimes(BaseModel):
