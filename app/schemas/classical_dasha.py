@@ -6,7 +6,11 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.classical import ClassicalProfileId
 from app.schemas.classical_conditions import DignityState, ResolvedTendency
-from app.schemas.dasha import ActiveDashaPeriod, DashaQueryTime
+from app.schemas.dasha import (
+    ActiveDashaPeriod,
+    CurrentVimshottariResponse,
+    DashaQueryTime,
+)
 from app.schemas.positions import BirthInput, CalculationProfile
 
 
@@ -110,7 +114,7 @@ class DashaLordInterpretation(BaseModel):
         le=8,
     )
     sarvashtakavarga_bindus_in_occupied_sign: int = Field(ge=0, le=56)
-    karmājīva_channels: list[str]
+    karmajiiva_channels: list[str]
     vocation_theme_ids: list[str]
     supporting_evidence: list[DashaEvidence]
     challenging_evidence: list[DashaEvidence]
@@ -126,7 +130,7 @@ class ClassicalDashaResponse(BaseModel):
     request_id: str
     profile_id: ClassicalProfileId
     calculation_profile: CalculationProfile
-    timing: object
+    timing: CurrentVimshottariResponse
     levels: list[DashaLordInterpretation] = Field(min_length=4, max_length=4)
     unique_lords: list[str]
     repeated_lords: list[str]
