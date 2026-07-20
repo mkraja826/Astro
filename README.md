@@ -23,6 +23,7 @@ The repository currently provides:
 - `POST /v1/classical/varahamihira_v1/conditions`
 - `POST /v1/classical/varahamihira_v1/aspects`
 - `POST /v1/classical/varahamihira_v1/career`
+- `POST /v1/classical/varahamihira_v1/ashtakavarga`
 - Lahiri sidereal planetary positions and ascendant
 - D1 Rasi and D9 Navamsa divisional charts
 - Fixed South Indian 4-by-4 sign-grid metadata
@@ -41,6 +42,8 @@ The repository currently provides:
 - Same-sign conjunction records and twelve whole-sign house-influence summaries
 - Chapter 10 Karmājīva channels from Lagna, Moon, and Sun
 - Unweighted vocation themes, income-source indications, and supporting facts
+- Chapter 9 raw Bhinnashtakavarga contributor rows and planetary bindu arrays
+- Twelve-sign Sarvashtakavarga totals with a fixed total of 337
 - True Rahu and opposite Ketu
 - Timezone, ambiguous-time and coordinate validation
 - Explicit Swiss Ephemeris source reporting
@@ -95,6 +98,7 @@ GET /v1/classical/varahamihira_v1/grahas
 POST /v1/classical/varahamihira_v1/conditions
 POST /v1/classical/varahamihira_v1/aspects
 POST /v1/classical/varahamihira_v1/career
+POST /v1/classical/varahamihira_v1/ashtakavarga
 ```
 
 The profile pins a public-domain 1905 English edition of *Brihat Jataka* and
@@ -114,10 +118,17 @@ three Karmājīva derivations from Lagna, Moon, and Sun; tenth-house occupants a
 income-source relations; the Navamsa lord of each tenth lord; classical vocation
 themes; and unweighted dignity, conjunction, and aspect support facts.
 
+The Ashtakavarga endpoint implements the raw Chapter 9 contributor tables. It
+returns eight contributor rows for each of the seven planetary
+Bhinnashtakavargas, twelve bindu and rekha values per Graha, and the sign-wise
+Sarvashtakavarga sum. The fixed planetary totals are 48, 49, 39, 54, 56, 52,
+and 39, producing a raw Sarvashtakavarga total of 337.
+
 The evaluators do not modify D1, D9, Panchanga, or Vimshottari results. Career
 output is plural and non-exclusive: `primary_indicator` remains null until
 friendship, cancellation, and strength weighting are validated. Ashtakavarga
-and Dasha interpretation remain separate future evaluators.
+v1 returns raw arithmetic only; reductions, transit judgment, and Dasha
+interpretation remain separate milestones.
 
 ## Vimshottari response depth
 
@@ -190,6 +201,7 @@ See [`docs/EPHEMERIS_DEPLOYMENT.md`](docs/EPHEMERIS_DEPLOYMENT.md).
 - [`docs/CLASSICAL_CONDITIONS_V1.md`](docs/CLASSICAL_CONDITIONS_V1.md)
 - [`docs/CLASSICAL_ASPECTS_V1.md`](docs/CLASSICAL_ASPECTS_V1.md)
 - [`docs/CLASSICAL_CAREER_V1.md`](docs/CLASSICAL_CAREER_V1.md)
+- [`docs/ASHTAKAVARGA_V1.md`](docs/ASHTAKAVARGA_V1.md)
 
 ## Docker
 
