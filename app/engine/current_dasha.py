@@ -7,10 +7,6 @@ from math import floor
 from uuid import uuid4
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-import swisseph as swe
-
-from app import __version__
-from app.core.ephemeris import configure_ephemeris, enforce_ephemeris_source
 from app.engine.dasha import (
     DASHA_LORDS,
     DASHA_YEAR_DAYS,
@@ -20,12 +16,9 @@ from app.engine.dasha import (
     _years_to_delta,
 )
 from app.engine.positions import (
-    _ENGINE_LOCK,
     NAKSHATRAS,
-    _calculate_body,
-    _ephemeris_source,
     _julian_day_ut,
-    _normalize_birth_time,
+    calculate_positions,
 )
 from app.schemas.dasha import (
     ActiveDashaPeriod,
@@ -34,12 +27,7 @@ from app.schemas.dasha import (
     DashaMoonPosition,
     DashaQueryTime,
 )
-from app.schemas.positions import (
-    Coordinates,
-    EngineMetadata,
-    NormalizedTime,
-    PositionsRequest,
-)
+from app.schemas.positions import NormalizedTime, PositionsRequest
 
 
 class DashaQueryError(ValueError):
@@ -136,29 +124,18 @@ def calculate_current_vimshottari(
 ) -> CurrentVimshottariResponse:
     """Return only the active four-level Vimshottari chain at one instant."""
 
-    positions_request = PositionsRequest(
-        birth=request.birth,
-        calculation_profile=request.calculation_profile,
-    )
-    birth_fold, birth_local, birth_utc = _normalize_birth_time(positions_request)
-    query_fold, query_local, query_utc = _normalize_query_time(request.as_of)
-    birth_julian_day = _julian_day_ut(birth_utc)
-    query_julian_day = _julian_day_ut(query_utc)
-    flags = swe.FLG_SWIEPH | swe.FLG_SIDEREAL | swe.FLG_SPEED
-
-    with _ENGINE_LOCK:
-        settings = configure_ephemeris()
-        swe.set_sid_mode(swe.SIDM_LAHIRI)
-        moon_values, returned_flags = _calculate_body(
-            birth_julian_day,
-            swe.MOON,
-            flags,
+    positions = calculate_positions(
+        PositionsRequest(
+            birth=request.birth,
+            calculation_profile=request.calculation_profile,
         )
-        source = _ephemeris_source(returned_flags)
-        enforce_ephemeris_source(source, "moon", settings)
-        ayanamsha = float(swe.get_ayanamsa_ut(birth_julian_day))
+    )
+    query_fold, query_local, query_utc = _normalize_query_time(request.as_of)
+    query_julian_day = _julian_day_ut(query_utc)
+    birth_utc = positions.time.utc_datetime
+    moon = next(planet for planet in positions.planets if planet.body == "moon")
+    moon_longitude = moon.longitude
 
-    moon_longitude = moon_values[0] % 360.0
     nakshatra_size = 360.0 / 27.0
     pada_size = nakshatra_size / 4.0
     nakshatra_zero_index = min(floor(moon_longitude / nakshatra_size), 26)
@@ -210,16 +187,17 @@ def calculate_current_vimshottari(
         query_utc,
     )
 
+    metadata = positions.metadata.model_copy(
+        update={
+            "node_type": "not_applicable",
+            "house_system": "not_applicable",
+        }
+    )
+
     return CurrentVimshottariResponse(
         request_id=f"req_{uuid4().hex}",
         calculation_profile=request.calculation_profile,
-        birth_time=NormalizedTime(
-            local_datetime=birth_local,
-            utc_datetime=birth_utc,
-            timezone=request.birth.timezone,
-            fold=birth_fold,
-            julian_day_ut=round(birth_julian_day, 9),
-        ),
+        birth_time=positions.time,
         query_time=NormalizedTime(
             local_datetime=query_local,
             utc_datetime=query_utc,
@@ -227,11 +205,7 @@ def calculate_current_vimshottari(
             fold=query_fold,
             julian_day_ut=round(query_julian_day, 9),
         ),
-        coordinates=Coordinates(
-            latitude=request.birth.latitude,
-            longitude=request.birth.longitude,
-            altitude_meters=request.birth.altitude_meters,
-        ),
+        coordinates=positions.coordinates,
         moon=DashaMoonPosition(
             longitude=round(moon_longitude, 8),
             nakshatra_index=nakshatra_zero_index + 1,
@@ -244,19 +218,10 @@ def calculate_current_vimshottari(
         year_length_days=DASHA_YEAR_DAYS,
         cycle_start_utc=cycle_start,
         cycle_end_utc=cycle_end,
-        ayanamsha_degrees=round(ayanamsha, 8),
+        ayanamsha_degrees=positions.ayanamsha_degrees,
         mahadasha=mahadasha,
         antardasha=antardasha,
         pratyantardasha=pratyantardasha,
         sookshma=sookshma,
-        metadata=EngineMetadata(
-            engine="jyothisyam-api",
-            engine_version=__version__,
-            swiss_ephemeris_version=str(swe.version),
-            zodiac="sidereal",
-            ayanamsha="lahiri",
-            node_type="not_applicable",
-            house_system="not_applicable",
-            ephemeris_sources=[source],
-        ),
+        metadata=metadata,
     )
