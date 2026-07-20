@@ -6,6 +6,11 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.classical import ClassicalProfileId
 from app.schemas.classical_conditions import DignityState, ResolvedTendency
+from app.schemas.classical_relationships import (
+    CompoundRelationship,
+    NaturalRelationship,
+    TemporaryRelationship,
+)
 from app.schemas.dasha import (
     ActiveDashaPeriod,
     CurrentVimshottariResponse,
@@ -82,6 +87,24 @@ class DashaConjunctionFact(BaseModel):
     rule_ids: list[str]
 
 
+class DashaLevelRelationship(BaseModel):
+    """Directed relationship from one active Dasha level lord to another."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    source_level: DashaInterpretationLevel
+    source_lord: str
+    target_level: DashaInterpretationLevel
+    target_lord: str
+    available: bool
+    target_relative_house: int | None = Field(default=None, ge=1, le=12)
+    natural_relationship: NaturalRelationship | None = None
+    temporary_relationship: TemporaryRelationship | None = None
+    compound_relationship: CompoundRelationship | None = None
+    rule_ids: list[str]
+    reason: str
+
+
 class DashaLordInterpretation(BaseModel):
     """Deterministic classical context for one active Vimshottari level."""
 
@@ -132,6 +155,10 @@ class ClassicalDashaResponse(BaseModel):
     calculation_profile: CalculationProfile
     timing: CurrentVimshottariResponse
     levels: list[DashaLordInterpretation] = Field(min_length=4, max_length=4)
+    relationships_between_levels: list[DashaLevelRelationship] = Field(
+        min_length=12,
+        max_length=12,
+    )
     unique_lords: list[str]
     repeated_lords: list[str]
     interpretation_mode: str

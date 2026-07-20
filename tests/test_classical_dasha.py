@@ -8,6 +8,15 @@ from app.main import app
 
 client = TestClient(app)
 BASE_PATH = "/v1/classical/varahamihira_v1"
+CLASSICAL_GRAHAS = {
+    "sun",
+    "moon",
+    "mars",
+    "mercury",
+    "jupiter",
+    "venus",
+    "saturn",
+}
 
 
 def _birth() -> dict[str, object]:
@@ -41,26 +50,19 @@ def test_classical_dasha_matches_existing_timing_and_context_endpoints() -> None
 
     timing_response = client.post("/v1/dashas/vimshottari/current", json=payload)
     timing = timing_response.json()
-    chart = client.post(
-        "/v1/charts/d1",
-        json={
-            "birth": payload["birth"],
-            "calculation_profile": payload["calculation_profile"],
-        },
-    ).json()
-    conditions = client.post(
-        f"{BASE_PATH}/conditions",
-        json={
-            "birth": payload["birth"],
-            "calculation_profile": payload["calculation_profile"],
-        },
-    ).json()
+    chart_request = {
+        "birth": payload["birth"],
+        "calculation_profile": payload["calculation_profile"],
+    }
+    chart = client.post("/v1/charts/d1", json=chart_request).json()
+    conditions = client.post(f"{BASE_PATH}/conditions", json=chart_request).json()
     ashtakavarga = client.post(
         f"{BASE_PATH}/ashtakavarga",
-        json={
-            "birth": payload["birth"],
-            "calculation_profile": payload["calculation_profile"],
-        },
+        json=chart_request,
+    ).json()
+    relationships = client.post(
+        f"{BASE_PATH}/relationships",
+        json=chart_request,
     ).json()
 
     assert response.status_code == 200, result
@@ -82,6 +84,7 @@ def test_classical_dasha_matches_existing_timing_and_context_endpoints() -> None
         "sookshma",
     ]
     assert [item["level"] for item in result["levels"]] == expected_levels
+    assert len(result["relationships_between_levels"]) == 12
 
     chart_points = {point["name"]: point for point in chart["points"]}
     conditions_by_graha = {
@@ -135,6 +138,29 @@ def test_classical_dasha_matches_existing_timing_and_context_endpoints() -> None
         assert categories <= {"supporting", "challenging", "contextual"}
         assert item["rule_ids"]
 
+    relationship_by_pair = {
+        (item["source_graha"], item["target_graha"]): item
+        for item in relationships["directed_relationships"]
+    }
+    for item in result["relationships_between_levels"]:
+        source_lord = item["source_lord"]
+        target_lord = item["target_lord"]
+        if (
+            source_lord not in CLASSICAL_GRAHAS
+            or target_lord not in CLASSICAL_GRAHAS
+            or source_lord == target_lord
+        ):
+            assert item["available"] is False
+            assert item["compound_relationship"] is None
+            continue
+
+        expected = relationship_by_pair[(source_lord, target_lord)]
+        assert item["available"] is True
+        assert item["target_relative_house"] == expected["target_relative_house"]
+        assert item["natural_relationship"] == expected["natural_relationship"]
+        assert item["temporary_relationship"] == expected["temporary_relationship"]
+        assert item["compound_relationship"] == expected["compound_relationship"]
+
 
 def test_rahu_period_has_neutral_placement_without_classical_dignity() -> None:
     full_response = client.post(
@@ -172,6 +198,12 @@ def test_rahu_period_has_neutral_placement_without_classical_dignity() -> None:
     assert any(
         evidence["fact"] == "classical_node_coverage"
         for evidence in rahu["contextual_evidence"]
+    )
+    assert all(
+        relationship["available"] is False
+        for relationship in result["relationships_between_levels"]
+        if relationship["source_lord"] == "rahu"
+        or relationship["target_lord"] == "rahu"
     )
 
 

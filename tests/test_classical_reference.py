@@ -16,7 +16,7 @@ def test_varahamihira_profile_is_source_pinned_and_versioned() -> None:
 
     assert response.status_code == 200, payload
     assert payload["profile_id"] == "varahamihira_v1"
-    assert payload["profile_version"] == "1.5.0"
+    assert payload["profile_version"] == "1.6.0"
     assert payload["status"] == "reference_foundation"
     assert payload["source"]["archive_identifier"] == "brihatjataka00varaiala"
     assert payload["source"]["publication_year"] == 1905
@@ -36,12 +36,14 @@ def test_varahamihira_profile_is_source_pinned_and_versioned() -> None:
     assert payload["career_analysis_enabled"] is True
     assert payload["ashtakavarga_enabled"] is True
     assert payload["dasha_interpretation_enabled"] is True
-    assert len(payload["endpoints"]) == 9
+    assert payload["relationships_enabled"] is True
+    assert len(payload["endpoints"]) == 10
     assert f"{BASE_PATH}/conditions" in payload["endpoints"]
     assert f"{BASE_PATH}/aspects" in payload["endpoints"]
     assert f"{BASE_PATH}/career" in payload["endpoints"]
     assert f"{BASE_PATH}/ashtakavarga" in payload["endpoints"]
     assert f"{BASE_PATH}/dasha/current" in payload["endpoints"]
+    assert f"{BASE_PATH}/relationships" in payload["endpoints"]
 
 
 def test_rule_registry_has_unique_traceable_chapter_rules() -> None:
@@ -53,7 +55,7 @@ def test_rule_registry_has_unique_traceable_chapter_rules() -> None:
     rules = payload["rules"]
     rule_ids = [rule["rule_id"] for rule in rules]
 
-    assert len(rules) == 36
+    assert len(rules) == 39
     assert len(rule_ids) == len(set(rule_ids))
     assert {rule["chapter"] for rule in rules} == {1, 2, 9, 10}
     assert {rule["source_id"] for rule in rules} == {
@@ -84,6 +86,9 @@ def test_rule_registry_has_unique_traceable_chapter_rules() -> None:
     assert "VM-BJ-C09-DASHA-ASHTAKAVARGA-CONTEXT-001" in rule_ids
     assert "VM-BJ-C10-DASHA-CAREER-CONTEXT-001" in rule_ids
     assert "VM-BJ-C02-DASHA-NODE-COVERAGE-001" in rule_ids
+    assert "VM-BJ-C02-NATURAL-RELATIONSHIP-EVAL-001" in rule_ids
+    assert "VM-BJ-C02-TEMPORARY-RELATIONSHIP-EVAL-001" in rule_ids
+    assert "VM-BJ-C02-COMPOUND-RELATIONSHIP-EVAL-001" in rule_ids
 
     aspect_rule = next(
         rule
@@ -92,6 +97,18 @@ def test_rule_registry_has_unique_traceable_chapter_rules() -> None:
     )
     assert aspect_rule["verse_reference"] == "2.13"
     assert aspect_rule["citation_precision"] == "verse"
+
+    relationship_rules = [
+        rule for rule in rules if "RELATIONSHIP-EVAL" in rule["rule_id"]
+    ]
+    assert len(relationship_rules) == 3
+    assert {rule["verse_reference"] for rule in relationship_rules} == {
+        "2.16-2.17",
+        "2.18",
+    }
+    assert {rule["citation_precision"] for rule in relationship_rules} == {
+        "verse"
+    }
 
     career_rules = [rule for rule in rules if rule["chapter"] == 10]
     assert {rule["verse_reference"] for rule in career_rules} == {
@@ -240,3 +257,4 @@ def test_openapi_lists_all_classical_routes() -> None:
     assert f"{BASE_PATH}/career" in paths
     assert f"{BASE_PATH}/ashtakavarga" in paths
     assert f"{BASE_PATH}/dasha/current" in paths
+    assert f"{BASE_PATH}/relationships" in paths

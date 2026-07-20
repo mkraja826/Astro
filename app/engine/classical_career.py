@@ -14,6 +14,12 @@ from app.engine.classical_reference import (
     get_varahamihira_grahas,
     get_varahamihira_rashis,
 )
+from app.engine.classical_relationships import (
+    COMPOUND_RULE_ID,
+    NATURAL_RULE_ID,
+    TEMPORARY_RULE_ID,
+    evaluate_relationship,
+)
 from app.schemas.charts import ChartPoint, ChartRequest, ChartType
 from app.schemas.classical_career import (
     CareerAspectFact,
@@ -21,6 +27,7 @@ from app.schemas.classical_career import (
     CareerChannel,
     CareerEvidence,
     CareerReferencePoint,
+    CareerRelationshipFact,
     ClassicalCareerRequest,
     ClassicalCareerResponse,
     IncomeSourceIndication,
@@ -264,6 +271,47 @@ def _aspects_to_sign(
     return results
 
 
+def _career_relationship(
+    tenth_lord: str,
+    indicator: str,
+    points: dict[str, ChartPoint],
+) -> CareerRelationshipFact:
+    """Return the directional relationship from tenth lord to indicator."""
+
+    if tenth_lord == indicator:
+        return CareerRelationshipFact(
+            tenth_lord=tenth_lord,
+            indicator_graha=indicator,
+            available=False,
+            rule_ids=[NATURAL_RULE_ID],
+            reason=(
+                "The tenth lord and Karmājīva indicator are the same Graha; the "
+                "relationship table applies between different Grahas."
+            ),
+        )
+
+    natural, temporary, compound, target_house = evaluate_relationship(
+        tenth_lord,
+        indicator,
+        points[tenth_lord].sign_index,
+        points[indicator].sign_index,
+    )
+    return CareerRelationshipFact(
+        tenth_lord=tenth_lord,
+        indicator_graha=indicator,
+        available=True,
+        target_relative_house=target_house,
+        natural_relationship=natural,
+        temporary_relationship=temporary,
+        compound_relationship=compound,
+        rule_ids=[NATURAL_RULE_ID, TEMPORARY_RULE_ID, COMPOUND_RULE_ID],
+        reason=(
+            f"{tenth_lord} treats {indicator} as {natural.value} naturally and "
+            f"{temporary.value} temporarily, producing {compound.value}."
+        ),
+    )
+
+
 def calculate_varahamihira_career(
     request: ClassicalCareerRequest,
 ) -> ClassicalCareerResponse:
@@ -324,6 +372,7 @@ def calculate_varahamihira_career(
         themes = _vocation_themes(indicator)
         income_sources = _income_sources(occupants)
         aspects = _aspects_to_sign(tenth_sign_index, points)
+        relationship = _career_relationship(tenth_lord, indicator, points)
         evidence = [
             CareerEvidence(
                 rule_id="VM-BJ-C10-INCOME-SOURCE-EVAL-001",
@@ -353,12 +402,25 @@ def calculate_varahamihira_career(
                 ),
             ),
             CareerEvidence(
+                rule_id=COMPOUND_RULE_ID,
+                condition="tenth_lord_indicator_relationship",
+                value=(
+                    relationship.compound_relationship.value
+                    if relationship.compound_relationship is not None
+                    else "same_graha"
+                ),
+                reason=(
+                    f"The directional relationship from {tenth_lord} to {indicator} "
+                    "is exposed without converting it into a strength score."
+                ),
+            ),
+            CareerEvidence(
                 rule_id="VM-BJ-C10-SUPPORT-FACTS-EVAL-001",
                 condition="unweighted_support",
                 value="not_ranked",
                 reason=(
-                    "Dignity, conjunction, and aspect facts are exposed, but no final "
-                    "strength score or cancellation rule is applied."
+                    "Dignity, conjunction, aspect, and relationship facts are exposed, "
+                    "but no final strength score or cancellation rule is applied."
                 ),
             ),
         ]
@@ -380,6 +442,7 @@ def calculate_varahamihira_career(
                 tenth_lord_d9_sign=d9_rashi.canonical_id,
                 tenth_lord_d9_degree_in_sign=round(d9_degree, 8),
                 karmājīva_indicator_graha=indicator,
+                tenth_lord_to_indicator_relationship=relationship,
                 vocation_themes=themes,
                 indicator_condition=condition_cache[indicator],
                 aspects_to_tenth_sign=aspects,
@@ -426,8 +489,9 @@ def calculate_varahamihira_career(
             "The result contains vocation themes, not a guaranteed profession.",
             "Lagna, Moon, and Sun channels are all retained as the source commentary directs.",
             "Repeated indicators are counted but are not automatically declared dominant.",
+            "Tenth-lord relationship labels are categorical and unweighted.",
             "Modern examples explain classical categories and are not new textual rules.",
-            "Natural friendship, cancellations, and weighted strength remain future work.",
+            "Cancellations and weighted strength remain future work.",
             "Rahu and Ketu are excluded from the seven-Graha Chapter 10 mapping.",
         ],
     )

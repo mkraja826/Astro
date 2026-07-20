@@ -24,6 +24,7 @@ The repository currently provides:
 - `POST /v1/classical/varahamihira_v1/aspects`
 - `POST /v1/classical/varahamihira_v1/career`
 - `POST /v1/classical/varahamihira_v1/ashtakavarga`
+- `POST /v1/classical/varahamihira_v1/relationships`
 - `POST /v1/classical/varahamihira_v1/dasha/current`
 - Lahiri sidereal planetary positions and ascendant
 - D1 Rasi and D9 Navamsa divisional charts
@@ -45,7 +46,8 @@ The repository currently provides:
 - Unweighted vocation themes, income-source indications, and supporting facts
 - Chapter 9 raw Bhinnashtakavarga contributor rows and planetary bindu arrays
 - Twelve-sign Sarvashtakavarga totals with a fixed total of 337
-- Active Vimshottari timing annotated with ownership, condition, aspect, bindu, and career facts
+- Chapter 2 natural, temporary, and compound seven-Graha relationships
+- Active Vimshottari timing annotated with ownership, condition, aspect, bindu, career, and relationship facts
 - Explicit neutral Rahu and Ketu coverage without invented classical dignity rules
 - True Rahu and opposite Ketu
 - Timezone, ambiguous-time and coordinate validation
@@ -102,6 +104,7 @@ POST /v1/classical/varahamihira_v1/conditions
 POST /v1/classical/varahamihira_v1/aspects
 POST /v1/classical/varahamihira_v1/career
 POST /v1/classical/varahamihira_v1/ashtakavarga
+POST /v1/classical/varahamihira_v1/relationships
 POST /v1/classical/varahamihira_v1/dasha/current
 ```
 
@@ -120,7 +123,8 @@ placements, occupants, and all aspect rays received by each whole-sign house.
 The career endpoint implements Chapter 10, verses 10.1–10.4. It returns all
 three Karmājīva derivations from Lagna, Moon, and Sun; tenth-house occupants and
 income-source relations; the Navamsa lord of each tenth lord; classical vocation
-themes; and unweighted dignity, conjunction, and aspect support facts.
+themes; unweighted dignity, conjunction, and aspect facts; and the directional
+relationship from each tenth lord to its derived indicator.
 
 The Ashtakavarga endpoint implements the raw Chapter 9 contributor tables. It
 returns eight contributor rows for each of the seven planetary
@@ -128,18 +132,26 @@ Bhinnashtakavargas, twelve bindu and rekha values per Graha, and the sign-wise
 Sarvashtakavarga sum. The fixed planetary totals are 48, 49, 39, 54, 56, 52,
 and 39, producing a raw Sarvashtakavarga total of 337.
 
+The relationship endpoint implements Chapter 2, verses 2.16–2.18. It returns 42
+directed natural and compound relationships plus 21 mutual temporary-pair
+summaries. Natural and compound relations remain directional; temporary
+friendship is derived from whole-sign natal separation. Rahu and Ketu are not
+inserted into the seven-Graha table, and no numeric score is applied.
+
 The classical Dasha endpoint preserves the existing current Vimshottari timing
 response and annotates each active lord with D1 placement, house ownership,
-dignity, Vargottama, aspects, conjunctions, raw Chapter 9 bindus, and matching
-Karmājīva channels. Vimshottari supplies timing; the API does not claim that
-*Brihat Jataka* defines that timing system. Rahu and Ketu receive neutral natal
-placement and aggregate sign context without invented dignity rules.
+dignity, Vargottama, aspects, conjunctions, raw Chapter 9 bindus, matching
+Karmājīva channels, and all directed relationships among the four active level
+lords. Vimshottari supplies timing; the API does not claim that *Brihat Jataka*
+defines that timing system. Rahu and Ketu receive neutral natal placement and
+aggregate sign context without invented dignity or friendship rules.
 
 The evaluators do not modify D1, D9, Panchanga, or Vimshottari results. Career
 output is plural and non-exclusive: `primary_indicator` remains null until
-friendship, cancellation, and strength weighting are validated. Ashtakavarga
-returns raw arithmetic only. Classical Dasha output uses evidence buckets and
-applies no event prediction, cancellation, threshold, or final strength score.
+cancellation and strength weighting are validated. Ashtakavarga returns raw
+arithmetic only. Relationship labels remain categorical. Classical Dasha output
+uses evidence buckets and applies no event prediction, cancellation, threshold,
+or final strength score.
 
 ## Vimshottari response depth
 
@@ -214,6 +226,7 @@ See [`docs/EPHEMERIS_DEPLOYMENT.md`](docs/EPHEMERIS_DEPLOYMENT.md).
 - [`docs/CLASSICAL_CAREER_V1.md`](docs/CLASSICAL_CAREER_V1.md)
 - [`docs/ASHTAKAVARGA_V1.md`](docs/ASHTAKAVARGA_V1.md)
 - [`docs/CLASSICAL_DASHA_CONTEXT_V1.md`](docs/CLASSICAL_DASHA_CONTEXT_V1.md)
+- [`docs/CLASSICAL_RELATIONSHIPS_V1.md`](docs/CLASSICAL_RELATIONSHIPS_V1.md)
 
 ## Docker
 
