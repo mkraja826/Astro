@@ -13,6 +13,7 @@ The repository currently provides:
 - `POST /v1/positions`
 - `POST /v1/panchanga`
 - `POST /v1/dashas/vimshottari`
+- `POST /v1/dashas/vimshottari/current`
 - Lahiri sidereal planetary positions and ascendant
 - Rashi, Nakshatra, Pada and whole-sign houses
 - Sunrise-based Vara, Tithi, Nakshatra, Yoga and Karana
@@ -21,6 +22,7 @@ The repository currently provides:
 - Nine proportional Antardashas inside every Mahadasha
 - Nine proportional Pratyantardashas inside every Antardasha
 - Optional Sookshma Dasha expansion with 6,561 fourth-level periods
+- Compact active Mahadasha-to-Sookshma chain lookup for any supported instant
 - True Rahu and opposite Ketu
 - Timezone, ambiguous-time and coordinate validation
 - Explicit Swiss Ephemeris source reporting
@@ -65,6 +67,35 @@ required:
 That response contains 6,561 Sookshma Dasha periods, so it should be requested
 only by clients that need the expanded timeline.
 
+## Current Vimshottari chain
+
+Use the compact endpoint when an application needs only the periods active at a
+specific instant:
+
+```http
+POST /v1/dashas/vimshottari/current
+```
+
+```json
+{
+  "birth": {
+    "local_datetime": "1998-10-26T10:28:00",
+    "timezone": "Asia/Kolkata",
+    "latitude": 16.575,
+    "longitude": 79.312,
+    "altitude_meters": 120
+  },
+  "as_of": {
+    "local_datetime": "2026-07-20T12:00:00",
+    "timezone": "Asia/Kolkata"
+  },
+  "calculation_profile": "south_indian_drik_lahiri_v1"
+}
+```
+
+The response contains one Mahadasha, Antardasha, Pratyantardasha and Sookshma
+period, including UTC boundaries, elapsed time, remaining time and progress.
+
 ## Tests
 
 ```bash
@@ -86,6 +117,7 @@ See [`docs/EPHEMERIS_DEPLOYMENT.md`](docs/EPHEMERIS_DEPLOYMENT.md).
 - [`docs/CALCULATION_PROFILE_V1.md`](docs/CALCULATION_PROFILE_V1.md)
 - [`docs/PANCHANGA_V1.md`](docs/PANCHANGA_V1.md)
 - [`docs/VIMSHOTTARI_V1.md`](docs/VIMSHOTTARI_V1.md)
+- [`docs/VIMSHOTTARI_CURRENT_V1.md`](docs/VIMSHOTTARI_CURRENT_V1.md)
 
 ## Docker
 
