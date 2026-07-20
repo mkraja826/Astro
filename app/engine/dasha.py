@@ -19,16 +19,18 @@ from app.engine.positions import (
     _normalize_birth_time,
 )
 from app.schemas.dasha import (
-    DASHA_YEAR_DAYS,
-)
-from app.schemas.dasha import (
     DashaLord,
     DashaMoonPosition,
     MahadashaPeriod,
     VimshottariRequest,
     VimshottariResponse,
 )
-from app.schemas.positions import Coordinates, EngineMetadata, NormalizedTime, PositionsRequest
+from app.schemas.positions import (
+    Coordinates,
+    EngineMetadata,
+    NormalizedTime,
+    PositionsRequest,
+)
 
 DASHA_LORDS = (
     DashaLord.KETU,
@@ -91,7 +93,11 @@ def calculate_vimshottari(request: VimshottariRequest) -> VimshottariResponse:
     for offset in range(len(DASHA_LORDS)):
         lord_index = (birth_lord_index + offset) % len(DASHA_LORDS)
         duration_years = DASHA_YEARS[lord_index]
-        period_end = first_end if offset == 0 else period_start + _years_to_delta(duration_years)
+        period_end = (
+            first_end
+            if offset == 0
+            else period_start + _years_to_delta(duration_years)
+        )
         active_at_birth = offset == 0
 
         periods.append(
@@ -102,7 +108,9 @@ def calculate_vimshottari(request: VimshottariRequest) -> VimshottariResponse:
                 start_utc=period_start,
                 end_utc=period_end,
                 active_at_birth=active_at_birth,
-                elapsed_at_birth_years=(round(elapsed_years, 9) if active_at_birth else None),
+                elapsed_at_birth_years=(
+                    round(elapsed_years, 9) if active_at_birth else None
+                ),
                 remaining_at_birth_years=(
                     round(remaining_years, 9) if active_at_birth else None
                 ),
