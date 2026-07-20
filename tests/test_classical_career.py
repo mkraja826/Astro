@@ -56,7 +56,8 @@ def test_career_returns_three_unweighted_karmājīva_channels() -> None:
         assert channel["indicator_condition"]["graha"] == (
             channel["karmājīva_indicator_graha"]
         )
-        assert len(channel["evidence"]) == 4
+        assert len(channel["evidence"]) == 5
+        assert channel["tenth_lord_to_indicator_relationship"]["rule_ids"]
 
 
 def test_channel_derivations_match_d1_and_reference_tables() -> None:
@@ -97,6 +98,37 @@ def test_channel_derivations_match_d1_and_reference_tables() -> None:
             "canonical_id"
         ]
         assert channel["karmājīva_indicator_graha"] == indicator
+
+
+def test_tenth_lord_relationship_matches_relationship_endpoint() -> None:
+    career = client.post(f"{BASE_PATH}/career", json=REQUEST_BODY).json()
+    relationships = client.post(
+        f"{BASE_PATH}/relationships",
+        json=REQUEST_BODY,
+    ).json()["directed_relationships"]
+    relationship_by_pair = {
+        (item["source_graha"], item["target_graha"]): item
+        for item in relationships
+    }
+
+    for channel in career["channels"]:
+        tenth_lord = channel["tenth_lord"]
+        indicator = channel["karmājīva_indicator_graha"]
+        fact = channel["tenth_lord_to_indicator_relationship"]
+        assert fact["tenth_lord"] == tenth_lord
+        assert fact["indicator_graha"] == indicator
+
+        if tenth_lord == indicator:
+            assert fact["available"] is False
+            assert fact["compound_relationship"] is None
+            continue
+
+        expected = relationship_by_pair[(tenth_lord, indicator)]
+        assert fact["available"] is True
+        assert fact["target_relative_house"] == expected["target_relative_house"]
+        assert fact["natural_relationship"] == expected["natural_relationship"]
+        assert fact["temporary_relationship"] == expected["temporary_relationship"]
+        assert fact["compound_relationship"] == expected["compound_relationship"]
 
 
 def test_tenth_occupants_and_income_sources_are_complete() -> None:
