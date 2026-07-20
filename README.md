@@ -24,6 +24,7 @@ The repository currently provides:
 - `POST /v1/classical/varahamihira_v1/aspects`
 - `POST /v1/classical/varahamihira_v1/career`
 - `POST /v1/classical/varahamihira_v1/ashtakavarga`
+- `POST /v1/classical/varahamihira_v1/dasha/current`
 - Lahiri sidereal planetary positions and ascendant
 - D1 Rasi and D9 Navamsa divisional charts
 - Fixed South Indian 4-by-4 sign-grid metadata
@@ -44,6 +45,8 @@ The repository currently provides:
 - Unweighted vocation themes, income-source indications, and supporting facts
 - Chapter 9 raw Bhinnashtakavarga contributor rows and planetary bindu arrays
 - Twelve-sign Sarvashtakavarga totals with a fixed total of 337
+- Active Vimshottari timing annotated with ownership, condition, aspect, bindu, and career facts
+- Explicit neutral Rahu and Ketu coverage without invented classical dignity rules
 - True Rahu and opposite Ketu
 - Timezone, ambiguous-time and coordinate validation
 - Explicit Swiss Ephemeris source reporting
@@ -99,6 +102,7 @@ POST /v1/classical/varahamihira_v1/conditions
 POST /v1/classical/varahamihira_v1/aspects
 POST /v1/classical/varahamihira_v1/career
 POST /v1/classical/varahamihira_v1/ashtakavarga
+POST /v1/classical/varahamihira_v1/dasha/current
 ```
 
 The profile pins a public-domain 1905 English edition of *Brihat Jataka* and
@@ -124,11 +128,18 @@ Bhinnashtakavargas, twelve bindu and rekha values per Graha, and the sign-wise
 Sarvashtakavarga sum. The fixed planetary totals are 48, 49, 39, 54, 56, 52,
 and 39, producing a raw Sarvashtakavarga total of 337.
 
+The classical Dasha endpoint preserves the existing current Vimshottari timing
+response and annotates each active lord with D1 placement, house ownership,
+dignity, Vargottama, aspects, conjunctions, raw Chapter 9 bindus, and matching
+Karmājīva channels. Vimshottari supplies timing; the API does not claim that
+*Brihat Jataka* defines that timing system. Rahu and Ketu receive neutral natal
+placement and aggregate sign context without invented dignity rules.
+
 The evaluators do not modify D1, D9, Panchanga, or Vimshottari results. Career
 output is plural and non-exclusive: `primary_indicator` remains null until
 friendship, cancellation, and strength weighting are validated. Ashtakavarga
-v1 returns raw arithmetic only; reductions, transit judgment, and Dasha
-interpretation remain separate milestones.
+returns raw arithmetic only. Classical Dasha output uses evidence buckets and
+applies no event prediction, cancellation, threshold, or final strength score.
 
 ## Vimshottari response depth
 
@@ -202,6 +213,7 @@ See [`docs/EPHEMERIS_DEPLOYMENT.md`](docs/EPHEMERIS_DEPLOYMENT.md).
 - [`docs/CLASSICAL_ASPECTS_V1.md`](docs/CLASSICAL_ASPECTS_V1.md)
 - [`docs/CLASSICAL_CAREER_V1.md`](docs/CLASSICAL_CAREER_V1.md)
 - [`docs/ASHTAKAVARGA_V1.md`](docs/ASHTAKAVARGA_V1.md)
+- [`docs/CLASSICAL_DASHA_CONTEXT_V1.md`](docs/CLASSICAL_DASHA_CONTEXT_V1.md)
 
 ## Docker
 
