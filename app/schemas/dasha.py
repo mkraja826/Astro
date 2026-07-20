@@ -3,7 +3,7 @@
 from datetime import datetime
 from enum import StrEnum
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.schemas.positions import (
     BirthInput,
@@ -50,6 +50,50 @@ class VimshottariRequest(BaseModel):
             "Deepest returned subdivision. Use 'sookshma' to include all 6,561 "
             "fourth-level periods; the default preserves the existing three-level response."
         ),
+    )
+
+
+class DashaQueryTime(BaseModel):
+    """Local civil timestamp at which the active Dasha chain is requested."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    local_datetime: datetime = Field(
+        examples=["2026-07-20T12:00:00"],
+        description="Naive local civil time; timezone is supplied separately.",
+    )
+    timezone: str = Field(
+        min_length=1,
+        max_length=64,
+        examples=["Asia/Kolkata"],
+        description="IANA timezone identifier for the requested instant.",
+    )
+    fold: int | None = Field(
+        default=None,
+        ge=0,
+        le=1,
+        description="Selects the first or second occurrence of an ambiguous local time.",
+    )
+
+    @field_validator("local_datetime")
+    @classmethod
+    def require_naive_local_datetime(cls, value: datetime) -> datetime:
+        """Reject offset-aware values because timezone is a separate field."""
+
+        if value.tzinfo is not None:
+            raise ValueError("local_datetime must not contain a UTC offset")
+        return value
+
+
+class CurrentVimshottariRequest(BaseModel):
+    """Birth data and a requested instant for the active Vimshottari chain."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    birth: BirthInput
+    as_of: DashaQueryTime
+    calculation_profile: CalculationProfile = (
+        CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_V1
     )
 
 
@@ -118,6 +162,19 @@ class MahadashaPeriod(BaseModel):
     antardashas: list[AntardashaPeriod]
 
 
+class ActiveDashaPeriod(BaseModel):
+    """One active Vimshottari level at the requested instant."""
+
+    sequence_number: int = Field(ge=1, le=9)
+    lord: DashaLord
+    duration_years: float
+    start_utc: datetime
+    end_utc: datetime
+    elapsed_as_of_years: float
+    remaining_as_of_years: float
+    progress_percent: float = Field(ge=0, le=100)
+
+
 class VimshottariResponse(BaseModel):
     """Complete birth balance and one 120-year Vimshottari cycle."""
 
@@ -132,4 +189,26 @@ class VimshottariResponse(BaseModel):
     year_length_days: float
     ayanamsha_degrees: float
     mahadashas: list[MahadashaPeriod]
+    metadata: EngineMetadata
+
+
+class CurrentVimshottariResponse(BaseModel):
+    """Only the active Vimshottari chain at one requested instant."""
+
+    request_id: str
+    calculation_profile: CalculationProfile
+    birth_time: NormalizedTime
+    query_time: NormalizedTime
+    coordinates: Coordinates
+    moon: DashaMoonPosition
+    birth_lord: DashaLord
+    birth_balance_years: float
+    year_length_days: float
+    cycle_start_utc: datetime
+    cycle_end_utc: datetime
+    ayanamsha_degrees: float
+    mahadasha: ActiveDashaPeriod
+    antardasha: ActiveDashaPeriod
+    pratyantardasha: ActiveDashaPeriod
+    sookshma: ActiveDashaPeriod
     metadata: EngineMetadata
