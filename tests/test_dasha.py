@@ -104,6 +104,51 @@ def test_vimshottari_returns_complete_birth_cycle() -> None:
     assert payload["metadata"]["ephemeris_sources"]
 
 
+def test_vimshottari_returns_contiguous_antardashas() -> None:
+    response = client.post("/v1/dashas/vimshottari", json=_payload())
+    payload = response.json()
+
+    assert response.status_code == 200, payload
+    birth_utc = _parse_datetime(payload["time"]["utc_datetime"])
+    active_antardashas: list[dict[str, object]] = []
+
+    for mahadasha in payload["mahadashas"]:
+        antardashas = mahadasha["antardashas"]
+        assert len(antardashas) == 9
+        assert antardashas[0]["start_utc"] == mahadasha["start_utc"]
+        assert antardashas[-1]["end_utc"] == mahadasha["end_utc"]
+        assert sum(item["duration_years"] for item in antardashas) == pytest.approx(
+            mahadasha["duration_years"],
+            abs=1e-7,
+        )
+
+        lord_start_index = LORDS.index(mahadasha["lord"])
+        expected_sequence = [
+            LORDS[(lord_start_index + offset) % len(LORDS)] for offset in range(9)
+        ]
+        assert [item["lord"] for item in antardashas] == expected_sequence
+
+        for current, following in zip(
+            antardashas[:-1],
+            antardashas[1:],
+            strict=True,
+        ):
+            assert current["end_utc"] == following["start_utc"]
+
+        active_antardashas.extend(
+            item for item in antardashas if item["active_at_birth"]
+        )
+
+    assert len(active_antardashas) == 1
+    active = active_antardashas[0]
+    assert _parse_datetime(active["start_utc"]) <= birth_utc
+    assert birth_utc < _parse_datetime(active["end_utc"])
+    assert (
+        active["elapsed_at_birth_years"] + active["remaining_at_birth_years"]
+        == pytest.approx(active["duration_years"], abs=2e-8)
+    )
+
+
 def test_vimshottari_rejects_unknown_timezone() -> None:
     payload = _payload()
     payload["birth"]["timezone"] = "India/Not-A-Timezone"  # type: ignore[index]
