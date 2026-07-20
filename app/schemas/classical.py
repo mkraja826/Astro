@@ -119,6 +119,8 @@ class ClassicalProfileResponse(BaseModel):
     implemented_chapters: list[int]
     interpretation_enabled: bool
     dignity_evaluator_enabled: bool
+    aspects_evaluator_enabled: bool = False
+    house_influence_evaluator_enabled: bool = False
     endpoints: list[str]
     caveats: list[str]
 
