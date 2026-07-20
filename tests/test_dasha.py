@@ -100,7 +100,7 @@ def test_vimshottari_returns_complete_birth_cycle() -> None:
         assert following["remaining_at_birth_years"] is None
 
     first_pratyantardasha = first["antardashas"][0]["pratyantardashas"][0]
-    assert "sookshmadashas" not in first_pratyantardasha
+    assert first_pratyantardasha["sookshmadashas"] is None
     assert payload["metadata"]["zodiac"] == "sidereal"
     assert payload["metadata"]["ayanamsha"] == "lahiri"
     assert payload["metadata"]["ephemeris_sources"]
