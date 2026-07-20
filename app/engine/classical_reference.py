@@ -26,8 +26,8 @@ SOURCE_ID = "brihat_jataka_chidambaram_aiyar_1905"
 
 _SOURCE = SourceEdition(
     source_id=SOURCE_ID,
-    work_title="Brihat Jataka",
-    author="Varahamihira",
+    work_title="Bṛhat Jātaka",
+    author="Varāhamihira",
     edition_title="The Brihat Jataka, second enlarged edition",
     translator="N. Chidambaram Aiyar",
     publication_year=1905,
@@ -43,7 +43,10 @@ _SOURCE = SourceEdition(
     notes=[
         "This edition is the pinned baseline for varahamihira_v1.",
         "Chapter-level citations are authoritative for this milestone.",
-        "Verse-level locators remain pending reconciliation with the user's preferred edition.",
+        (
+            "Verse-level locators remain pending reconciliation with the user's "
+            "preferred edition."
+        ),
     ],
 )
 
@@ -55,7 +58,7 @@ _RULES = (
         chapter=1,
         citation_precision=CitationPrecision.CHAPTER,
         topic="zodiac_sequence",
-        statement="The zodiac contains twelve ordered Rashi beginning with Mesha.",
+        statement="The zodiac contains twelve ordered Rāśis beginning with Meṣa.",
         implementation_status=RuleImplementationStatus.REFERENCE_DATA,
         confidence="high",
         data_keys=["index", "canonical_id", "sanskrit_name", "english_name"],
@@ -68,11 +71,11 @@ _RULES = (
         chapter=1,
         citation_precision=CitationPrecision.CHAPTER,
         topic="rashi_lordship",
-        statement="Each Rashi is associated with its traditional planetary lord.",
+        statement="Each Rāśi is associated with its traditional planetary lord.",
         implementation_status=RuleImplementationStatus.REFERENCE_DATA,
         confidence="high",
         data_keys=["lord"],
-        notes=["Rahu and Ketu are not assigned Rashi lordship in this table."],
+        notes=["Rahu and Ketu are not assigned Rāśi lordship in this table."],
     ),
     ClassicalRuleReference(
         rule_id="VM-BJ-C01-CLASS-001",
@@ -82,7 +85,7 @@ _RULES = (
         citation_precision=CitationPrecision.CHAPTER,
         topic="rashi_classification",
         statement=(
-            "Rashi are classified by modality, gender, element, and odd-even parity."
+            "Rāśis are classified by modality, gender, element, and odd-even parity."
         ),
         implementation_status=RuleImplementationStatus.REFERENCE_DATA,
         confidence="high",
@@ -96,11 +99,13 @@ _RULES = (
         chapter=1,
         citation_precision=CitationPrecision.CHAPTER,
         topic="kalapurusha_body",
-        statement="The twelve Rashi correspond in order to parts of Kalapurusha.",
+        statement="The twelve Rāśis correspond in order to parts of Kālapuruṣa.",
         implementation_status=RuleImplementationStatus.REFERENCE_DATA,
         confidence="high",
         data_keys=["kalapurusha_body_part"],
-        notes=["Labels follow the pinned English edition's chapter-level terminology."],
+        notes=[
+            "Labels follow the pinned English edition's chapter-level terminology."
+        ],
     ),
     ClassicalRuleReference(
         rule_id="VM-BJ-C02-GRAHAS-001",
@@ -123,7 +128,8 @@ _RULES = (
         citation_precision=CitationPrecision.CHAPTER,
         topic="graha_attributes",
         statement=(
-            "Grahas are registered with lordship, gender, element, weekday, and natural tendency."
+            "Grahas are registered with lordship, gender, element, weekday, and "
+            "natural tendency."
         ),
         implementation_status=RuleImplementationStatus.REFERENCE_DATA,
         confidence="high",
@@ -135,7 +141,10 @@ _RULES = (
             "natural_tendency",
         ],
         notes=[
-            "Moon and Mercury are represented as conditional rather than flattened into one class."
+            (
+                "Moon and Mercury are represented as conditional rather than "
+                "flattened into one class."
+            )
         ],
     ),
     ClassicalRuleReference(
@@ -145,7 +154,9 @@ _RULES = (
         chapter=2,
         citation_precision=CitationPrecision.CHAPTER,
         topic="exaltation_debilitation",
-        statement="Each classical Graha has registered exaltation and debilitation points.",
+        statement=(
+            "Each classical Graha has registered exaltation and debilitation points."
+        ),
         implementation_status=RuleImplementationStatus.REFERENCE_DATA,
         confidence="high",
         data_keys=[
@@ -154,30 +165,164 @@ _RULES = (
             "debilitation_sign",
             "debilitation_degree",
         ],
-        notes=["Evaluation against birth charts is intentionally deferred to the next milestone."],
+        notes=[
+            "Evaluation against birth charts is intentionally deferred to the next milestone."
+        ],
     ),
 )
 
 _RASHI_DATA = (
-    (1, "aries", "Mesha", "Aries", "mars", "movable", "masculine", "fire", "odd", "head"),
-    (2, "taurus", "Vrishabha", "Taurus", "venus", "fixed", "feminine", "earth", "even", "face"),
-    (3, "gemini", "Mithuna", "Gemini", "mercury", "dual", "masculine", "air", "odd", "chest"),
-    (4, "cancer", "Karka", "Cancer", "moon", "movable", "feminine", "water", "even", "heart"),
-    (5, "leo", "Simha", "Leo", "sun", "fixed", "masculine", "fire", "odd", "belly"),
-    (6, "virgo", "Kanya", "Virgo", "mercury", "dual", "feminine", "earth", "even", "waist"),
-    (7, "libra", "Tula", "Libra", "venus", "movable", "masculine", "air", "odd", "lower_belly"),
-    (8, "scorpio", "Vrischika", "Scorpio", "mars", "fixed", "feminine", "water", "even", "sexual_organs"),
-    (9, "sagittarius", "Dhanus", "Sagittarius", "jupiter", "dual", "masculine", "fire", "odd", "thighs"),
-    (10, "capricorn", "Makara", "Capricorn", "saturn", "movable", "feminine", "earth", "even", "knees"),
-    (11, "aquarius", "Kumbha", "Aquarius", "saturn", "fixed", "masculine", "air", "odd", "buttocks"),
-    (12, "pisces", "Meena", "Pisces", "jupiter", "dual", "feminine", "water", "even", "feet"),
+    (
+        1,
+        "aries",
+        "Meṣa",
+        "Aries",
+        "mars",
+        "movable",
+        "masculine",
+        "fire",
+        "odd",
+        "head",
+    ),
+    (
+        2,
+        "taurus",
+        "Vṛṣabha",
+        "Taurus",
+        "venus",
+        "fixed",
+        "feminine",
+        "earth",
+        "even",
+        "face",
+    ),
+    (
+        3,
+        "gemini",
+        "Mithuna",
+        "Gemini",
+        "mercury",
+        "dual",
+        "masculine",
+        "air",
+        "odd",
+        "chest",
+    ),
+    (
+        4,
+        "cancer",
+        "Karka",
+        "Cancer",
+        "moon",
+        "movable",
+        "feminine",
+        "water",
+        "even",
+        "heart",
+    ),
+    (
+        5,
+        "leo",
+        "Siṃha",
+        "Leo",
+        "sun",
+        "fixed",
+        "masculine",
+        "fire",
+        "odd",
+        "belly",
+    ),
+    (
+        6,
+        "virgo",
+        "Kanyā",
+        "Virgo",
+        "mercury",
+        "dual",
+        "feminine",
+        "earth",
+        "even",
+        "waist",
+    ),
+    (
+        7,
+        "libra",
+        "Tulā",
+        "Libra",
+        "venus",
+        "movable",
+        "masculine",
+        "air",
+        "odd",
+        "lower_belly",
+    ),
+    (
+        8,
+        "scorpio",
+        "Vṛścika",
+        "Scorpio",
+        "mars",
+        "fixed",
+        "feminine",
+        "water",
+        "even",
+        "sexual_organs",
+    ),
+    (
+        9,
+        "sagittarius",
+        "Dhanuṣ",
+        "Sagittarius",
+        "jupiter",
+        "dual",
+        "masculine",
+        "fire",
+        "odd",
+        "thighs",
+    ),
+    (
+        10,
+        "capricorn",
+        "Makara",
+        "Capricorn",
+        "saturn",
+        "movable",
+        "feminine",
+        "earth",
+        "even",
+        "knees",
+    ),
+    (
+        11,
+        "aquarius",
+        "Kumbha",
+        "Aquarius",
+        "saturn",
+        "fixed",
+        "masculine",
+        "air",
+        "odd",
+        "buttocks",
+    ),
+    (
+        12,
+        "pisces",
+        "Mīna",
+        "Pisces",
+        "jupiter",
+        "dual",
+        "feminine",
+        "water",
+        "even",
+        "feet",
+    ),
 )
 
 _GRAHA_DATA = (
     (
         1,
         "sun",
-        "Surya",
+        "Sūrya",
         "Sun",
         ["leo"],
         "masculine",
@@ -193,13 +338,13 @@ _GRAHA_DATA = (
     (
         2,
         "moon",
-        "Chandra",
+        "Candra",
         "Moon",
         ["cancer"],
         "feminine",
         "water",
         "conditional",
-        "Waxing and waning condition must be evaluated before assigning final tendency.",
+        "Waxing and waning condition must be evaluated before final tendency.",
         "monday",
         "taurus",
         3.0,
@@ -209,7 +354,7 @@ _GRAHA_DATA = (
     (
         3,
         "mars",
-        "Mangala",
+        "Maṅgala",
         "Mars",
         ["aries", "scorpio"],
         "masculine",
@@ -231,7 +376,7 @@ _GRAHA_DATA = (
         "neuter",
         "earth",
         "conditional",
-        "Association and other stated conditions must be evaluated before final tendency.",
+        "Association and selected conditions must be evaluated before final tendency.",
         "wednesday",
         "virgo",
         15.0,
@@ -241,7 +386,7 @@ _GRAHA_DATA = (
     (
         5,
         "jupiter",
-        "Brihaspati",
+        "Bṛhaspati",
         "Jupiter",
         ["sagittarius", "pisces"],
         "masculine",
@@ -257,7 +402,7 @@ _GRAHA_DATA = (
     (
         6,
         "venus",
-        "Shukra",
+        "Śukra",
         "Venus",
         ["taurus", "libra"],
         "feminine",
@@ -273,7 +418,7 @@ _GRAHA_DATA = (
     (
         7,
         "saturn",
-        "Shani",
+        "Śani",
         "Saturn",
         ["capricorn", "aquarius"],
         "neuter",
@@ -295,9 +440,9 @@ def get_varahamihira_profile() -> ClassicalProfileResponse:
     return ClassicalProfileResponse(
         profile_id=PROFILE_ID,
         profile_version="1.0.0",
-        display_name="Varahamihira Brihat Jataka Reference Profile v1",
+        display_name="Varāhamihira Bṛhat Jātaka Reference Profile v1",
         status=ProfileStatus.REFERENCE_FOUNDATION,
-        tradition="Brihat Jataka classical reference layer",
+        tradition="Bṛhat Jātaka classical reference layer",
         source=_SOURCE.model_copy(deep=True),
         astronomical_profile_dependency="south_indian_drik_lahiri_v1",
         calculation_engine_impact="none",
