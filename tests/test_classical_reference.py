@@ -16,20 +16,27 @@ def test_varahamihira_profile_is_source_pinned_and_versioned() -> None:
 
     assert response.status_code == 200, payload
     assert payload["profile_id"] == "varahamihira_v1"
-    assert payload["profile_version"] == "1.2.0"
+    assert payload["profile_version"] == "1.3.0"
     assert payload["status"] == "reference_foundation"
     assert payload["source"]["archive_identifier"] == "brihatjataka00varaiala"
     assert payload["source"]["publication_year"] == 1905
-    assert payload["implemented_chapters"] == [1, 2]
-    assert payload["astronomical_profile_dependency"] == "south_indian_drik_lahiri_v1"
+    assert payload["implemented_chapters"] == [1, 2, 10]
+    assert "Chapter 10: Vocation (Karmājīva)" in payload["source"][
+        "reference_scope"
+    ]
+    assert payload["astronomical_profile_dependency"] == (
+        "south_indian_drik_lahiri_v1"
+    )
     assert payload["calculation_engine_impact"] == "none"
     assert payload["interpretation_enabled"] is False
     assert payload["dignity_evaluator_enabled"] is True
     assert payload["aspects_evaluator_enabled"] is True
     assert payload["house_influence_evaluator_enabled"] is True
-    assert len(payload["endpoints"]) == 6
+    assert payload["career_analysis_enabled"] is True
+    assert len(payload["endpoints"]) == 7
     assert f"{BASE_PATH}/conditions" in payload["endpoints"]
     assert f"{BASE_PATH}/aspects" in payload["endpoints"]
+    assert f"{BASE_PATH}/career" in payload["endpoints"]
 
 
 def test_rule_registry_has_unique_traceable_chapter_rules() -> None:
@@ -41,9 +48,9 @@ def test_rule_registry_has_unique_traceable_chapter_rules() -> None:
     rules = payload["rules"]
     rule_ids = [rule["rule_id"] for rule in rules]
 
-    assert len(rules) == 17
+    assert len(rules) == 22
     assert len(rule_ids) == len(set(rule_ids))
-    assert {rule["chapter"] for rule in rules} == {1, 2}
+    assert {rule["chapter"] for rule in rules} == {1, 2, 10}
     assert {rule["source_id"] for rule in rules} == {
         "brihat_jataka_chidambaram_aiyar_1905"
     }
@@ -58,6 +65,9 @@ def test_rule_registry_has_unique_traceable_chapter_rules() -> None:
     assert "VM-BJ-C02-MERCURY-ASSOC-EVAL-001" in rule_ids
     assert "VM-BJ-C02-ASPECT-STRENGTH-EVAL-001" in rule_ids
     assert "VM-BJ-C02-SPECIAL-ASPECT-EVAL-001" in rule_ids
+    assert "VM-BJ-C10-NAVAMSA-LORD-EVAL-001" in rule_ids
+    assert "VM-BJ-C10-SUPPORT-FACTS-EVAL-001" in rule_ids
+
     aspect_rule = next(
         rule
         for rule in rules
@@ -65,6 +75,15 @@ def test_rule_registry_has_unique_traceable_chapter_rules() -> None:
     )
     assert aspect_rule["verse_reference"] == "2.13"
     assert aspect_rule["citation_precision"] == "verse"
+
+    career_rules = [rule for rule in rules if rule["chapter"] == 10]
+    assert {rule["verse_reference"] for rule in career_rules} == {
+        "10.1",
+        "10.2",
+        "10.3",
+        "10.4",
+    }
+    assert {rule["citation_precision"] for rule in career_rules} == {"verse"}
 
 
 def test_chapter_one_returns_complete_rashi_reference_table() -> None:
@@ -180,3 +199,4 @@ def test_openapi_lists_all_classical_routes() -> None:
     assert f"{BASE_PATH}/grahas" in paths
     assert f"{BASE_PATH}/conditions" in paths
     assert f"{BASE_PATH}/aspects" in paths
+    assert f"{BASE_PATH}/career" in paths
