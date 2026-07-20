@@ -16,7 +16,11 @@ from app.engine.classical_reference import (
 )
 from app.engine.classical_relationships import calculate_varahamihira_relationships
 from app.engine.classical_strength import calculate_varahamihira_strength
-from app.engine.classical_strength_rules import (
+from app.engine.classical_weighting import (
+    calculate_varahamihira_weighted_strength,
+    get_weighting_profile,
+)
+from app.engine.classical_weighting_profile import (
     extend_varahamihira_profile,
     extend_varahamihira_rules,
 )
@@ -55,6 +59,11 @@ from app.schemas.classical_relationships import (
 from app.schemas.classical_strength import (
     ClassicalStrengthRequest,
     ClassicalStrengthResponse,
+)
+from app.schemas.classical_weighting import (
+    ClassicalWeightedStrengthRequest,
+    ClassicalWeightedStrengthResponse,
+    WeightingProfileResponse,
 )
 
 router = APIRouter(
@@ -99,6 +108,18 @@ def varahamihira_rules() -> RuleRegistryResponse:
     """Return all source-traceable rules implemented by the profile."""
 
     return extend_varahamihira_rules(get_varahamihira_rules())
+
+
+@router.get(
+    "/weighting/profile",
+    response_model=WeightingProfileResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Read the controlled strength-weighting convention",
+)
+def varahamihira_weighting_profile() -> WeightingProfileResponse:
+    """Return immutable API weighting formulas and validation boundaries."""
+
+    return get_weighting_profile()
 
 
 @router.get(
@@ -269,6 +290,31 @@ def varahamihira_strength(
 
     try:
         return calculate_varahamihira_strength(request)
+    except BirthTimeError as exc:
+        raise _unprocessable(exc) from exc
+    except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
+        raise _ephemeris_unavailable(exc) from exc
+
+
+@router.post(
+    "/strength/weighted",
+    response_model=ClassicalWeightedStrengthResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Apply the controlled transparent strength-weighting convention",
+    responses={
+        422: {"description": "Invalid coordinates, timezone, or local civil time"},
+        503: {
+            "description": "Required licensed ephemeris configuration or data unavailable"
+        },
+    },
+)
+def varahamihira_weighted_strength(
+    request: ClassicalWeightedStrengthRequest,
+) -> ClassicalWeightedStrengthResponse:
+    """Return raw facts, transparent numeric components, and seven-Graha ranking."""
+
+    try:
+        return calculate_varahamihira_weighted_strength(request)
     except BirthTimeError as exc:
         raise _unprocessable(exc) from exc
     except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
