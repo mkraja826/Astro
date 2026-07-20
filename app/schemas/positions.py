@@ -7,8 +7,15 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class CalculationProfile(StrEnum):
-    """Immutable calculation profiles supported by the public API."""
+    """Immutable calculation profiles accepted by the public API.
 
+    The two older values remain accepted as compatibility aliases. All three
+    values are calculated by the Skyfield/JPL DE440s production provider.
+    """
+
+    SOUTH_INDIAN_DRIK_LAHIRI_JPL_DE440S_V1 = (
+        "south_indian_drik_lahiri_jpl_de440s_v1"
+    )
     SOUTH_INDIAN_DRIK_LAHIRI_V1 = "south_indian_drik_lahiri_v1"
     SOUTH_INDIAN_DRIK_LAHIRI_SKYFIELD_DE440S_V1 = (
         "south_indian_drik_lahiri_skyfield_de440s_v1"
@@ -51,13 +58,13 @@ class BirthInput(BaseModel):
 
 
 class PositionsRequest(BaseModel):
-    """Request contract for the first astronomical calculation endpoint."""
+    """Request contract for astronomical calculations."""
 
     model_config = ConfigDict(extra="forbid")
 
     birth: BirthInput
     calculation_profile: CalculationProfile = (
-        CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_V1
+        CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_JPL_DE440S_V1
     )
 
 
@@ -107,10 +114,14 @@ class EngineMetadata(BaseModel):
 
     engine: str
     engine_version: str
-    astronomical_provider: str = "swiss_ephemeris"
+    astronomical_provider: str = "skyfield_jpl"
     provider_version: str | None = None
     ephemeris_model: str | None = None
-    swiss_ephemeris_version: str | None = None
+    swiss_ephemeris_version: str | None = Field(
+        default=None,
+        deprecated=True,
+        description="Deprecated compatibility field; always null in the JPL-only engine.",
+    )
     zodiac: str
     ayanamsha: str
     node_type: str
