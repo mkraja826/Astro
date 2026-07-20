@@ -11,8 +11,8 @@ import swisseph as swe
 from app import __version__
 from app.core.ephemeris import configure_ephemeris, enforce_ephemeris_source
 from app.engine.positions import (
-    NAKSHATRAS,
     _ENGINE_LOCK,
+    NAKSHATRAS,
     _calculate_body,
     _ephemeris_source,
     _julian_day_ut,
