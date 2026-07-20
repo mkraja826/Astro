@@ -58,14 +58,29 @@ Each set of nine Antardashas is contiguous, starts at its parent Mahadasha start
 and ends exactly at its parent Mahadasha end. The final boundary is pinned to
 the parent end timestamp to prevent accumulated floating-point drift.
 
+## Pratyantardasha subdivision
+
+Every Antardasha contains exactly nine Pratyantardashas. Their sequence begins
+with the Antardasha lord and then follows the same canonical nine-lord cycle.
+
+```text
+pratyantardasha_years = antardasha_years × pratyantardasha_lord_years / 120
+```
+
+Each set of nine Pratyantardashas is contiguous, starts at its parent
+Antardasha start, and ends exactly at its parent Antardasha end. The final
+boundary is pinned to the parent end timestamp to avoid cumulative drift.
+
 ## Response guarantees
 
 - Exactly nine Mahadasha periods
 - Exactly nine Antardashas inside every Mahadasha
-- Mahadasha and Antardasha periods are ordered and contiguous
-- Exactly one Mahadasha and one Antardasha are active at birth
+- Exactly nine Pratyantardashas inside every Antardasha
+- Exactly 81 Antardashas and 729 Pratyantardashas in the complete response
+- Every level is ordered and contiguous
+- Exactly one Mahadasha, Antardasha and Pratyantardasha are active at birth
 - Elapsed plus remaining years equals the active period's full duration
-- Antardasha durations sum to their parent Mahadasha duration
+- Child-period durations sum to their parent-period duration
 - Period source and Lahiri provenance are returned
 - Ambiguous civil times require an explicit `fold`
 - Production strict-source and licensing safeguards are inherited from the
@@ -73,5 +88,5 @@ the parent end timestamp to prevent accumulated floating-point drift.
 
 ## Scope
 
-This version returns Mahadasha and Antardasha timelines. Pratyantardasha and
-deeper subdivisions remain outside v1.
+This version returns Mahadasha, Antardasha and Pratyantardasha timelines.
+Sookshma Dasha and deeper subdivisions remain outside v1.
