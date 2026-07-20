@@ -18,6 +18,7 @@ The repository currently provides:
 - Sunrise-based Vara, Tithi, Nakshatra, Yoga and Karana
 - Hindu sunrise and sunset in local and UTC time
 - Vimshottari birth balance and one complete 120-year Mahadasha cycle
+- Nine proportional Antardashas inside every Mahadasha
 - True Rahu and opposite Ketu
 - Timezone, ambiguous-time and coordinate validation
 - Explicit Swiss Ephemeris source reporting
