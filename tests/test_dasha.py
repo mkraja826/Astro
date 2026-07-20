@@ -93,7 +93,7 @@ def test_vimshottari_returns_complete_birth_cycle() -> None:
         == pytest.approx(first["duration_years"], abs=1e-8)
     )
 
-    for current, following in zip(periods, periods[1:], strict=True):
+    for current, following in zip(periods[:-1], periods[1:], strict=True):
         assert current["end_utc"] == following["start_utc"]
         assert following["active_at_birth"] is False
         assert following["elapsed_at_birth_years"] is None
