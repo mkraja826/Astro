@@ -16,7 +16,7 @@ def test_varahamihira_profile_is_source_pinned_and_versioned() -> None:
 
     assert response.status_code == 200, payload
     assert payload["profile_id"] == "varahamihira_v1"
-    assert payload["profile_version"] == "1.8.0"
+    assert payload["profile_version"] == "1.9.0"
     assert payload["status"] == "reference_foundation"
     assert payload["source"]["archive_identifier"] == "brihatjataka00varaiala"
     assert payload["source"]["publication_year"] == 1905
@@ -37,7 +37,7 @@ def test_varahamihira_profile_is_source_pinned_and_versioned() -> None:
     assert payload["ashtakavarga_enabled"] is True
     assert payload["dasha_interpretation_enabled"] is True
     assert payload["relationships_enabled"] is True
-    assert len(payload["endpoints"]) == 15
+    assert len(payload["endpoints"]) == 18
     assert f"{BASE_PATH}/conditions" in payload["endpoints"]
     assert f"{BASE_PATH}/aspects" in payload["endpoints"]
     assert f"{BASE_PATH}/career" in payload["endpoints"]
@@ -49,6 +49,9 @@ def test_varahamihira_profile_is_source_pinned_and_versioned() -> None:
     assert f"{BASE_PATH}/strength" in payload["endpoints"]
     assert f"{BASE_PATH}/strength/weighted" in payload["endpoints"]
     assert f"{BASE_PATH}/weighting/profile" in payload["endpoints"]
+    assert f"{BASE_PATH}/validation/profile" in payload["endpoints"]
+    assert f"{BASE_PATH}/validation/cases" in payload["endpoints"]
+    assert f"{BASE_PATH}/validation/compare" in payload["endpoints"]
 
 
 def test_rule_registry_has_unique_traceable_chapter_rules() -> None:
@@ -283,3 +286,6 @@ def test_openapi_lists_all_classical_routes() -> None:
     assert f"{BASE_PATH}/relationships" in paths
     assert f"{BASE_PATH}/strength" in paths
     assert f"{BASE_PATH}/strength/weighted" in paths
+    assert f"{BASE_PATH}/validation/profile" in paths
+    assert f"{BASE_PATH}/validation/cases" in paths
+    assert f"{BASE_PATH}/validation/compare" in paths
