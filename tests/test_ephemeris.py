@@ -1,11 +1,22 @@
 """Tests for local JPL ephemeris readiness policies."""
 
+from hashlib import sha256
 from pathlib import Path
 
 import pytest
 
 from app.core.ephemeris import EphemerisUnavailableError
 from app.core.jpl_ephemeris import inspect_jpl_ephemeris, require_jpl_ephemeris
+
+
+def _configure_fixture_kernel(
+    monkeypatch: pytest.MonkeyPatch,
+    path: Path,
+    payload: bytes,
+) -> None:
+    path.write_bytes(payload)
+    monkeypatch.setenv("JYOTHISYAM_JPL_EPHEMERIS_PATH", str(path))
+    monkeypatch.setenv("JYOTHISYAM_JPL_EPHEMERIS_SHA256", sha256(payload).hexdigest())
 
 
 def test_readiness_reports_missing_kernel(
@@ -26,20 +37,23 @@ def test_readiness_reports_missing_kernel(
     assert report.issues
 
 
-def test_readiness_accepts_nonempty_bsp_kernel(
+def test_readiness_accepts_verified_nonempty_bsp_kernel(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
     kernel = tmp_path / "de440s.bsp"
-    kernel.write_bytes(b"test fixture")
-    monkeypatch.setenv("JYOTHISYAM_JPL_EPHEMERIS_PATH", str(kernel))
+    payload = b"test fixture"
+    _configure_fixture_kernel(monkeypatch, kernel, payload)
 
     report = inspect_jpl_ephemeris()
 
     assert report.ready is True
     assert report.status == "ready"
     assert report.file_exists is True
-    assert report.file_size_bytes == len(b"test fixture")
+    assert report.file_size_bytes == len(payload)
+    assert report.expected_sha256 == sha256(payload).hexdigest()
+    assert report.actual_sha256 == sha256(payload).hexdigest()
+    assert report.integrity_verified is True
     assert report.issues == ()
 
 
@@ -48,8 +62,8 @@ def test_readiness_rejects_wrong_extension(
     tmp_path: Path,
 ) -> None:
     kernel = tmp_path / "de440s.dat"
-    kernel.write_bytes(b"test fixture")
-    monkeypatch.setenv("JYOTHISYAM_JPL_EPHEMERIS_PATH", str(kernel))
+    payload = b"test fixture"
+    _configure_fixture_kernel(monkeypatch, kernel, payload)
 
     report = inspect_jpl_ephemeris()
 
@@ -87,8 +101,7 @@ def test_legacy_swiss_environment_variables_do_not_affect_jpl_readiness(
     tmp_path: Path,
 ) -> None:
     kernel = tmp_path / "de440s.bsp"
-    kernel.write_bytes(b"test fixture")
-    monkeypatch.setenv("JYOTHISYAM_JPL_EPHEMERIS_PATH", str(kernel))
+    _configure_fixture_kernel(monkeypatch, kernel, b"test fixture")
     monkeypatch.setenv("JYOTHISYAM_SWISS_LICENSE_MODE", "unset")
     monkeypatch.setenv("JYOTHISYAM_REQUIRE_SWISS_EPHEMERIS", "true")
 

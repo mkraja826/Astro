@@ -28,16 +28,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: app/data/jpl/de440s.bsp
-          key: jpl-de440s-v1
+          key: jpl-de440s-c1c7feeab882263fc493a9d5a5b2ddd71b54826cdf65d8d17a76126b260a49f2
 
-      - name: Download JPL DE440s
-        if: steps.cache-jpl.outputs.cache-hit != 'true'
+      - name: Install verified JPL DE440s
         run: |
-          mkdir -p app/data/jpl
-          curl --fail --location --retry 3 \
-            https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de440s.bsp \
-            --output app/data/jpl/de440s.bsp
-          test -s app/data/jpl/de440s.bsp
+          python scripts/download_jpl_kernel.py \
+            --destination app/data/jpl/de440s.bsp \
+            --sha256 c1c7feeab882263fc493a9d5a5b2ddd71b54826cdf65d8d17a76126b260a49f2
 
       - name: Install project
         run: |
@@ -49,3 +46,24 @@ jobs:
 
       - name: Test
         run: pytest
+
+      - name: Build production image
+        run: docker build --tag jyothisyam-api:ci .
+
+      - name: Smoke test production image
+        run: |
+          docker run --detach --name jyothisyam-api-ci -p 18080:8080 jyothisyam-api:ci
+          trap 'docker logs jyothisyam-api-ci || true; docker rm --force jyothisyam-api-ci || true' EXIT
+
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --show-error \
+              http://127.0.0.1:18080/health/ephemeris \
+              --output /tmp/ephemeris-health.json; then
+              cat /tmp/ephemeris-health.json
+              exit 0
+            fi
+            sleep 1
+          done
+
+          echo "Production container did not become ready" >&2
+          exit 1
