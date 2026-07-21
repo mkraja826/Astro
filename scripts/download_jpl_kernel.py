@@ -24,7 +24,10 @@ def file_sha256(path: Path) -> str:
 
 def _validate_sha256(value: str) -> str:
     normalized = value.strip().lower()
-    if len(normalized) != 64 or any(character not in "0123456789abcdef" for character in normalized):
+    invalid_character = any(
+        character not in "0123456789abcdef" for character in normalized
+    )
+    if len(normalized) != 64 or invalid_character:
         raise ValueError("expected SHA-256 must contain exactly 64 hexadecimal characters")
     return normalized
 
@@ -57,13 +60,18 @@ def download_kernel(destination: Path, url: str, expected_sha256: str) -> None:
         if size == 0:
             raise ValueError("downloaded JPL kernel is empty")
         if actual != expected:
-            raise ValueError(f"JPL kernel SHA-256 mismatch: expected {expected}, received {actual}")
+            raise ValueError(
+                f"JPL kernel SHA-256 mismatch: expected {expected}, received {actual}"
+            )
 
         temporary.replace(destination)
     finally:
         temporary.unlink(missing_ok=True)
 
-    print(f"Downloaded and verified JPL kernel: {destination} ({size} bytes, {expected})")
+    print(
+        f"Downloaded and verified JPL kernel: {destination} "
+        f"({size} bytes, {expected})"
+    )
 
 
 def main() -> int:
