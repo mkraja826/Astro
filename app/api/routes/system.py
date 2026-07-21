@@ -9,7 +9,8 @@ from app import __version__
 from app.core.config import RuntimeSettings
 from app.core.jpl_ephemeris import inspect_jpl_ephemeris
 from app.core.security import inspect_api_security
-from app.core.usage import inspect_usage_policy
+from app.core.usage_hardening import inspect_usage_policy
+from app.core.usage_readiness import inspect_usage_connectivity
 
 router = APIRouter(tags=["System"])
 _UNAVAILABLE_RESPONSES = {503: {"description": "A production dependency is not ready"}}
@@ -85,6 +86,11 @@ class UsageHealthResponse(BaseModel):
     required: bool
     durable: bool
     configured: bool
+    reachable: bool | None
+    project_ref: str | None
+    schema_version: str | None
+    latency_ms: float | None
+    issue: str | None
     requests_per_minute: int
     monthly_credit_limit: int
     consumer_header: str
@@ -176,18 +182,26 @@ def _runtime_payload(request: Request) -> RuntimeHealthResponse:
     )
 
 
-def _usage_payload(request: Request) -> UsageHealthResponse:
-    report = inspect_usage_policy(_runtime_settings(request))
+async def _usage_payload(request: Request) -> UsageHealthResponse:
+    runtime = _runtime_settings(request)
+    policy = inspect_usage_policy(runtime)
+    connectivity = await inspect_usage_connectivity(runtime)
+    ready = policy.ready and connectivity.ready
     return UsageHealthResponse(
-        status=report.status,
-        ready=report.ready,
-        backend=report.backend,
-        required=report.required,
-        durable=report.durable,
-        configured=report.configured,
-        requests_per_minute=report.requests_per_minute,
-        monthly_credit_limit=report.monthly_credit_limit,
-        consumer_header=report.consumer_header,
+        status="ready" if ready else "degraded",
+        ready=ready,
+        backend=policy.backend,
+        required=policy.required,
+        durable=policy.durable,
+        configured=policy.configured,
+        reachable=connectivity.reachable,
+        project_ref=connectivity.project_ref,
+        schema_version=connectivity.schema_version,
+        latency_ms=connectivity.latency_ms,
+        issue=connectivity.issue,
+        requests_per_minute=policy.requests_per_minute,
+        monthly_credit_limit=policy.monthly_credit_limit,
+        consumer_header=policy.consumer_header,
     )
 
 
@@ -250,10 +264,10 @@ def runtime_health_check(request: Request) -> RuntimeHealthResponse:
     summary="Rate limiting and usage metering readiness",
     responses=_UNAVAILABLE_RESPONSES,
 )
-def usage_health_check(request: Request, response: Response) -> UsageHealthResponse:
-    """Report whether a safe usage backend is configured for this environment."""
+async def usage_health_check(request: Request, response: Response) -> UsageHealthResponse:
+    """Report configuration and live connectivity for the durable usage backend."""
 
-    payload = _usage_payload(request)
+    payload = await _usage_payload(request)
     if not payload.ready:
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     return payload
@@ -265,13 +279,13 @@ def usage_health_check(request: Request, response: Response) -> UsageHealthRespo
     summary="Combined production readiness",
     responses=_UNAVAILABLE_RESPONSES,
 )
-def readiness_check(request: Request, response: Response) -> ReadinessResponse:
-    """Require verified astronomy, auth, runtime, and durable usage policy readiness."""
+async def readiness_check(request: Request, response: Response) -> ReadinessResponse:
+    """Require verified astronomy, auth, runtime, and live usage backend readiness."""
 
     ephemeris = _ephemeris_payload()
     security = _security_payload()
     runtime = _runtime_payload(request)
-    usage = _usage_payload(request)
+    usage = await _usage_payload(request)
     ready = ephemeris.ready and security.ready and runtime.ready and usage.ready
     if not ready:
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
