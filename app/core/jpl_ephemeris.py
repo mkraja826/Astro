@@ -13,7 +13,9 @@ from app.core.ephemeris import EphemerisUnavailableError
 
 JPL_EPHEMERIS_MODEL = "de440s"
 JPL_EPHEMERIS_FILENAME = "de440s.bsp"
-JPL_EPHEMERIS_SHA256 = "c1c7feeab882263fc493a9d5a5b2ddd71b54826cdf65d8d17a76126b260a49f2"
+JPL_EPHEMERIS_SHA256 = (
+    "c1c7feeab882263fc493a9d5a5b2ddd71b54826cdf65d8d17a76126b260a49f2"
+)
 _SHA256_HEX = frozenset("0123456789abcdef")
 _CHUNK_SIZE = 1024 * 1024
 
@@ -96,7 +98,8 @@ def inspect_jpl_ephemeris() -> JplEphemerisStatus:
 
     if not _is_valid_sha256(settings.expected_sha256):
         issues.append(
-            "JYOTHISYAM_JPL_EPHEMERIS_SHA256 must contain exactly 64 hexadecimal characters"
+            "JYOTHISYAM_JPL_EPHEMERIS_SHA256 must contain exactly 64 "
+            "hexadecimal characters"
         )
 
     if not exists:
@@ -124,11 +127,18 @@ def inspect_jpl_ephemeris() -> JplEphemerisStatus:
             and _is_valid_sha256(settings.expected_sha256)
         ):
             try:
-                actual_sha256 = _cached_file_sha256(str(data_path.resolve()), size, modified_ns)
+                actual_sha256 = _cached_file_sha256(
+                    str(data_path.resolve()),
+                    size,
+                    modified_ns,
+                )
             except OSError as error:
                 issues.append(f"JPL ephemeris file could not be hashed: {error}")
             else:
-                integrity_verified = compare_digest(actual_sha256, settings.expected_sha256)
+                integrity_verified = compare_digest(
+                    actual_sha256,
+                    settings.expected_sha256,
+                )
                 if not integrity_verified:
                     issues.append(
                         "JPL ephemeris SHA-256 mismatch: expected "
