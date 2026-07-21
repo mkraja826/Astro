@@ -7,15 +7,17 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
+      - name: Check out feature branch
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -45,14 +47,20 @@ jobs:
           pip install --quiet -e ".[dev]"
 
       - name: Generate JPL golden baselines
-        run: python scripts/generate_jpl_golden_baselines.py --output jpl_de440s_v1.json
+        run: python scripts/generate_jpl_golden_baselines.py
 
-      - name: Upload JPL golden baselines
-        uses: actions/upload-artifact@v4
-        with:
-          name: jpl-golden-baselines
-          path: jpl_de440s_v1.json
-          if-no-files-found: error
+      - name: Commit generated baselines
+        if: github.event_name == 'pull_request'
+        run: |
+          if git diff --quiet -- app/data/validation/jpl_de440s_v1; then
+            echo "Golden baselines are already current."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add app/data/validation/jpl_de440s_v1
+            git commit -m "data: freeze JPL DE440s golden baselines"
+            git push origin "HEAD:${GITHUB_HEAD_REF}"
+          fi
 
       - name: Lint
         run: ruff check .
