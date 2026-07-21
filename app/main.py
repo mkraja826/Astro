@@ -8,22 +8,26 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app import __version__
+from app.api.routes import system as system_routes
 from app.api.routes.charts import router as charts_router
 from app.api.routes.classical import router as classical_router
 from app.api.routes.classical_validation import router as classical_validation_router
 from app.api.routes.dasha import router as dasha_router
 from app.api.routes.panchanga import router as panchanga_router
 from app.api.routes.positions import router as positions_router
-from app.api.routes.system import router as system_router
 from app.core.config import RuntimeSettings, load_runtime_settings
 from app.core.runtime_guard import RuntimeGuardMiddleware, request_id_from_scope
 from app.core.security import ApiSecurityError
-from app.core.usage import (
+from app.core.usage import UsagePolicyError
+from app.core.usage_hardening import (
     UsageFinalizeMiddleware,
-    UsagePolicyError,
     build_usage_backend,
+    inspect_usage_policy,
     require_metered_access,
 )
+
+# Keep system readiness on the same Astro-only metering policy used by route admission.
+system_routes.inspect_usage_policy = inspect_usage_policy
 
 
 async def _security_error_response(
@@ -112,7 +116,7 @@ def create_app(settings: RuntimeSettings | None = None) -> FastAPI:
     application.add_middleware(UsageFinalizeMiddleware)
 
     protected = [Depends(require_metered_access)]
-    application.include_router(system_router)
+    application.include_router(system_routes.router)
     application.include_router(positions_router, dependencies=protected)
     application.include_router(charts_router, dependencies=protected)
     application.include_router(panchanga_router, dependencies=protected)
