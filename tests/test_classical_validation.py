@@ -82,7 +82,7 @@ def test_actual_snapshot_contains_every_supported_core_group() -> None:
     case = get_validation_cases().cases[0]
     snapshot = build_actual_snapshot(
         case,
-        CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_V1,
+        CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_JPL_DE440S_V1,
     )
 
     assert snapshot.ayanamsha_degrees is not None
@@ -181,15 +181,20 @@ def test_unknown_case_is_rejected_before_calculation() -> None:
 
 def test_validation_routes_are_in_profile_and_openapi() -> None:
     profile = client.get("/v1/classical/varahamihira_v1/profile").json()
-    assert profile["profile_version"] == "1.9.0"
-    assert f"{BASE_PATH}/profile" in profile["endpoints"]
-    assert f"{BASE_PATH}/cases" in profile["endpoints"]
-    assert f"{BASE_PATH}/compare" in profile["endpoints"]
+    assert profile["profile_version"] == "1.10.0"
+    expected_endpoints = {
+        f"{BASE_PATH}/profile",
+        f"{BASE_PATH}/cases",
+        f"{BASE_PATH}/compare",
+        f"{BASE_PATH}/baseline/manifest",
+        f"{BASE_PATH}/baseline/integrity",
+        f"{BASE_PATH}/baseline/cases/{{case_id}}",
+        f"{BASE_PATH}/baseline/verify-current",
+    }
+    assert expected_endpoints.issubset(profile["endpoints"])
 
     paths = client.get("/openapi.json").json()["paths"]
-    assert f"{BASE_PATH}/profile" in paths
-    assert f"{BASE_PATH}/cases" in paths
-    assert f"{BASE_PATH}/compare" in paths
+    assert expected_endpoints.issubset(paths)
 
 
 def test_weighting_conventions_do_not_enter_classical_rule_registry() -> None:
