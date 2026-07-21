@@ -1,7 +1,11 @@
 """FastAPI application entry point."""
 
+import logging
+
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
+from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app import __version__
 from app.api.routes.charts import router as charts_router
@@ -11,7 +15,11 @@ from app.api.routes.dasha import router as dasha_router
 from app.api.routes.panchanga import router as panchanga_router
 from app.api.routes.positions import router as positions_router
 from app.api.routes.system import router as system_router
+from app.core.config import RuntimeSettings, load_runtime_settings
+from app.core.runtime_guard import RuntimeGuardMiddleware, request_id_from_scope
 from app.core.security import ApiSecurityError, require_api_key
+
+_LOGGER = logging.getLogger("jyothisyam.error")
 
 
 async def _security_error_response(
@@ -20,17 +28,44 @@ async def _security_error_response(
 ) -> JSONResponse:
     """Translate service-authentication failures without leaking configured secrets."""
 
-    del request
+    request_id = request_id_from_scope(request.scope)
     headers = {"WWW-Authenticate": "Bearer"} if error.status_code == 401 else None
     return JSONResponse(
         status_code=error.status_code,
-        content={"code": error.code, "message": error.message},
+        content={"code": error.code, "message": error.message, "request_id": request_id},
         headers=headers,
     )
 
 
-def create_app() -> FastAPI:
+async def _unexpected_error_response(request: Request, error: Exception) -> JSONResponse:
+    """Return a stable non-sensitive response for unexpected application failures."""
+
+    request_id = request_id_from_scope(request.scope)
+    _LOGGER.exception(
+        "Unhandled API error request_id=%s method=%s path=%s",
+        request_id,
+        request.method,
+        request.url.path,
+        exc_info=error,
+    )
+    return JSONResponse(
+        status_code=500,
+        content={
+            "code": "INTERNAL_SERVER_ERROR",
+            "message": "The server could not complete the request.",
+            "request_id": request_id,
+        },
+    )
+
+
+def create_app(settings: RuntimeSettings | None = None) -> FastAPI:
     """Create and configure the Jyothisyam API application."""
+
+    runtime = settings or load_runtime_settings()
+    logging.basicConfig(level=getattr(logging, runtime.log_level), format="%(message)s")
+    docs_url = "/docs" if runtime.docs_enabled else None
+    redoc_url = "/redoc" if runtime.docs_enabled else None
+    openapi_url = "/openapi.json" if runtime.docs_enabled else None
 
     application = FastAPI(
         title="Jyothisyam API",
@@ -42,11 +77,33 @@ def create_app() -> FastAPI:
             "Vimshottari timelines, and a Varahamihira reference profile."
         ),
         version=__version__,
-        docs_url="/docs",
-        redoc_url="/redoc",
-        openapi_url="/openapi.json",
+        docs_url=docs_url,
+        redoc_url=redoc_url,
+        openapi_url=openapi_url,
     )
+    application.state.runtime_settings = runtime
     application.add_exception_handler(ApiSecurityError, _security_error_response)
+    application.add_exception_handler(Exception, _unexpected_error_response)
+
+    application.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=list(runtime.allowed_hosts),
+    )
+    if runtime.cors_origins:
+        application.add_middleware(
+            CORSMiddleware,
+            allow_origins=list(runtime.cors_origins),
+            allow_credentials=False,
+            allow_methods=["GET", "POST", "OPTIONS"],
+            allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
+            expose_headers=["X-Request-ID"],
+            max_age=600,
+        )
+    application.add_middleware(
+        RuntimeGuardMiddleware,
+        max_request_body_bytes=runtime.max_request_body_bytes,
+        request_timeout_seconds=runtime.request_timeout_seconds,
+    )
 
     protected = [Depends(require_api_key)]
     application.include_router(system_router)
