@@ -20,9 +20,11 @@ Staging must prove all of the following before Horos is connected:
 Create these only in the deployment platform's secret store:
 
 - `JYOTHISYAM_API_KEY`: independently generated opaque service key, at least 32 characters.
-- `JYOTHISYAM_SUPABASE_SERVICE_ROLE_KEY`: service-role key for Astro project `hdaugtypjpniesdgyral` only.
+- `JYOTHISYAM_SUPABASE_SERVICE_ROLE_KEY`: an Astro `sb_secret_...` server key. A legacy `service_role` JWT remains supported only during migration.
 
 Never place either value in Git, shell history, screenshots, Horos, browser code, mobile builds, or health responses.
+
+Supabase opaque secret keys are sent only through the Data API `apikey` header. They are never placed in `Authorization: Bearer`, because they are not JWTs. Legacy service-role JWTs retain the bearer header for backward compatibility.
 
 ## Non-secret configuration
 
@@ -47,7 +49,7 @@ Before deploying the new image, apply and verify:
 supabase/migrations/20260721173000_api_usage_health_v1.sql
 ```
 
-The migration is additive and non-mutating. It creates only the service-role function `public.api_usage_health_v1()` and grants no client access.
+The migration is additive and non-mutating. It creates only the server-only function `public.api_usage_health_v1()` and grants no client access.
 
 ## Preflight
 
@@ -69,6 +71,19 @@ docker image inspect jyothisyam-api:staging-candidate --format '{{json .RepoDige
 ```
 
 Deploy by immutable image digest rather than a mutable `latest` tag. Keep the previous healthy image digest or platform revision available for rollback.
+
+## Local file-secret smoke
+
+The container entrypoint supports read-only secret files without copying their values into Docker's stored environment configuration:
+
+```text
+JYOTHISYAM_API_KEY_FILE=/run/astro-secrets/api_key
+JYOTHISYAM_SUPABASE_SERVICE_ROLE_KEY_FILE=/run/astro-secrets/supabase_server_key
+```
+
+Do not set a direct secret variable and its matching `_FILE` variable together. The entrypoint fails closed if both are present, a file is unreadable, or a file is empty.
+
+Mount the secret directory read-only and start the image normally. Do not override the entrypoint with an inline shell command.
 
 ## Platform requirements
 
@@ -119,7 +134,7 @@ Staging is accepted only when:
 - authenticated requests without a consumer UUID return HTTP 400,
 - a valid request returns HTTP 200 with rate-limit and credit headers,
 - the same request ID returns HTTP 409,
-- no service-role secret appears in logs or responses.
+- no server secret appears in logs or responses.
 
 ## Rollback
 
@@ -130,7 +145,7 @@ Rollback is image/revision based; the three usage migrations are additive and sh
 3. Confirm `/health` and `/health/ready` on the restored revision.
 4. Disable the failing revision.
 5. Rotate `JYOTHISYAM_API_KEY` only if exposure is suspected.
-6. Rotate the Astro service-role key only if exposure is suspected, then update the secret reference and re-run readiness.
+6. Rotate the Astro server secret only if exposure is suspected, then update the secret reference and re-run readiness.
 7. Preserve logs, request IDs, image digest, and deployment metadata for review.
 
 Do not point rollback or recovery commands at MDMS.
