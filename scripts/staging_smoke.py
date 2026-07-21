@@ -9,8 +9,7 @@ import os
 from dataclasses import dataclass
 from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin, urlsplit
-from urllib.request import Request
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 from uuid import UUID, uuid4
 
 ASTRO_PROJECT_REF = "hdaugtypjpniesdgyral"
@@ -68,7 +67,11 @@ def main() -> int:
         default=os.getenv("ASTRO_STAGING_BASE_URL", "").strip(),
         help="HTTPS base URL of the staging API",
     )
-    parser.add_argument("--allow-http", action="store_true", help="Permit HTTP for local testing only")
+    parser.add_argument(
+        "--allow-http",
+        action="store_true",
+        help="Permit HTTP for local testing only",
+    )
     args = parser.parse_args()
 
     base_url = args.base_url.rstrip("/")
