@@ -64,7 +64,15 @@ jobs:
           pip install --quiet -e ".[dev]"
 
       - name: Test
-        run: pytest
+        run: pytest --junitxml=pytest-report.xml
+
+      - name: Upload Pytest report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-report
+          path: pytest-report.xml
+          retention-days: 1
 
       - name: Build production image
         run: docker build --tag jyothisyam-api:ci .
