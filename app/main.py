@@ -19,8 +19,6 @@ from app.core.config import RuntimeSettings, load_runtime_settings
 from app.core.runtime_guard import RuntimeGuardMiddleware, request_id_from_scope
 from app.core.security import ApiSecurityError, require_api_key
 
-_LOGGER = logging.getLogger("jyothisyam.error")
-
 
 async def _security_error_response(
     request: Request,
@@ -34,27 +32,6 @@ async def _security_error_response(
         status_code=error.status_code,
         content={"code": error.code, "message": error.message, "request_id": request_id},
         headers=headers,
-    )
-
-
-async def _unexpected_error_response(request: Request, error: Exception) -> JSONResponse:
-    """Return a stable non-sensitive response for unexpected application failures."""
-
-    request_id = request_id_from_scope(request.scope)
-    _LOGGER.exception(
-        "Unhandled API error request_id=%s method=%s path=%s",
-        request_id,
-        request.method,
-        request.url.path,
-        exc_info=error,
-    )
-    return JSONResponse(
-        status_code=500,
-        content={
-            "code": "INTERNAL_SERVER_ERROR",
-            "message": "The server could not complete the request.",
-            "request_id": request_id,
-        },
     )
 
 
@@ -83,7 +60,6 @@ def create_app(settings: RuntimeSettings | None = None) -> FastAPI:
     )
     application.state.runtime_settings = runtime
     application.add_exception_handler(ApiSecurityError, _security_error_response)
-    application.add_exception_handler(Exception, _unexpected_error_response)
 
     application.add_middleware(
         TrustedHostMiddleware,
