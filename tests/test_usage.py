@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException
 from fastapi.testclient import TestClient
 
 from app.core.config import RuntimeSettings
-from app.core.usage import require_metered_access
+from app.core.usage_hardening import require_metered_access
 from app.main import create_app
 
 VALID_KEY = "astro-ci-service-key-0123456789abcdef"
@@ -216,7 +216,10 @@ def test_supabase_health_exposes_no_secret(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     secret = "supabase-service-role-secret-0123456789abcdef"
-    monkeypatch.setenv("JYOTHISYAM_SUPABASE_URL", "https://astro.example.supabase.co")
+    monkeypatch.setenv(
+        "JYOTHISYAM_SUPABASE_URL",
+        "https://hdaugtypjpniesdgyral.supabase.co",
+    )
     monkeypatch.setenv("JYOTHISYAM_SUPABASE_SERVICE_ROLE_KEY", secret)
     client = TestClient(
         create_app(
