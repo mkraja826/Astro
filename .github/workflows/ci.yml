@@ -53,9 +53,13 @@ jobs:
       - name: Smoke test production image
         env:
           ASTRO_CI_API_KEY: astro-ci-service-key-0123456789abcdef
+          ASTRO_CI_CONSUMER_ID: 11111111-1111-4111-8111-111111111111
         run: |
           docker run --detach --name jyothisyam-api-ci -p 18080:8080 \
             --env JYOTHISYAM_API_KEY="$ASTRO_CI_API_KEY" \
+            --env JYOTHISYAM_USAGE_BACKEND=memory \
+            --env JYOTHISYAM_REQUIRE_USAGE_GUARD=false \
+            --env JYOTHISYAM_REQUESTS_PER_MINUTE=2 \
             --env JYOTHISYAM_MAX_REQUEST_BODY_BYTES=64 \
             jyothisyam-api:ci
           trap 'docker logs jyothisyam-api-ci || true; docker rm --force jyothisyam-api-ci || true' EXIT
@@ -70,6 +74,7 @@ jobs:
               cat /tmp/readiness.json
               grep --ignore-case '^x-request-id: ci-readiness-001' /tmp/readiness-headers.txt
               grep '"runtime"' /tmp/readiness.json
+              grep '"usage"' /tmp/readiness.json
               break
             fi
             if [ "$attempt" -eq 30 ]; then
@@ -95,11 +100,41 @@ jobs:
           test "$unauthenticated_status" = "401"
           cat /tmp/unauthenticated.json
 
+          missing_consumer_status=$(curl --silent --output /tmp/missing-consumer.json \
+            --write-out '%{http_code}' \
+            --header "Authorization: Bearer $ASTRO_CI_API_KEY" \
+            http://127.0.0.1:18080/v1/classical/varahamihira_v1/profile)
+          test "$missing_consumer_status" = "400"
+          grep 'CONSUMER_ID_REQUIRED' /tmp/missing-consumer.json
+
           curl --fail --silent --show-error \
             --header "Authorization: Bearer $ASTRO_CI_API_KEY" \
+            --header "X-Astro-Consumer-ID: $ASTRO_CI_CONSUMER_ID" \
+            --header "X-Request-ID: ci-metered-001" \
+            --dump-header /tmp/metered-headers.txt \
             http://127.0.0.1:18080/v1/classical/varahamihira_v1/profile \
             --output /tmp/authenticated.json
+          cat /tmp/metered-headers.txt
           cat /tmp/authenticated.json
+          grep --ignore-case '^x-ratelimit-limit: 2' /tmp/metered-headers.txt
+          grep --ignore-case '^x-astro-credit-cost: 1' /tmp/metered-headers.txt
+
+          second_status=$(curl --silent --output /tmp/second.json \
+            --write-out '%{http_code}' \
+            --header "Authorization: Bearer $ASTRO_CI_API_KEY" \
+            --header "X-Astro-Consumer-ID: $ASTRO_CI_CONSUMER_ID" \
+            --header "X-Request-ID: ci-metered-002" \
+            http://127.0.0.1:18080/v1/classical/varahamihira_v1/profile)
+          test "$second_status" = "200"
+
+          limited_status=$(curl --silent --output /tmp/limited.json \
+            --write-out '%{http_code}' \
+            --header "Authorization: Bearer $ASTRO_CI_API_KEY" \
+            --header "X-Astro-Consumer-ID: $ASTRO_CI_CONSUMER_ID" \
+            --header "X-Request-ID: ci-metered-003" \
+            http://127.0.0.1:18080/v1/classical/varahamihira_v1/profile)
+          test "$limited_status" = "429"
+          grep 'RATE_LIMIT_EXCEEDED' /tmp/limited.json
 
           python - <<'PY'
           from pathlib import Path
