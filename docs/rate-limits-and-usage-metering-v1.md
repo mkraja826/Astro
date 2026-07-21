@@ -57,7 +57,7 @@ Successful admitted calculation responses include:
 
 ## Database migrations
 
-Apply these migrations in order:
+These migrations were applied in order to Astro project `hdaugtypjpniesdgyral` on 2026-07-21:
 
 1. `supabase/migrations/20260721161000_api_usage_metering_v1.sql`
 2. `supabase/migrations/20260721170000_api_usage_metering_safety_v1.sql`
@@ -70,9 +70,22 @@ They create or update only these Astro-project objects:
 - `public.api_usage_admit_v1(...)`
 - `public.api_usage_finalize_v1(...)`
 
-All three tables have RLS enabled. `anon` and `authenticated` receive no direct access. Only `service_role` may execute the RPCs. The safety migration serializes global request-ID admission and enforces quota checks for the first monthly row.
+All three tables have RLS enabled. `anon` and `authenticated` receive no direct access. Only `service_role` may execute the RPCs. The absence of client RLS policies is deliberate default-deny behavior. The safety migration serializes global request-ID admission and enforces quota checks for the first monthly row.
 
 The migrations must never be applied to MDMS.
+
+## Verification
+
+The exact migrations first passed a rollback-only transaction. After application, the committed schema passed synthetic checks for:
+
+- successful admission and billing,
+- duplicate request-ID rejection across consumers,
+- failed-response reservation release,
+- fixed-minute rate limiting,
+- first-row monthly quota rejection, and
+- complete removal of all synthetic rows.
+
+Supabase security advisors reported only informational `rls_enabled_no_policy` notices for the three deliberate default-deny tables. The new consumer/admission index is expected to remain unused until real traffic begins.
 
 ## Required staging and production secrets
 
@@ -91,11 +104,8 @@ The service-role key belongs only in the Python API deployment secret store. It 
 
 ## Deployment sequence
 
-1. pass Ruff, full tests, and Docker smoke checks,
-2. review both SQL migrations,
-3. apply them only to Astro project `hdaugtypjpniesdgyral`,
-4. run SQL admission, duplicate-ID, quota, and finalization verification,
-5. configure deployment secrets,
-6. deploy staging,
-7. update the Horos Edge Function to send the authenticated user UUID and a unique request ID,
-8. confirm shared limits across more than one API instance.
+1. merge the verified application package,
+2. configure staging secrets,
+3. deploy staging,
+4. update the Horos Edge Function to send the authenticated user UUID and a unique request ID,
+5. confirm shared limits across more than one API instance.
