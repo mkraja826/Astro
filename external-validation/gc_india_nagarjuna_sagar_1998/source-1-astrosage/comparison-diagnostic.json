@@ -1,0 +1,577 @@
+{
+    "profile_id":  "varahamihira_v1",
+    "case":  {
+                 "case_id":  "gc_india_nagarjuna_sagar_1998",
+                 "label":  "Nagarjuna Sagar reference",
+                 "birth":  {
+                               "local_datetime":  "1998-10-26T10:28:00",
+                               "timezone":  "Asia/Kolkata",
+                               "latitude":  16.575,
+                               "longitude":  79.312,
+                               "altitude_meters":  120.0,
+                               "fold":  null
+                           },
+                 "coverage_tags":  [
+                                       "india",
+                                       "northern_hemisphere",
+                                       "non_dst",
+                                       "primary_fixture"
+                                   ]
+             },
+    "source":  {
+                   "source_name":  "AstroSage",
+                   "source_version":  "version not disclosed",
+                   "source_kind":  "external_software",
+                   "calculation_notes":  [
+                                             "Source: AstroSage generated Kundli PDF",
+                                             "PDF path: C:\\Astro\\external-validation\\gc_india-nagarjuna-sagar-1998\\source-1-astrosage\\astrosage-full-kundli.pdf",
+                                             "PDF generation date shown: 2026-07-21 13:36:31 India Standard Time",
+                                             "Birth shown by source PDF: 1998-10-26 10:28:00 UTC+05:30",
+                                             "Place shown by source PDF: Nagarjuna Sagar Dam",
+                                             "Coordinates shown by source PDF: 16:34 N, 79:19 E",
+                                             "Frozen case coordinates expected: 16.575 N, 79.312 E, altitude 120 m",
+                                             "Altitude: not disclosed by source PDF",
+                                             "Ayanamsha: Lahiri, 023-50-24",
+                                             "Node convention: not disclosed by source PDF; Rahu and Ketu are marked retrograde",
+                                             "Zodiac mode: not explicitly disclosed by source PDF",
+                                             "Values transcribed from the Traditional section of the source PDF",
+                                             "Comparison status: diagnostic only; this AstroSage source remains rejected_input_mismatch and is not approved",
+                                             "Formal comparison blocked pending human review because PDF coordinates do not exactly match the frozen case"
+                                         ]
+               },
+    "actual_snapshot":  {
+                            "ayanamsha_degrees":  23.81619793,
+                            "ascendant_longitude":  246.88818395,
+                            "point_longitudes":  {
+                                                     "ascendant":  246.88818395,
+                                                     "sun":  188.75805003,
+                                                     "moon":  252.2537349,
+                                                     "mars":  137.48582616,
+                                                     "mercury":  207.31073938,
+                                                     "jupiter":  324.9137552,
+                                                     "venus":  187.74322029,
+                                                     "saturn":  6.14956735,
+                                                     "rahu":  125.20717069,
+                                                     "ketu":  305.20717069
+                                                 },
+                            "d1_signs":  {
+                                             "ascendant":  9,
+                                             "sun":  7,
+                                             "moon":  9,
+                                             "mars":  5,
+                                             "mercury":  7,
+                                             "jupiter":  11,
+                                             "venus":  7,
+                                             "saturn":  1,
+                                             "rahu":  5,
+                                             "ketu":  11
+                                         },
+                            "d9_signs":  {
+                                             "ascendant":  3,
+                                             "sun":  9,
+                                             "moon":  4,
+                                             "mars":  6,
+                                             "mercury":  3,
+                                             "jupiter":  2,
+                                             "venus":  9,
+                                             "saturn":  2,
+                                             "rahu":  2,
+                                             "ketu":  8
+                                         },
+                            "dignity":  {
+                                            "sun":  "debilitation_sign",
+                                            "moon":  "ordinary",
+                                            "mars":  "ordinary",
+                                            "mercury":  "ordinary",
+                                            "jupiter":  "ordinary",
+                                            "venus":  "own_sign",
+                                            "saturn":  "debilitation_sign"
+                                        },
+                            "vargottama":  {
+                                               "sun":  false,
+                                               "moon":  false,
+                                               "mars":  false,
+                                               "mercury":  false,
+                                               "jupiter":  false,
+                                               "venus":  false,
+                                               "saturn":  false
+                                           },
+                            "compound_relationships":  {
+                                                           "sun\u003emoon":  "great_friend",
+                                                           "sun\u003emars":  "great_friend",
+                                                           "sun\u003emercury":  "enemy",
+                                                           "sun\u003ejupiter":  "neutral",
+                                                           "sun\u003evenus":  "great_enemy",
+                                                           "sun\u003esaturn":  "great_enemy",
+                                                           "moon\u003esun":  "great_friend",
+                                                           "moon\u003emars":  "enemy",
+                                                           "moon\u003emercury":  "great_friend",
+                                                           "moon\u003ejupiter":  "friend",
+                                                           "moon\u003evenus":  "friend",
+                                                           "moon\u003esaturn":  "enemy",
+                                                           "mars\u003esun":  "great_friend",
+                                                           "mars\u003emoon":  "neutral",
+                                                           "mars\u003emercury":  "neutral",
+                                                           "mars\u003ejupiter":  "neutral",
+                                                           "mars\u003evenus":  "friend",
+                                                           "mars\u003esaturn":  "enemy",
+                                                           "mercury\u003esun":  "neutral",
+                                                           "mercury\u003emoon":  "neutral",
+                                                           "mercury\u003emars":  "friend",
+                                                           "mercury\u003ejupiter":  "enemy",
+                                                           "mercury\u003evenus":  "neutral",
+                                                           "mercury\u003esaturn":  "enemy",
+                                                           "jupiter\u003esun":  "neutral",
+                                                           "jupiter\u003emoon":  "great_friend",
+                                                           "jupiter\u003emars":  "neutral",
+                                                           "jupiter\u003emercury":  "great_enemy",
+                                                           "jupiter\u003evenus":  "great_enemy",
+                                                           "jupiter\u003esaturn":  "friend",
+                                                           "venus\u003esun":  "great_enemy",
+                                                           "venus\u003emoon":  "neutral",
+                                                           "venus\u003emars":  "friend",
+                                                           "venus\u003emercury":  "neutral",
+                                                           "venus\u003ejupiter":  "enemy",
+                                                           "venus\u003esaturn":  "neutral",
+                                                           "saturn\u003esun":  "great_enemy",
+                                                           "saturn\u003emoon":  "great_enemy",
+                                                           "saturn\u003emars":  "great_enemy",
+                                                           "saturn\u003emercury":  "neutral",
+                                                           "saturn\u003ejupiter":  "friend",
+                                                           "saturn\u003evenus":  "neutral"
+                                                       },
+                            "bhinnashtakavarga":  {
+                                                      "sun":  [
+                                                                  4,
+                                                                  5,
+                                                                  4,
+                                                                  4,
+                                                                  3,
+                                                                  5,
+                                                                  5,
+                                                                  4,
+                                                                  3,
+                                                                  2,
+                                                                  5,
+                                                                  4
+                                                              ],
+                                                      "moon":  [
+                                                                   4,
+                                                                   6,
+                                                                   4,
+                                                                   3,
+                                                                   5,
+                                                                   5,
+                                                                   4,
+                                                                   1,
+                                                                   6,
+                                                                   4,
+                                                                   6,
+                                                                   1
+                                                               ],
+                                                      "mars":  [
+                                                                   1,
+                                                                   4,
+                                                                   1,
+                                                                   3,
+                                                                   4,
+                                                                   3,
+                                                                   3,
+                                                                   3,
+                                                                   5,
+                                                                   2,
+                                                                   6,
+                                                                   4
+                                                               ],
+                                                      "mercury":  [
+                                                                      2,
+                                                                      5,
+                                                                      4,
+                                                                      5,
+                                                                      4,
+                                                                      6,
+                                                                      5,
+                                                                      3,
+                                                                      5,
+                                                                      5,
+                                                                      5,
+                                                                      5
+                                                                  ],
+                                                      "jupiter":  [
+                                                                      4,
+                                                                      4,
+                                                                      7,
+                                                                      3,
+                                                                      8,
+                                                                      4,
+                                                                      4,
+                                                                      5,
+                                                                      3,
+                                                                      4,
+                                                                      4,
+                                                                      6
+                                                                  ],
+                                                      "venus":  [
+                                                                    3,
+                                                                    2,
+                                                                    5,
+                                                                    5,
+                                                                    6,
+                                                                    2,
+                                                                    5,
+                                                                    4,
+                                                                    7,
+                                                                    5,
+                                                                    5,
+                                                                    3
+                                                                ],
+                                                      "saturn":  [
+                                                                     1,
+                                                                     5,
+                                                                     4,
+                                                                     4,
+                                                                     4,
+                                                                     4,
+                                                                     4,
+                                                                     1,
+                                                                     3,
+                                                                     3,
+                                                                     3,
+                                                                     3
+                                                                 ]
+                                                  },
+                            "sarvashtakavarga":  [
+                                                     19,
+                                                     31,
+                                                     29,
+                                                     27,
+                                                     34,
+                                                     29,
+                                                     30,
+                                                     21,
+                                                     32,
+                                                     25,
+                                                     34,
+                                                     26
+                                                 ],
+                            "weighted_scores":  {
+                                                    "sun":  -5.214286,
+                                                    "moon":  2.571429,
+                                                    "mars":  2.857143,
+                                                    "mercury":  0.785714,
+                                                    "jupiter":  1.857143,
+                                                    "venus":  3.785714,
+                                                    "saturn":  -8.785714
+                                                },
+                            "weighted_ranks":  {
+                                                   "sun":  6,
+                                                   "moon":  3,
+                                                   "mars":  2,
+                                                   "mercury":  5,
+                                                   "jupiter":  4,
+                                                   "venus":  1,
+                                                   "saturn":  7
+                                               }
+                        },
+    "compared_field_count":  31,
+    "matched_field_count":  28,
+    "mismatched_field_count":  3,
+    "skipped_field_groups":  [
+                                 "dignity",
+                                 "vargottama",
+                                 "compound_relationships",
+                                 "bhinnashtakavarga",
+                                 "sarvashtakavarga",
+                                 "weighted_scores",
+                                 "weighted_ranks"
+                             ],
+    "passed":  false,
+    "comparisons":  [
+                        {
+                            "path":  "ascendant_longitude",
+                            "status":  "match",
+                            "actual_value":  "246.88818395",
+                            "reference_value":  "246.869166667",
+                            "absolute_difference":  0.019017283,
+                            "tolerance":  0.05,
+                            "reason":  "Numeric difference 0.01901728300001082 is within tolerance 0.05."
+                        },
+                        {
+                            "path":  "ayanamsha_degrees",
+                            "status":  "mismatch",
+                            "actual_value":  "23.81619793",
+                            "reference_value":  "23.84",
+                            "absolute_difference":  0.02380207,
+                            "tolerance":  0.02,
+                            "reason":  "Numeric difference 0.023802069999998565 exceeds tolerance 0.02."
+                        },
+                        {
+                            "path":  "d1_signs.ascendant",
+                            "status":  "match",
+                            "actual_value":  "9",
+                            "reference_value":  "9",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d1_signs.jupiter",
+                            "status":  "match",
+                            "actual_value":  "11",
+                            "reference_value":  "11",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d1_signs.ketu",
+                            "status":  "match",
+                            "actual_value":  "11",
+                            "reference_value":  "11",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d1_signs.mars",
+                            "status":  "match",
+                            "actual_value":  "5",
+                            "reference_value":  "5",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d1_signs.mercury",
+                            "status":  "match",
+                            "actual_value":  "7",
+                            "reference_value":  "7",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d1_signs.moon",
+                            "status":  "match",
+                            "actual_value":  "9",
+                            "reference_value":  "9",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d1_signs.rahu",
+                            "status":  "match",
+                            "actual_value":  "5",
+                            "reference_value":  "5",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d1_signs.saturn",
+                            "status":  "match",
+                            "actual_value":  "1",
+                            "reference_value":  "1",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d1_signs.sun",
+                            "status":  "match",
+                            "actual_value":  "7",
+                            "reference_value":  "7",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d1_signs.venus",
+                            "status":  "match",
+                            "actual_value":  "7",
+                            "reference_value":  "7",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d9_signs.ascendant",
+                            "status":  "match",
+                            "actual_value":  "3",
+                            "reference_value":  "3",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d9_signs.jupiter",
+                            "status":  "match",
+                            "actual_value":  "2",
+                            "reference_value":  "2",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d9_signs.ketu",
+                            "status":  "match",
+                            "actual_value":  "8",
+                            "reference_value":  "8",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d9_signs.mars",
+                            "status":  "match",
+                            "actual_value":  "6",
+                            "reference_value":  "6",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d9_signs.mercury",
+                            "status":  "match",
+                            "actual_value":  "3",
+                            "reference_value":  "3",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d9_signs.moon",
+                            "status":  "match",
+                            "actual_value":  "4",
+                            "reference_value":  "4",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d9_signs.rahu",
+                            "status":  "match",
+                            "actual_value":  "2",
+                            "reference_value":  "2",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d9_signs.saturn",
+                            "status":  "match",
+                            "actual_value":  "2",
+                            "reference_value":  "2",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d9_signs.sun",
+                            "status":  "match",
+                            "actual_value":  "9",
+                            "reference_value":  "9",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "d9_signs.venus",
+                            "status":  "match",
+                            "actual_value":  "9",
+                            "reference_value":  "9",
+                            "absolute_difference":  0.0,
+                            "tolerance":  0.0,
+                            "reason":  "Numeric difference 0.0 is within tolerance 0.0."
+                        },
+                        {
+                            "path":  "point_longitudes.jupiter",
+                            "status":  "match",
+                            "actual_value":  "324.9137552",
+                            "reference_value":  "324.915",
+                            "absolute_difference":  0.0012448,
+                            "tolerance":  0.05,
+                            "reason":  "Numeric difference 0.0012447999999949388 is within tolerance 0.05."
+                        },
+                        {
+                            "path":  "point_longitudes.ketu",
+                            "status":  "mismatch",
+                            "actual_value":  "305.20717069",
+                            "reference_value":  "304.091666667",
+                            "absolute_difference":  1.115504023,
+                            "tolerance":  0.05,
+                            "reason":  "Numeric difference 1.1155040229999713 exceeds tolerance 0.05."
+                        },
+                        {
+                            "path":  "point_longitudes.mars",
+                            "status":  "match",
+                            "actual_value":  "137.48582616",
+                            "reference_value":  "137.469444444",
+                            "absolute_difference":  0.016381716,
+                            "tolerance":  0.05,
+                            "reason":  "Numeric difference 0.016381715999983726 is within tolerance 0.05."
+                        },
+                        {
+                            "path":  "point_longitudes.mercury",
+                            "status":  "match",
+                            "actual_value":  "207.31073938",
+                            "reference_value":  "207.300833333",
+                            "absolute_difference":  0.009906047,
+                            "tolerance":  0.05,
+                            "reason":  "Numeric difference 0.009906046999986984 is within tolerance 0.05."
+                        },
+                        {
+                            "path":  "point_longitudes.moon",
+                            "status":  "match",
+                            "actual_value":  "252.2537349",
+                            "reference_value":  "252.228333333",
+                            "absolute_difference":  0.025401567,
+                            "tolerance":  0.05,
+                            "reason":  "Numeric difference 0.025401567000017167 is within tolerance 0.05."
+                        },
+                        {
+                            "path":  "point_longitudes.rahu",
+                            "status":  "mismatch",
+                            "actual_value":  "125.20717069",
+                            "reference_value":  "124.091666667",
+                            "absolute_difference":  1.115504023,
+                            "tolerance":  0.05,
+                            "reason":  "Numeric difference 1.1155040229999997 exceeds tolerance 0.05."
+                        },
+                        {
+                            "path":  "point_longitudes.saturn",
+                            "status":  "match",
+                            "actual_value":  "6.14956735",
+                            "reference_value":  "6.105833333",
+                            "absolute_difference":  0.043734017,
+                            "tolerance":  0.05,
+                            "reason":  "Numeric difference 0.043734017000000236 is within tolerance 0.05."
+                        },
+                        {
+                            "path":  "point_longitudes.sun",
+                            "status":  "match",
+                            "actual_value":  "188.75805003",
+                            "reference_value":  "188.744166667",
+                            "absolute_difference":  0.013883363,
+                            "tolerance":  0.05,
+                            "reason":  "Numeric difference 0.013883362999990823 is within tolerance 0.05."
+                        },
+                        {
+                            "path":  "point_longitudes.venus",
+                            "status":  "match",
+                            "actual_value":  "187.74322029",
+                            "reference_value":  "187.734444444",
+                            "absolute_difference":  0.008775846,
+                            "tolerance":  0.05,
+                            "reason":  "Numeric difference 0.008775846000020238 is within tolerance 0.05."
+                        }
+                    ],
+    "external_reference_validation_complete":  false,
+    "caveats":  [
+                    "A passing comparison validates only the supplied field groups.",
+                    "The request is not persisted as an approved external snapshot.",
+                    "Two independent approved sources per case are required for completion.",
+                    "Disagreements must be resolved from calculation contracts, not majority vote."
+                ]
+}

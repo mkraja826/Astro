@@ -1,0 +1,60 @@
+{
+  "source": {
+    "source_name": "Jagannatha Hora",
+    "source_version": "8.0",
+    "source_kind": "external_software",
+    "calculation_notes": [
+      "Birth: 1998-10-26 10:28:00 Asia/Kolkata",
+      "Coordinates: 16.575 N, 79.312 E",
+      "Altitude: 120 metres",
+      "Sidereal zodiac",
+      "Lahiri/Chitrapaksha ayanamsha",
+      "Geocentric planetary positions",
+      "True lunar node",
+      "No DST",
+      "AWAITING exact Jagannatha Hora setting labels and evidence filenames"
+    ]
+  },
+  "format": "generic_json_v1",
+  "payload": {
+    "chart": {
+      "ayanamsa": null,
+      "lagna_longitude": null,
+      "planetary_longitudes": {
+        "Surya": null,
+        "Chandra": null,
+        "Kuja": null,
+        "Budha": null,
+        "Guru": null,
+        "Shukra": null,
+        "Shani": null,
+        "True Node": null,
+        "Ketu": null
+      },
+      "rasi_signs": {
+        "Lagna": null,
+        "Surya": null,
+        "Chandra": null,
+        "Kuja": null,
+        "Budha": null,
+        "Guru": null,
+        "Shukra": null,
+        "Shani": null,
+        "Rahu": null,
+        "Ketu": null
+      },
+      "navamsha_signs": {
+        "Lagna": null,
+        "Surya": null,
+        "Chandra": null,
+        "Kuja": null,
+        "Budha": null,
+        "Guru": null,
+        "Shukra": null,
+        "Shani": null,
+        "Rahu": null,
+        "Ketu": null
+      }
+    }
+  }
+}

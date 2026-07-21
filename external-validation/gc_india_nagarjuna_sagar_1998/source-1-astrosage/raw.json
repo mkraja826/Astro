@@ -1,0 +1,65 @@
+{
+  "source": {
+    "source_name": "AstroSage",
+    "source_version": "version not disclosed",
+    "source_kind": "external_software",
+    "calculation_notes": [
+      "Source: AstroSage generated Kundli PDF",
+      "PDF path: C:\\Astro\\external-validation\\gc_india-nagarjuna-sagar-1998\\source-1-astrosage\\astrosage-full-kundli.pdf",
+      "PDF generation date shown: 2026-07-21 13:36:31 India Standard Time",
+      "Birth shown by source PDF: 1998-10-26 10:28:00 UTC+05:30",
+      "Place shown by source PDF: Nagarjuna Sagar Dam",
+      "Coordinates shown by source PDF: 16:34 N, 79:19 E",
+      "Frozen case coordinates expected: 16.575 N, 79.312 E, altitude 120 m",
+      "Altitude: not disclosed by source PDF",
+      "Ayanamsha: Lahiri, 023-50-24",
+      "Node convention: not disclosed by source PDF; Rahu and Ketu are marked retrograde",
+      "Zodiac mode: not explicitly disclosed by source PDF",
+      "Values transcribed from the Traditional section of the source PDF",
+      "Comparison status: diagnostic only; this AstroSage source remains rejected_input_mismatch and is not approved",
+      "Formal comparison blocked pending human review because PDF coordinates do not exactly match the frozen case"
+    ]
+  },
+  "format": "generic_json_v1",
+  "payload": {
+    "chart": {
+      "ayanamsa": 23.84,
+      "lagna_longitude": 246.869166667,
+      "planetary_longitudes": {
+        "Sun": 188.744166667,
+        "Moon": 252.228333333,
+        "Mars": 137.469444444,
+        "Mercury": 207.300833333,
+        "Jupiter": 324.915,
+        "Venus": 187.734444444,
+        "Saturn": 6.105833333,
+        "Rahu": 124.091666667,
+        "Ketu": 304.091666667
+      },
+      "rasi_signs": {
+        "Lagna": 9,
+        "Sun": 7,
+        "Moon": 9,
+        "Mars": 5,
+        "Mercury": 7,
+        "Jupiter": 11,
+        "Venus": 7,
+        "Saturn": 1,
+        "Rahu": 5,
+        "Ketu": 11
+      },
+      "navamsha_signs": {
+        "Lagna": 3,
+        "Sun": 9,
+        "Moon": 4,
+        "Mars": 6,
+        "Mercury": 3,
+        "Jupiter": 2,
+        "Venus": 9,
+        "Saturn": 2,
+        "Rahu": 2,
+        "Ketu": 8
+      }
+    }
+  }
+}

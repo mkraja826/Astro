@@ -1,0 +1,72 @@
+{
+  "source": {
+    "source_name": "Jagannatha Hora",
+    "source_version": "8.0",
+    "source_kind": "external_software",
+    "calculation_notes": [
+      "Controlled manual birth input visibly entered in Jagannatha Hora 8.0 screenshots.",
+      "Birth date and time: 1998-10-26 10:28:00.",
+      "Calendar: Gregorian.",
+      "Timezone: UTC+05:30 East of GMT; standard time; LMT unchecked.",
+      "Coordinates: 16.575 N, 79.312 E.",
+      "Birth-data form shows longitude 79 E 18' 43.2\" and latitude 16 N 34' 30\".",
+      "Natal summary displays longitude rounded/truncated to 79 E 18' 43\" and latitude 16 N 34' 30\".",
+      "Altitude: 120 metres above sea-level.",
+      "City-search field contains stale text in a partial birth-input screenshot; exact manual timezone, coordinates and altitude are treated as authoritative.",
+      "Natal summary place label is Unknown country.",
+      "Ayanamsha: True Lahiri/Chitrapaksha (Spica in the middle of Chitra always).",
+      "No custom ayanamsha correction: correction checkbox unchecked and amount fields show 0 deg, 0 min, 0 sec.",
+      "Ayanamsha displayed by source: 23-49-09.05.",
+      "Final planet settings: apparent geocentric positions.",
+      "Final planet settings: no refraction.",
+      "Final planet settings: annual aberration of light enabled.",
+      "Final planet settings: gravitational deflection enabled.",
+      "Final planet settings: nutation enabled.",
+      "Final planet settings: true lunar nodes.",
+      "Source values transcribed from Jagannatha Hora 8.0 screenshots in this evidence directory.",
+      "The older screenshot 05-planet-settings-before-final-change-NOT-FINAL.png is retained for audit context only and is not used as proof of final planet settings."
+    ]
+  },
+  "format": "generic_json_v1",
+  "payload": {
+    "chart": {
+      "ayanamsa": 23.819180555556,
+      "lagna_longitude": 246.885947222222,
+      "planetary_longitudes": {
+        "Sun": 188.758050000000,
+        "Moon": 252.253763888889,
+        "Mars": 137.485827777778,
+        "Mercury": 207.310741666667,
+        "Jupiter": 324.913755555556,
+        "Venus": 187.743222222222,
+        "Saturn": 6.149566666667,
+        "Rahu": 125.207236111111,
+        "Ketu": 305.207236111111
+      },
+      "rasi_signs": {
+        "Lagna": "Sagittarius",
+        "Sun": "Libra",
+        "Moon": "Sagittarius",
+        "Mars": "Leo",
+        "Mercury": "Libra",
+        "Jupiter": "Aquarius",
+        "Venus": "Libra",
+        "Saturn": "Aries",
+        "Rahu": "Leo",
+        "Ketu": "Aquarius"
+      },
+      "navamsha_signs": {
+        "Lagna": "Gemini",
+        "Sun": "Sagittarius",
+        "Moon": "Cancer",
+        "Mars": "Virgo",
+        "Mercury": "Gemini",
+        "Jupiter": "Taurus",
+        "Venus": "Sagittarius",
+        "Saturn": "Taurus",
+        "Rahu": "Taurus",
+        "Ketu": "Scorpio"
+      }
+    }
+  }
+}
