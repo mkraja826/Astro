@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 
 from app.core.config import RuntimeSettings
 from app.core.usage_hardening import require_metered_access
+from app.core.usage_readiness import UsageConnectivityStatus
 from app.main import create_app
 
 VALID_KEY = "astro-ci-service-key-0123456789abcdef"
@@ -221,6 +222,22 @@ def test_supabase_health_exposes_no_secret(
         "https://hdaugtypjpniesdgyral.supabase.co",
     )
     monkeypatch.setenv("JYOTHISYAM_SUPABASE_SERVICE_ROLE_KEY", secret)
+
+    async def _ready_connectivity(settings: RuntimeSettings) -> UsageConnectivityStatus:
+        del settings
+        return UsageConnectivityStatus(
+            ready=True,
+            reachable=True,
+            project_ref="hdaugtypjpniesdgyral",
+            schema_version="api_usage_metering_safety_v1",
+            latency_ms=1.0,
+            issue=None,
+        )
+
+    monkeypatch.setattr(
+        "app.api.routes.system.inspect_usage_connectivity",
+        _ready_connectivity,
+    )
     client = TestClient(
         create_app(
             _settings(
