@@ -13,6 +13,7 @@ from urllib.request import Request as UrlRequest
 from urllib.request import urlopen
 
 from app.core.config import RuntimeSettings
+from app.core.supabase_server_auth import supabase_server_headers
 from app.core.usage_hardening import (
     ASTRO_SUPABASE_PROJECT_REF,
     inspect_usage_policy,
@@ -52,7 +53,7 @@ def _decode_payload(raw: bytes) -> dict[str, Any] | None:
 
 def _probe_sync(
     base_url: str,
-    service_role_key: str,
+    server_credential: str,
     timeout_seconds: float,
 ) -> tuple[dict[str, Any] | None, float, str | None]:
     started = perf_counter()
@@ -60,11 +61,7 @@ def _probe_sync(
         f"{base_url.rstrip('/')}/rest/v1/rpc/api_usage_health_v1",
         data=b"{}",
         method="POST",
-        headers={
-            "apikey": service_role_key,
-            "Authorization": f"Bearer {service_role_key}",
-            "Content-Type": "application/json",
-        },
+        headers=supabase_server_headers(server_credential),
     )
     try:
         with urlopen(request, timeout=timeout_seconds) as response:
@@ -80,7 +77,7 @@ def _probe_sync(
 
 
 async def inspect_usage_connectivity(settings: RuntimeSettings) -> UsageConnectivityStatus:
-    """Probe the service-role-only health RPC without creating usage records."""
+    """Probe the service-only health RPC without creating usage records."""
 
     policy = inspect_usage_policy(settings)
     if not policy.ready:
@@ -102,11 +99,11 @@ async def inspect_usage_connectivity(settings: RuntimeSettings) -> UsageConnecti
             issue=None,
         )
 
-    base_url, service_role_key = _credentials()
+    base_url, server_credential = _credentials()
     payload, latency_ms, issue = await asyncio.to_thread(
         _probe_sync,
         base_url,
-        service_role_key,
+        server_credential,
         settings.usage_rpc_timeout_seconds,
     )
     if payload is None:
