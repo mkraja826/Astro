@@ -16,6 +16,10 @@ from app.engine.classical_validation_baselines import (
     verify_current_jpl_baselines,
     verify_jpl_baseline_storage,
 )
+from app.engine.classical_validation_imports import (
+    ExternalSnapshotNormalizationError,
+    normalize_external_snapshot,
+)
 from app.engine.positions import BirthTimeError
 from app.schemas.classical_validation import (
     GoldenChartCaseSetResponse,
@@ -28,6 +32,10 @@ from app.schemas.classical_validation_baselines import (
     JplBaselineManifest,
     JplBaselineRuntimeVerificationResponse,
     JplBaselineStorageVerificationResponse,
+)
+from app.schemas.classical_validation_imports import (
+    ExternalSnapshotImportRequest,
+    ExternalSnapshotImportResponse,
 )
 
 router = APIRouter(
@@ -79,6 +87,30 @@ def validation_cases() -> GoldenChartCaseSetResponse:
     """Return twelve immutable, globally diverse birth inputs."""
 
     return get_validation_cases()
+
+
+@router.post(
+    "/normalize/external",
+    response_model=ExternalSnapshotImportResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Normalize an external Jyotisha software export",
+    responses={
+        422: {
+            "description": (
+                "Unsupported aliases, malformed values, or an empty normalized snapshot"
+            )
+        }
+    },
+)
+def validation_normalize_external(
+    request: ExternalSnapshotImportRequest,
+) -> ExternalSnapshotImportResponse:
+    """Normalize aliases without persisting or approving the supplied snapshot."""
+
+    try:
+        return normalize_external_snapshot(request)
+    except ExternalSnapshotNormalizationError as exc:
+        raise _unprocessable(exc) from exc
 
 
 @router.post(
@@ -171,5 +203,9 @@ def baseline_verify_current() -> JplBaselineRuntimeVerificationResponse:
 
     try:
         return verify_current_jpl_baselines()
-    except (BaselineIntegrityError, EphemerisConfigurationError, EphemerisUnavailableError) as exc:
+    except (
+        BaselineIntegrityError,
+        EphemerisConfigurationError,
+        EphemerisUnavailableError,
+    ) as exc:
         raise _ephemeris_unavailable(exc) from exc
