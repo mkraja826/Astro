@@ -36,10 +36,8 @@ class RuntimeSettings:
         return self.environment == "production"
 
 
-
 def _is_true(value: str | None) -> bool:
     return value is not None and value.strip().lower() in _TRUE_VALUES
-
 
 
 def _csv(value: str | None, default: tuple[str, ...] = ()) -> tuple[str, ...]:
@@ -47,7 +45,6 @@ def _csv(value: str | None, default: tuple[str, ...] = ()) -> tuple[str, ...]:
         return default
     items = tuple(dict.fromkeys(item.strip() for item in value.split(",") if item.strip()))
     return items
-
 
 
 def _positive_int(name: str, default: int) -> int:
@@ -63,7 +60,6 @@ def _positive_int(name: str, default: int) -> int:
     return value
 
 
-
 def _non_negative_int(name: str, default: int) -> int:
     raw = getenv(name)
     if raw is None:
@@ -75,7 +71,6 @@ def _non_negative_int(name: str, default: int) -> int:
     if value < 0:
         raise ValueError(f"{name} must be zero or greater")
     return value
-
 
 
 def _positive_float(name: str, default: float) -> float:
@@ -91,14 +86,12 @@ def _positive_float(name: str, default: float) -> float:
     return value
 
 
-
 def _validate_hosts(hosts: tuple[str, ...]) -> tuple[str, ...]:
     if not hosts:
         raise ValueError("JYOTHISYAM_ALLOWED_HOSTS must contain at least one host")
     if "*" in hosts:
         raise ValueError("JYOTHISYAM_ALLOWED_HOSTS must not contain a wildcard")
     return hosts
-
 
 
 def _validate_origins(origins: tuple[str, ...]) -> tuple[str, ...]:
@@ -110,9 +103,8 @@ def _validate_origins(origins: tuple[str, ...]) -> tuple[str, ...]:
     return origins
 
 
-
 def _usage_backend(environment: str) -> str:
-    default = "supabase" if environment in {"staging", "production"} else "memory"
+    default = "supabase" if environment in {"staging", "production"} else "disabled"
     backend = getenv("JYOTHISYAM_USAGE_BACKEND", default).strip().lower()
     if backend not in _VALID_USAGE_BACKENDS:
         raise ValueError("JYOTHISYAM_USAGE_BACKEND must be disabled, memory, or supabase")
