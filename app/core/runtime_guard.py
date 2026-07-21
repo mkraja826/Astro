@@ -16,6 +16,7 @@ from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 _REQUEST_ID_PATTERN = re.compile(r"^[A-Za-z0-9._:-]{1,64}$")
 _ACCESS_LOGGER = logging.getLogger("jyothisyam.access")
+_ERROR_LOGGER = logging.getLogger("jyothisyam.error")
 
 
 class RequestBodyTooLargeError(Exception):
@@ -135,6 +136,25 @@ class RuntimeGuardMiddleware:
                 504,
                 "REQUEST_TIMEOUT",
                 "The request exceeded the configured processing timeout.",
+                request_id,
+            )(scope, receive, send_with_runtime_headers)
+        except Exception as error:
+            if response_started:
+                raise
+            error_event = {
+                "event": "unhandled_error",
+                "request_id": request_id,
+                "method": scope.get("method"),
+                "path": scope.get("path"),
+                "error_type": type(error).__name__,
+            }
+            _ERROR_LOGGER.error(
+                json.dumps(error_event, separators=(",", ":"), sort_keys=True)
+            )
+            await _error_response(
+                500,
+                "INTERNAL_SERVER_ERROR",
+                "The server could not complete the request.",
                 request_id,
             )(scope, receive, send_with_runtime_headers)
         finally:
