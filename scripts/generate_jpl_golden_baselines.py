@@ -29,7 +29,7 @@ def _digest(value: Any) -> str:
 
 
 def build_baseline_document() -> dict[str, Any]:
-    """Calculate and normalize all frozen cases into one digest-locked document."""
+    """Calculate all frozen cases into one logical digest-locked document."""
 
     case_set = get_validation_cases()
     records: list[dict[str, Any]] = []
@@ -62,23 +62,50 @@ def build_baseline_document() -> dict[str, Any]:
     return payload
 
 
+def write_baseline_directory(output_dir: Path) -> dict[str, Any]:
+    """Write one immutable case file plus a manifest for readable future diffs."""
+
+    document = build_baseline_document()
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for old_file in output_dir.glob("*.json"):
+        old_file.unlink()
+
+    case_references: list[dict[str, str]] = []
+    for record in document["cases"]:
+        filename = f"{record['case_id']}.json"
+        (output_dir / filename).write_text(
+            json.dumps(record, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        case_references.append(
+            {
+                "case_id": record["case_id"],
+                "snapshot_digest": record["snapshot_digest"],
+                "path": filename,
+            }
+        )
+
+    manifest = {key: value for key, value in document.items() if key != "cases"}
+    manifest["cases"] = case_references
+    (output_dir / "manifest.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return document
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--output",
+        "--output-dir",
         type=Path,
-        default=Path("app/data/validation/jpl_de440s_v1.json"),
+        default=Path("app/data/validation/jpl_de440s_v1"),
     )
     args = parser.parse_args()
 
-    document = build_baseline_document()
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(
-        json.dumps(document, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    document = write_baseline_directory(args.output_dir)
     print(
-        f"Wrote {document['case_count']} JPL golden baselines to {args.output} "
+        f"Wrote {document['case_count']} JPL golden baselines to {args.output_dir} "
         f"({document['baseline_set_digest']})"
     )
 
