@@ -1,8 +1,8 @@
 """Integration tests for authenticated rate limiting and usage metering."""
 
+import pytest
 from fastapi import Depends, HTTPException
 from fastapi.testclient import TestClient
-import pytest
 
 from app.core.config import RuntimeSettings
 from app.core.usage import require_metered_access
