@@ -39,7 +39,7 @@ def test_development_defaults_are_safe_for_local_tests(
     assert settings.cors_origins == ()
     assert settings.max_request_body_bytes == 1_048_576
     assert settings.request_timeout_seconds == 30.0
-    assert settings.usage_backend == "memory"
+    assert settings.usage_backend == "disabled"
     assert settings.usage_required is False
     assert settings.requests_per_minute == 60
     assert settings.monthly_credit_limit == 0
