@@ -1,0 +1,20 @@
+Source 2 feasibility isolated environment
+Access/capture date: 2026-07-21
+Environment path: C:\Astro\.source2-venv
+Git ignore mechanism: C:\Astro\.git\info\exclude entry .source2-venv/
+
+Python: 3.12.10
+pip: 25.0.1
+certifi: 2026.6.17
+numpy: 2.5.1
+pyerfa: 2.0.1.5
+bundled ERFA: 2.0.1
+corresponding SOFA: 20231011
+
+Package purpose:
+- certifi: verified HTTPS trust store for external response capture
+- numpy: array dependency used by PyERFA and ascendant vector geometry
+- pyerfa: Python binding for ERFA/SOFA time, Earth-orientation, and astrometry routines
+
+No package was added to the Astro production virtual environment, pyproject.toml,
+or any tracked production dependency file.

@@ -4,7 +4,7 @@
 
 `awaiting_independent_source_selection`
 
-No Source 2 has been selected, captured, normalized, compared, or approved. This directory contains instructions and empty templates only. Do not create `raw.json` until a qualifying independent source has been selected and its unchanged evidence has been retained.
+No Source 2 has been selected, formally captured, normalized, compared, or approved. This directory contains instructions, empty templates, and a non-formal feasibility investigation under `feasibility/`. Do not create `raw.json` until a qualifying independent source has been selected and its unchanged evidence has been retained.
 
 The frozen case is not yet fully externally validated. Human approval of a qualifying Source 2 is still required.
 
@@ -52,6 +52,7 @@ Any unavailable or non-configurable convention must be formally documented from 
 - `capture-checklist.md`: evidence and workflow gate checklist
 - `capture-sheet.md`: blank transcription worksheet
 - `raw-template.json`: unpopulated `generic_json_v1` normalization template
+- `feasibility/`: non-formal JPL Horizons + IAU SOFA/ERFA investigation; its raw responses and generated experiments are not a populated Source 2 capture
 
 ## Workflow
 
