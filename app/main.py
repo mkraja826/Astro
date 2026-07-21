@@ -17,7 +17,13 @@ from app.api.routes.positions import router as positions_router
 from app.api.routes.system import router as system_router
 from app.core.config import RuntimeSettings, load_runtime_settings
 from app.core.runtime_guard import RuntimeGuardMiddleware, request_id_from_scope
-from app.core.security import ApiSecurityError, require_api_key
+from app.core.security import ApiSecurityError
+from app.core.usage import (
+    UsageFinalizeMiddleware,
+    UsagePolicyError,
+    build_usage_backend,
+    require_metered_access,
+)
 
 
 async def _security_error_response(
@@ -32,6 +38,17 @@ async def _security_error_response(
         status_code=error.status_code,
         content={"code": error.code, "message": error.message, "request_id": request_id},
         headers=headers,
+    )
+
+
+async def _usage_error_response(request: Request, error: UsagePolicyError) -> JSONResponse:
+    """Return a stable non-secret response for quota and metering failures."""
+
+    request_id = request_id_from_scope(request.scope)
+    return JSONResponse(
+        status_code=error.status_code,
+        content={"code": error.code, "message": error.message, "request_id": request_id},
+        headers=error.headers,
     )
 
 
@@ -59,7 +76,9 @@ def create_app(settings: RuntimeSettings | None = None) -> FastAPI:
         openapi_url=openapi_url,
     )
     application.state.runtime_settings = runtime
+    application.state.usage_backend = build_usage_backend(runtime)
     application.add_exception_handler(ApiSecurityError, _security_error_response)
+    application.add_exception_handler(UsagePolicyError, _usage_error_response)
 
     application.add_middleware(
         TrustedHostMiddleware,
@@ -71,8 +90,18 @@ def create_app(settings: RuntimeSettings | None = None) -> FastAPI:
             allow_origins=list(runtime.cors_origins),
             allow_credentials=False,
             allow_methods=["GET", "POST", "OPTIONS"],
-            allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
-            expose_headers=["X-Request-ID"],
+            allow_headers=[
+                "Authorization",
+                "Content-Type",
+                "X-Astro-Consumer-ID",
+                "X-Request-ID",
+            ],
+            expose_headers=[
+                "X-Astro-Credit-Cost",
+                "X-RateLimit-Limit",
+                "X-RateLimit-Remaining",
+                "X-Request-ID",
+            ],
             max_age=600,
         )
     application.add_middleware(
@@ -80,8 +109,9 @@ def create_app(settings: RuntimeSettings | None = None) -> FastAPI:
         max_request_body_bytes=runtime.max_request_body_bytes,
         request_timeout_seconds=runtime.request_timeout_seconds,
     )
+    application.add_middleware(UsageFinalizeMiddleware)
 
-    protected = [Depends(require_api_key)]
+    protected = [Depends(require_metered_access)]
     application.include_router(system_router)
     application.include_router(positions_router, dependencies=protected)
     application.include_router(charts_router, dependencies=protected)
