@@ -45,5 +45,5 @@ line-length = 100
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.ruff.lint.per-file-ignores]
-"app/engine/classical_validation_imports.py" = ["E501"]
+"app/engine/classical_validation_imports.py" = ["E501", "UP035"]
 "tests/test_classical_validation_imports.py" = ["E501"]
