@@ -1,4 +1,4 @@
-"""Profile extension for weighting and external golden-chart validation."""
+"""Profile extension for weighting and golden-chart validation."""
 
 from app.engine.classical_strength_rules import (
     extend_varahamihira_profile as extend_strength_profile,
@@ -15,6 +15,18 @@ WEIGHTED_DASHA_ENDPOINT = "/v1/classical/varahamihira_v1/dasha/current/weighted"
 VALIDATION_PROFILE_ENDPOINT = "/v1/classical/varahamihira_v1/validation/profile"
 VALIDATION_CASES_ENDPOINT = "/v1/classical/varahamihira_v1/validation/cases"
 VALIDATION_COMPARE_ENDPOINT = "/v1/classical/varahamihira_v1/validation/compare"
+BASELINE_MANIFEST_ENDPOINT = (
+    "/v1/classical/varahamihira_v1/validation/baseline/manifest"
+)
+BASELINE_INTEGRITY_ENDPOINT = (
+    "/v1/classical/varahamihira_v1/validation/baseline/integrity"
+)
+BASELINE_CASE_ENDPOINT = (
+    "/v1/classical/varahamihira_v1/validation/baseline/cases/{case_id}"
+)
+BASELINE_VERIFY_ENDPOINT = (
+    "/v1/classical/varahamihira_v1/validation/baseline/verify-current"
+)
 
 
 def extend_varahamihira_profile(
@@ -32,6 +44,10 @@ def extend_varahamihira_profile(
         VALIDATION_PROFILE_ENDPOINT,
         VALIDATION_CASES_ENDPOINT,
         VALIDATION_COMPARE_ENDPOINT,
+        BASELINE_MANIFEST_ENDPOINT,
+        BASELINE_INTEGRITY_ENDPOINT,
+        BASELINE_CASE_ENDPOINT,
+        BASELINE_VERIFY_ENDPOINT,
     )
     for endpoint in additional_endpoints:
         if endpoint not in endpoints:
@@ -39,13 +55,15 @@ def extend_varahamihira_profile(
 
     return extended.model_copy(
         update={
-            "profile_version": "1.9.0",
+            "profile_version": "1.10.0",
             "endpoints": endpoints,
             "caveats": [
                 "The controlled weighting profile is an API convention, not a textual rule.",
                 "Every weighted result embeds its raw unweighted strength evidence.",
                 "Weighted career and Dasha routes are additive; old contracts are unchanged.",
                 "Twelve globally diverse validation inputs are frozen in case set v1.",
+                "Twelve digest-locked JPL outputs are committed as internal regressions.",
+                "Internal JPL baselines are not independent external evidence.",
                 "No external software snapshots are approved or committed yet.",
                 "Two independent external sources per case remain required.",
                 "Cancellation adjustments and predictions remain disabled.",
