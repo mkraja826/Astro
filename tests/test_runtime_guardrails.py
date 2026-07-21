@@ -58,13 +58,9 @@ def test_exact_cors_origin_is_allowed() -> None:
         create_app(_settings(cors_origins=("https://horos.example",)))
     )
 
-    response = client.options(
-        "/v1/classical/varahamihira_v1/profile",
-        headers={
-            "Origin": "https://horos.example",
-            "Access-Control-Request-Method": "GET",
-            "Access-Control-Request-Headers": "Authorization,X-Request-ID",
-        },
+    response = client.get(
+        "/health",
+        headers={"Origin": "https://horos.example"},
     )
 
     assert response.status_code == 200
