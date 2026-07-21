@@ -1,13 +1,17 @@
-# External Golden-Chart Validation Harness v1
+# Golden-Chart Validation Harness v1
 
 ## Purpose
 
-This harness compares Jyothisyam calculations with independently produced
-Jyotisha snapshots. It records field-level agreements and disagreements without
-assuming that the majority result is correct.
+The validation system has two deliberately separate layers:
 
-The harness does not alter the astronomical, chart, classical, or weighting
-engines. It is a validation layer over their existing outputs.
+1. **Internal JPL regression baselines** freeze Jyothisyam's own deterministic
+   Skyfield/JPL outputs so future code or dependency changes cannot alter results
+   silently.
+2. **External reference validation** compares those calculations with independently
+   produced Jyotisha software exports and manual references.
+
+An internal baseline is not independent evidence. It must never increase the
+external approval count or make the project claim third-party validation.
 
 ## Public endpoints
 
@@ -15,6 +19,11 @@ engines. It is a validation layer over their existing outputs.
 GET  /v1/classical/varahamihira_v1/validation/profile
 GET  /v1/classical/varahamihira_v1/validation/cases
 POST /v1/classical/varahamihira_v1/validation/compare
+
+GET  /v1/classical/varahamihira_v1/validation/baseline/manifest
+GET  /v1/classical/varahamihira_v1/validation/baseline/integrity
+GET  /v1/classical/varahamihira_v1/validation/baseline/cases/{case_id}
+POST /v1/classical/varahamihira_v1/validation/baseline/verify-current
 ```
 
 ## Frozen case set
@@ -29,12 +38,63 @@ inputs. The set covers:
 - daylight-saving and non-daylight-saving zones
 - leap-day, year-boundary, near-midnight, polar-night, and altitude cases
 
-The API returns a SHA-256 digest of the normalized case set. Any input change
-must create a new case-set version rather than silently modifying v1.
+Case-set digest:
+
+```text
+5dcd67cd142e49127cdb62165ca8e1ccb7b28f58fabbf3612eeca42c5392f624
+```
+
+Any input change must create a new case-set version rather than silently modifying
+v1.
+
+## Internal JPL baseline set
+
+Baseline set:
+
+```text
+jyothisyam_jpl_de440s_golden_baselines_v1
+```
+
+Calculation profile:
+
+```text
+south_indian_drik_lahiri_jpl_de440s_v1
+```
+
+Full logical-set digest:
+
+```text
+e4c97e2c62ce380dfd361f645cc18682849085b823541ae509edd2d1f3568da0
+```
+
+The repository stores:
+
+```text
+app/data/validation/jpl_de440s_v1/manifest.json
+app/data/validation/jpl_de440s_v1/<case_id>.json
+```
+
+Each case file contains a normalized snapshot and its own SHA-256 digest. The
+manifest locks:
+
+- the case-set identity and digest
+- the canonical calculation profile
+- Skyfield version 1.54
+- JPL model DE440s
+- all twelve case IDs and per-case digests
+- the digest of the reconstructed logical baseline set
+
+`GET .../baseline/integrity` validates storage without recalculating charts. It
+checks safe paths, case membership, duplicates, missing and unexpected cases,
+per-file hashes, and the full-set hash.
+
+`POST .../baseline/verify-current` recalculates all twelve cases and compares the
+current normalized output exactly with each committed baseline. It reports every
+mismatched flattened field path. This operation is intentionally more expensive.
 
 ## Snapshot groups
 
-A reference source may submit any subset of:
+A normalized snapshot contains:
 
 - ayanamsha
 - ascendant longitude
@@ -49,10 +109,10 @@ A reference source may submit any subset of:
 - controlled API weighting scores
 - controlled API weighting ranks
 
-Omitted groups are reported as skipped. A passing report validates only the
-fields actually supplied.
+An external source may submit any subset. Omitted groups are reported as skipped,
+and a passing report validates only the supplied fields.
 
-## Comparison rules
+## External comparison rules
 
 Default tolerances are:
 
@@ -63,8 +123,8 @@ controlled score: 0.000001
 ```
 
 Signs, dignity labels, Vargottama, relationships, bindus, and ranks are exact
-comparisons. Every scalar produces a comparison record with the actual value,
-reference value, difference where numeric, tolerance, status, and reason.
+comparisons. Every scalar produces a record containing the actual value, reference
+value, numeric difference where applicable, tolerance, status, and reason.
 
 ## External source provenance
 
@@ -75,13 +135,13 @@ Every comparison identifies:
 - source kind
 - calculation notes
 
-Recommended calculation notes include the zodiac, ayanamsha, node type,
-ephemeris, house convention, and any software-specific options.
+Recommended notes include zodiac, ayanamsha, node type, ephemeris, house
+convention, and software-specific options.
 
 ## Completion policy
 
-Version 1.0.0 requires two independent external sources for every frozen case.
-No external snapshots are committed yet, so:
+Two independently reviewed external sources are required for every frozen case.
+The current truthful status remains:
 
 ```json
 {
@@ -91,11 +151,13 @@ No external snapshots are committed yet, so:
 }
 ```
 
+The twelve internal JPL baselines do not change those values.
+
 A disagreement must be investigated against calculation contracts and source
-rules. The implementation must not choose whichever value appears in the most
+rules. The implementation must not select whichever value appears in the most
 programs without understanding the cause.
 
-## Example partial comparison
+## Example partial external comparison
 
 ```json
 {
@@ -111,15 +173,15 @@ programs without understanding the cause.
   },
   "reference_snapshot": {
     "point_longitudes": {
-      "sun": 212.0,
-      "moon": 270.0
+      "sun": 188.75805,
+      "moon": 252.25373
     },
     "d1_signs": {
-      "sun": 8,
-      "moon": 10
+      "sun": 7,
+      "moon": 9
     }
   },
-  "calculation_profile": "south_indian_drik_lahiri_v1",
+  "calculation_profile": "south_indian_drik_lahiri_jpl_de440s_v1",
   "tolerances": {
     "longitude_degrees": 0.01,
     "ayanamsha_degrees": 0.01,
@@ -131,12 +193,24 @@ programs without understanding the cause.
 The comparison route calculates the frozen case at request time. It does not
 persist or approve the submitted reference snapshot.
 
+## Regenerating internal baselines
+
+Run only after an intentional, reviewed calculation-contract change:
+
+```powershell
+python scripts/generate_jpl_golden_baselines.py
+python -m pytest tests/test_jpl_golden_baselines.py
+```
+
+A changed digest must be reviewed field by field. Do not regenerate baselines merely
+to make a failing test pass.
+
 ## Weighting boundary
 
 `transparent_strength_weighting_v1` is an API convention, not a quotation from
 Brihat Jataka. External Jyotisha programs are not expected to reproduce these
-scores unless they intentionally implement the same published formulas. Raw
-astronomical and classical fields should be validated before score comparison.
+scores unless they implement the same published formulas. Raw astronomical and
+classical fields should be validated before score comparison.
 
 ## Exclusions
 
