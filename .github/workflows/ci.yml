@@ -51,19 +51,36 @@ jobs:
         run: docker build --tag jyothisyam-api:ci .
 
       - name: Smoke test production image
+        env:
+          ASTRO_CI_API_KEY: astro-ci-service-key-0123456789abcdef
         run: |
-          docker run --detach --name jyothisyam-api-ci -p 18080:8080 jyothisyam-api:ci
+          docker run --detach --name jyothisyam-api-ci -p 18080:8080 \
+            --env JYOTHISYAM_API_KEY="$ASTRO_CI_API_KEY" \
+            jyothisyam-api:ci
           trap 'docker logs jyothisyam-api-ci || true; docker rm --force jyothisyam-api-ci || true' EXIT
 
           for attempt in $(seq 1 30); do
             if curl --fail --silent --show-error \
-              http://127.0.0.1:18080/health/ephemeris \
-              --output /tmp/ephemeris-health.json; then
-              cat /tmp/ephemeris-health.json
-              exit 0
+              http://127.0.0.1:18080/health/ready \
+              --output /tmp/readiness.json; then
+              cat /tmp/readiness.json
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              echo "Production container did not become ready" >&2
+              exit 1
             fi
             sleep 1
           done
 
-          echo "Production container did not become ready" >&2
-          exit 1
+          unauthenticated_status=$(curl --silent --output /tmp/unauthenticated.json \
+            --write-out '%{http_code}' \
+            http://127.0.0.1:18080/v1/classical/varahamihira_v1/profile)
+          test "$unauthenticated_status" = "401"
+          cat /tmp/unauthenticated.json
+
+          curl --fail --silent --show-error \
+            --header "Authorization: Bearer $ASTRO_CI_API_KEY" \
+            http://127.0.0.1:18080/v1/classical/varahamihira_v1/profile \
+            --output /tmp/authenticated.json
+          cat /tmp/authenticated.json
