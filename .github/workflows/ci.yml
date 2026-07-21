@@ -21,7 +21,15 @@ jobs:
         run: python3 -m pip install --quiet "ruff>=0.9,<1.0"
 
       - name: Lint
-        run: ruff check .
+        run: ruff check . --output-format=json > ruff-report.json
+
+      - name: Upload Ruff report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ruff-report
+          path: ruff-report.json
+          retention-days: 1
 
   test:
     needs: lint
