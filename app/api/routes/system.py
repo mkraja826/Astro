@@ -9,6 +9,11 @@ from app import __version__
 from app.core.jpl_ephemeris import inspect_jpl_ephemeris
 
 router = APIRouter(tags=["System"])
+_EPHEMERIS_UNAVAILABLE_RESPONSES = {
+    503: {
+        "description": "Local JPL DE440s kernel is not ready or failed integrity",
+    }
+}
 
 
 class RootResponse(BaseModel):
@@ -95,7 +100,7 @@ def _jpl_health(response: Response) -> EphemerisHealthResponse:
     "/health/ephemeris",
     response_model=EphemerisHealthResponse,
     summary="Production JPL ephemeris readiness and integrity check",
-    responses={503: {"description": "Local JPL DE440s kernel is not ready or failed integrity"}},
+    responses=_EPHEMERIS_UNAVAILABLE_RESPONSES,
 )
 def ephemeris_health_check(response: Response) -> EphemerisHealthResponse:
     """Report whether the production DE440s kernel is present and verified."""
@@ -107,7 +112,7 @@ def ephemeris_health_check(response: Response) -> EphemerisHealthResponse:
     "/health/ephemeris/jpl",
     response_model=EphemerisHealthResponse,
     summary="JPL ephemeris readiness compatibility route",
-    responses={503: {"description": "Local JPL DE440s kernel is not ready or failed integrity"}},
+    responses=_EPHEMERIS_UNAVAILABLE_RESPONSES,
 )
 def jpl_ephemeris_health_check(response: Response) -> EphemerisHealthResponse:
     """Retain the earlier JPL-specific readiness URL as an additive alias."""
