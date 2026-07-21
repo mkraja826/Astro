@@ -2,10 +2,11 @@
 
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Request, Response, status
 from pydantic import BaseModel
 
 from app import __version__
+from app.core.config import RuntimeSettings
 from app.core.jpl_ephemeris import inspect_jpl_ephemeris
 from app.core.security import inspect_api_security
 
@@ -61,24 +62,43 @@ class SecurityHealthResponse(BaseModel):
     minimum_key_length: int
 
 
+class RuntimeHealthResponse(BaseModel):
+    """Non-secret process policy used by production runtime guards."""
+
+    status: str
+    ready: bool
+    environment: str
+    docs_enabled: bool
+    allowed_host_count: int
+    cors_origin_count: int
+    max_request_body_bytes: int
+    request_timeout_seconds: float
+
+
 class ReadinessResponse(BaseModel):
-    """Combined production readiness for astronomy data and service authentication."""
+    """Combined production readiness for data, authentication, and runtime policy."""
 
     status: str
     ready: bool
     ephemeris: EphemerisHealthResponse
     security: SecurityHealthResponse
+    runtime: RuntimeHealthResponse
+
+
+def _runtime_settings(request: Request) -> RuntimeSettings:
+    return request.app.state.runtime_settings
 
 
 @router.get("/", response_model=RootResponse, summary="API information")
-def root() -> RootResponse:
+def root(request: Request) -> RootResponse:
     """Return basic information about the Jyothisyam API."""
 
+    runtime = _runtime_settings(request)
     return RootResponse(
         name="Jyothisyam API",
         version=__version__,
         status="running",
-        documentation="/docs",
+        documentation="/docs" if runtime.docs_enabled else "disabled",
     )
 
 
@@ -126,6 +146,20 @@ def _security_payload() -> SecurityHealthResponse:
     )
 
 
+def _runtime_payload(request: Request) -> RuntimeHealthResponse:
+    runtime = _runtime_settings(request)
+    return RuntimeHealthResponse(
+        status="ready",
+        ready=True,
+        environment=runtime.environment,
+        docs_enabled=runtime.docs_enabled,
+        allowed_host_count=len(runtime.allowed_hosts),
+        cors_origin_count=len(runtime.cors_origins),
+        max_request_body_bytes=runtime.max_request_body_bytes,
+        request_timeout_seconds=runtime.request_timeout_seconds,
+    )
+
+
 @router.get(
     "/health/ephemeris",
     response_model=EphemerisHealthResponse,
@@ -169,17 +203,29 @@ def security_health_check(response: Response) -> SecurityHealthResponse:
 
 
 @router.get(
+    "/health/runtime",
+    response_model=RuntimeHealthResponse,
+    summary="Runtime guardrail readiness",
+)
+def runtime_health_check(request: Request) -> RuntimeHealthResponse:
+    """Report non-secret limits and environment behavior used by this process."""
+
+    return _runtime_payload(request)
+
+
+@router.get(
     "/health/ready",
     response_model=ReadinessResponse,
     summary="Combined production readiness",
     responses=_UNAVAILABLE_RESPONSES,
 )
-def readiness_check(response: Response) -> ReadinessResponse:
-    """Require both verified JPL data and a ready API-key policy."""
+def readiness_check(request: Request, response: Response) -> ReadinessResponse:
+    """Require verified JPL data, a ready API-key policy, and validated runtime settings."""
 
     ephemeris = _ephemeris_payload()
     security = _security_payload()
-    ready = ephemeris.ready and security.ready
+    runtime = _runtime_payload(request)
+    ready = ephemeris.ready and security.ready and runtime.ready
     if not ready:
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     return ReadinessResponse(
@@ -187,4 +233,5 @@ def readiness_check(response: Response) -> ReadinessResponse:
         ready=ready,
         ephemeris=ephemeris,
         security=security,
+        runtime=runtime,
     )
