@@ -1,0 +1,112 @@
+{
+  "comparison_performed": false,
+  "lunar_elements": {
+    "api_source": "NASA/JPL Horizons API",
+    "api_version": "1.2",
+    "center": "Center body name: Earth (399)                     {source: DE441}",
+    "epoch_jd_tdb": 2451112.707675722,
+    "ketu_derived": false,
+    "osculating_ascending_node_om_degrees": 149.0422360226254,
+    "reason": "Horizons OM is an osculating node relative to the selected ecliptic/equinox; equivalence to apparent Jyotisha true Rahu has not been established.",
+    "reference_plane_or_frame_line": "Reference frame : Ecliptic of J2000.0",
+    "response_filename": "horizons-elements-moon.json",
+    "response_sha256": "8c4692d9657158f287e1f295683f7a9984afba37e32e41488a33cfbc6dbeb770",
+    "target": "Target body name: Moon (301)                      {source: DE441}",
+    "true_node_status": "unresolved"
+  },
+  "observer_quantity_31": {
+    "jupiter": {
+      "api_source": "NASA/JPL Horizons API",
+      "api_version": "1.2",
+      "apparent_tropical_ecliptic_latitude_degrees": -1.4982896,
+      "apparent_tropical_ecliptic_longitude_degrees": 348.7299267,
+      "center": "Center body name: Earth (399)                     {source: DE441}",
+      "center_site": "Center-site name: GEOCENTRIC",
+      "response_filename": "horizons-observer-jupiter.json",
+      "response_sha256": "fecdb50480c706a517eb466cda469c5833bfbb04cb7a090bc7706535ed0b68e0",
+      "start_time": "Start time      : A.D. 1998-Oct-26 04:58:00.0000 UT",
+      "target": "Target body name: Jupiter (599)                   {source: jup365_merged}",
+      "time_column": "1998-Oct-26 04:58:00.000"
+    },
+    "mars": {
+      "api_source": "NASA/JPL Horizons API",
+      "api_version": "1.2",
+      "apparent_tropical_ecliptic_latitude_degrees": 1.4602258,
+      "apparent_tropical_ecliptic_longitude_degrees": 161.3020103,
+      "center": "Center body name: Earth (399)                     {source: DE441}",
+      "center_site": "Center-site name: GEOCENTRIC",
+      "response_filename": "horizons-observer-mars.json",
+      "response_sha256": "cd52162bc3b1ce299d89e865197df66e8bbbb7cf3194ac7e660516e68468cf14",
+      "start_time": "Start time      : A.D. 1998-Oct-26 04:58:00.0000 UT",
+      "target": "Target body name: Mars (499)                      {source: mar099}",
+      "time_column": "1998-Oct-26 04:58:00.000"
+    },
+    "mercury": {
+      "api_source": "NASA/JPL Horizons API",
+      "api_version": "1.2",
+      "apparent_tropical_ecliptic_latitude_degrees": -1.8333045,
+      "apparent_tropical_ecliptic_longitude_degrees": 231.126924,
+      "center": "Center body name: Earth (399)                     {source: DE441}",
+      "center_site": "Center-site name: GEOCENTRIC",
+      "response_filename": "horizons-observer-mercury.json",
+      "response_sha256": "f47e8c88b3a3613c7844fb07f32c4e8d06eca0123dd0542aa9f06ba848a2fe2e",
+      "start_time": "Start time      : A.D. 1998-Oct-26 04:58:00.0000 UT",
+      "target": "Target body name: Mercury (199)                   {source: DE441}",
+      "time_column": "1998-Oct-26 04:58:00.000"
+    },
+    "moon": {
+      "api_source": "NASA/JPL Horizons API",
+      "api_version": "1.2",
+      "apparent_tropical_ecliptic_latitude_degrees": 4.0492581,
+      "apparent_tropical_ecliptic_longitude_degrees": 276.069919,
+      "center": "Center body name: Earth (399)                     {source: DE441}",
+      "center_site": "Center-site name: GEOCENTRIC",
+      "response_filename": "horizons-observer-moon.json",
+      "response_sha256": "d1524abcbaa4dc8b074d83125bbc0b0e3a6d517429dae92891c8e0365d37fe5f",
+      "start_time": "Start time      : A.D. 1998-Oct-26 04:58:00.0000 UT",
+      "target": "Target body name: Moon (301)                      {source: DE441}",
+      "time_column": "1998-Oct-26 04:58:00.000"
+    },
+    "saturn": {
+      "api_source": "NASA/JPL Horizons API",
+      "api_version": "1.2",
+      "apparent_tropical_ecliptic_latitude_degrees": -2.7643288,
+      "apparent_tropical_ecliptic_longitude_degrees": 29.9657395,
+      "center": "Center body name: Earth (399)                     {source: DE441}",
+      "center_site": "Center-site name: GEOCENTRIC",
+      "response_filename": "horizons-observer-saturn.json",
+      "response_sha256": "e6b574cfa949608269a7e4b1be81cd5a6aadaebbdfd335cc6e14a326490f233f",
+      "start_time": "Start time      : A.D. 1998-Oct-26 04:58:00.0000 UT",
+      "target": "Target body name: Saturn (699)                    {source: sat441l}",
+      "time_column": "1998-Oct-26 04:58:00.000"
+    },
+    "sun": {
+      "api_source": "NASA/JPL Horizons API",
+      "api_version": "1.2",
+      "apparent_tropical_ecliptic_latitude_degrees": 0.0001593,
+      "apparent_tropical_ecliptic_longitude_degrees": 212.5742344,
+      "center": "Center body name: Earth (399)                     {source: DE441}",
+      "center_site": "Center-site name: GEOCENTRIC",
+      "response_filename": "horizons-observer-sun.json",
+      "response_sha256": "532b3215dd799cd3535e0ca4f93e3c6b34d23f938107bccda205df9662748070",
+      "start_time": "Start time      : A.D. 1998-Oct-26 04:58:00.0000 UT",
+      "target": "Target body name: Sun (10)                        {source: DE441}",
+      "time_column": "1998-Oct-26 04:58:00.000"
+    },
+    "venus": {
+      "api_source": "NASA/JPL Horizons API",
+      "api_version": "1.2",
+      "apparent_tropical_ecliptic_latitude_degrees": 1.0370804,
+      "apparent_tropical_ecliptic_longitude_degrees": 211.5594044,
+      "center": "Center body name: Earth (399)                     {source: DE441}",
+      "center_site": "Center-site name: GEOCENTRIC",
+      "response_filename": "horizons-observer-venus.json",
+      "response_sha256": "8fc35d35263e203bcb5d3349f886580f9a375fd8a4f6f226389618023691cdea",
+      "start_time": "Start time      : A.D. 1998-Oct-26 04:58:00.0000 UT",
+      "target": "Target body name: Venus (299)                     {source: DE441}",
+      "time_column": "1998-Oct-26 04:58:00.000"
+    }
+  },
+  "purpose": "source_2_feasibility_parsed_horizons_fields",
+  "schema_version": "1.0.0"
+}

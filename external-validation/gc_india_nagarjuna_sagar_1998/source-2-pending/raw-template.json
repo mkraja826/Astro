@@ -1,0 +1,59 @@
+{
+  "source": {
+    "source_name": "REPLACE_WITH_INDEPENDENT_SOURCE_NAME",
+    "source_version": "REPLACE_WITH_SOURCE_VERSION_OR_BUILD",
+    "source_kind": "external_software",
+    "calculation_notes": [
+      "REPLACE_WITH_VERIFIED_INPUT_AND_TIMEZONE_NOTE",
+      "REPLACE_WITH_VERIFIED_CALENDAR_NOTE",
+      "REPLACE_WITH_AYANAMSHA_AND_CUSTOM_CORRECTION_NOTE",
+      "REPLACE_WITH_GEOCENTRIC_OR_TOPOCENTRIC_NOTE",
+      "REPLACE_WITH_APPARENT_OR_TRUE_POSITION_MODE_NOTE",
+      "REPLACE_WITH_REFRACTION_ABERRATION_DEFLECTION_AND_NUTATION_NOTE",
+      "REPLACE_WITH_TRUE_OR_MEAN_NODE_NOTE",
+      "REPLACE_WITH_EPHEMERIS_VERSION_AND_EVIDENCE_FILENAMES"
+    ]
+  },
+  "format": "generic_json_v1",
+  "payload": {
+    "chart": {
+      "ayanamsa": null,
+      "lagna_longitude": null,
+      "planetary_longitudes": {
+        "Sun": null,
+        "Moon": null,
+        "Mars": null,
+        "Mercury": null,
+        "Jupiter": null,
+        "Venus": null,
+        "Saturn": null,
+        "Rahu": null,
+        "Ketu": null
+      },
+      "rasi_signs": {
+        "Lagna": null,
+        "Sun": null,
+        "Moon": null,
+        "Mars": null,
+        "Mercury": null,
+        "Jupiter": null,
+        "Venus": null,
+        "Saturn": null,
+        "Rahu": null,
+        "Ketu": null
+      },
+      "navamsha_signs": {
+        "Lagna": null,
+        "Sun": null,
+        "Moon": null,
+        "Mars": null,
+        "Mercury": null,
+        "Jupiter": null,
+        "Venus": null,
+        "Saturn": null,
+        "Rahu": null,
+        "Ketu": null
+      }
+    }
+  }
+}

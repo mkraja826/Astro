@@ -1,0 +1,49 @@
+{
+  "atmospheric_refraction": false,
+  "comparison_performed": false,
+  "earth_orientation": {
+    "dut1_error_seconds": 1.4924305554758758e-05,
+    "dut1_seconds": -0.19479267777750642,
+    "error_columns": "Bulletin A formal errors",
+    "interpolation": "linear between adjacent daily records",
+    "series": "IERS finals2000A",
+    "source_file": "iers-finals2000A.all",
+    "target_mjd_utc": 51112.20694444422,
+    "value_columns": "Bulletin B final",
+    "xp_arcseconds": 0.1536507222220674,
+    "xp_error_arcseconds": 5.996527777891606e-05,
+    "yp_arcseconds": 0.40760233333371576,
+    "yp_error_arcseconds": 0.0001033444444462657
+  },
+  "erfa_routines": [
+    "dtf2d",
+    "utctai",
+    "taitt",
+    "utcut1",
+    "gst06a",
+    "obl06",
+    "nut06a",
+    "sp00",
+    "pom00"
+  ],
+  "geographic_input": {
+    "altitude_effect": "No effect on the unrefracted geodetic horizon-plane normal.",
+    "altitude_meters": 120,
+    "latitude_degrees_north": 16.575,
+    "longitude_degrees_east": 79.312
+  },
+  "limitation": "The geometric method and EOP handling are reproducible, but exact equivalence to the target calculation profile must be reviewed before formal capture.",
+  "models": [
+    "IAU 2006 precession",
+    "IAU 2000A nutation"
+  ],
+  "purpose": "source_2_ascendant_feasibility",
+  "schema_version": "1.0.0",
+  "sensitivity": {
+    "plus_formal_dut1_error_effect_arcseconds": 0.00020632292034861166,
+    "polar_motion_effect_arcseconds": 0.22469940261089505
+  },
+  "status": "provisionally_proven",
+  "tropical_ascendant_degrees": 270.704444202489,
+  "utc_instant": "1998-10-26T04:58:00Z"
+}

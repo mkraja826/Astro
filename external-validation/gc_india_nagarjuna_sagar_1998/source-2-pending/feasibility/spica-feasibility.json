@@ -1,0 +1,50 @@
+{
+  "accepted_for_formal_capture": false,
+  "ayanamsha_status": "unresolved",
+  "catalogue_input": {
+    "catalogue_epoch": "J2000",
+    "catalogue_identifier": "HIP 65474",
+    "catalogue_name": "Spica / alpha Virginis",
+    "dec_degrees": -11.0,
+    "dec_minutes": 9.0,
+    "dec_seconds": 40.7501,
+    "parallax_mas": 13.06,
+    "pm_dec_mas_per_year": -30.67,
+    "pm_ra_cos_dec_mas_per_year": -42.35,
+    "ra_hours": 13.0,
+    "ra_minutes": 25.0,
+    "ra_seconds": 11.57937,
+    "radial_velocity_km_per_second": -3.31,
+    "reference_frame": "ICRS"
+  },
+  "catalogue_source_file": "simbad-spica.html",
+  "comparison_performed": false,
+  "experimental_apparent_spica_longitude_degrees": 203.81619849221497,
+  "experimental_spica_minus_180_degrees": 23.816198492214966,
+  "purpose": "source_2_true_chitra_feasibility",
+  "schema_version": "1.0.0",
+  "transformation_routines": [
+    "dtf2d",
+    "utctai",
+    "taitt",
+    "atci13",
+    "obl06",
+    "nut06a"
+  ],
+  "treatments": {
+    "aberration": "ERFA atci13 astrometric-to-CIRS transformation",
+    "ecliptic": "true obliquity of date, experimental construction",
+    "light_deflection": "ERFA atci13 astrometric-to-CIRS transformation",
+    "nutation": "IAU 2000A through ERFA nut06a",
+    "parallax": "SIMBAD catalogue parallax passed to atci13",
+    "precession": "IAU 2006 through ERFA",
+    "proper_motion": "SIMBAD ICRS mu-alpha*cos(delta) and mu-delta",
+    "radial_velocity": "SIMBAD heliocentric radial velocity passed to atci13"
+  },
+  "unresolved_reasons": [
+    "No authoritative specification has yet fixed whether True Chitra uses this exact apparent-place and true-ecliptic construction.",
+    "SIMBAD combines catalogue measurements; the required component or photocentre convention for the Spica multiple system is not formally established for this use.",
+    "The sidereal anchor at exactly 180 degrees is plausible from the middle of Chitra definition but has not yet been tied to a normative True Lahiri specification."
+  ],
+  "utc_instant": "1998-10-26T04:58:00Z"
+}

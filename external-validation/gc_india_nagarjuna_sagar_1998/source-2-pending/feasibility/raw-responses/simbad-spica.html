@@ -1,0 +1,1932 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+<head>
+ <!-- Include the CSS stylesheet for the CDS navbar and footer: -->
+<link href="/cds-navbar-resources/css/cdsnavbar.min.css" rel="stylesheet"/>
+<!-- Include OpenSearch engines for CDS services: -->
+<link title="SIMBAD" rel="search" type="application/opensearchdescription+xml" href="/cds-navbar-resources/opensearch/simbad.xml"/>
+<link title="VizieR" rel="search" type="application/opensearchdescription+xml" href="/cds-navbar-resources/opensearch/vizier.xml"/>
+<link title="Aladin" rel="search" type="application/opensearchdescription+xml" href="/cds-navbar-resources/opensearch/aladin.xml"/>
+<link title="XMatch" rel="search" type="application/opensearchdescription+xml" href="/cds-navbar-resources/opensearch/xmatch.xml"/><meta charset="utf-8">
+<link rel="stylesheet" href="/Simlib/jquery.dataTables.min.css"  type="text/css" />
+<link rel="stylesheet" href="/Simlib/sed.css" type="text/css" />
+<link rel="stylesheet" href="/Simlib/tables.css" type="text/css" />
+<link rel="stylesheet" href="/Simlib/myAladinLite.css" type="text/css" />
+<link rel="search" type="application/opensearchdescription+xml" title="SIMBAD basic" href="http://simbad.u-strasbg.fr/Simlib/simbadBasic.xml" />
+<script src="/Simlib/jquery.min.js" type="text/javascript"></script>
+<script src="/Simlib/jquery.dataTables.min.js" type="text/javascript"></script>
+<script src="/Simlib/simbad.js" type="text/javascript"></script>
+<script src="/Simlib/tables.js" type="text/javascript"></script>
+<script src="/Simlib/jquery-ui.js" type="text/javascript"></script>
+<script src="/Simlib/myAladinLite.js" type="text/javascript"></script>
+<script src="/samp/simbad-samp.js" type="text/javascript"></script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_CHTML"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<link rel="stylesheet" href="/css/simbad.css"  type="text/css" />
+<link rel="stylesheet" href="/htree/css/style.css" type="text/css" />
+<script src="/htree/js/CanvasSVG.js"></script>
+<script src="/htree/js/Circle.js"></script>
+<script src="/htree/js/script.js"></script>
+<Meta name="Description" content="The SIMBAD astronomical database provides basic data, cross-identifications, bibliography and measurements for astronomical objects outside the solar system.">
+<meta property="og:title" content="Spica"/><meta property="og:type" content="article"/><meta property="og:url" content="sim-basic"/><meta property="og:image" content="http://cds.unistra.fr/Icons/simbad_icon.gif"/><TITLE itemprop='name'>Spica</TITLE></head>
+<body>
+ <!--
+#######################################################################
+#                                                                     #
+#                   CDS TOP NAVIGATION BAR                            #
+#                                                                     #
+#######################################################################
+-->
+<nav class="cds-menu for-simbad" role="menubar" aria-label="CDS services navigation" data-pagefind-ignore="all">
+<!-- HEADER: CDS WEBSITE LINK -->
+<header><a href="https://cds.unistra.fr" role="menuitem" aria-label="CDS website"></a></header>
+<!-- MENU CONTENT -->
+<ul role="menu" aria-label="CDS services">
+<!-- List of all services (collapsed on very small screens) -->
+<li class="is-collapsed-when-very-small" role="none">
+<!-- Trigger for showing the menu on very small screens -->
+<span class="menu-trigger for-all-services" tabindex="0" onclick="void(0)" role="menuitem" aria-label="List CDS services and more" aria-haspopup="true" aria-expanded="false"><span>Services</span></span>
+<!-- CDS main services -->
+<ul role="menu" aria-label="CDS main services">
+<li role="none"><a class="portal" href="https://portal.cds.unistra.fr"  role="menuitem" aria-label="CDS Portal"><span></span></a></li>
+<li role="none"><a class="simbad" href="http://simbad.cds.unistra.fr/simbad"      role="menuitem" aria-label="Simbad"><span></span></a></li>
+<li role="none"><a class="vizier" href="http://vizier.cds.unistra.fr/viz-bin/VizieR"         role="menuitem" aria-label="VizieR"><span></span></a></li>
+<li role="none"><a class="aladin" href="http://aladin.cds.unistra.fr/aladin.gml"     role="menuitem" aria-label="Aladin"><span></span></a></li>
+<li role="none"><a class="xmatch" href="http://cdsxmatch.u-strasbg.fr"  role="menuitem" aria-label="X-Match"><span></span></a></li>
+<!-- SUB-MENU: Other CDS services -->
+<li role="none">
+<!-- Trigger for showing the sub-menu -->
+<a class="menu-trigger for-other-services" tabindex="0" onclick="void(0)" role="menuitem" aria-label="Other resources" aria-haspopup="true">Others</a>
+<!-- Sub-menu itself -->
+<ul role="menu" aria-label="Other resources">
+<li role="none"><a href="https://cds.unistra.fr/cgi-bin/Sesame" role="menuitem" aria-label="Sesame name resolver">Sesame name resolver</a></li>
+<li role="none"><a href="https://cds.unistra.fr/cgi-bin/Dic-Simbad"            role="menuitem" aria-label="Dictionary of nomenclature">Dictionary of nomenclature</a></li>
+<li role="separator" class="divider" aria-hidden="true"></li>
+<!-- Link: email CDS-Question-->
+<li role="none"><a href="mailto:cds-question@unistra.fr" tabindex="0" role="menuitem" aria-label="Contact us">Contact us</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<!-- Link: CDS help resources -->
+<li role="none"><a class="help" href="https://cds.unistra.fr/help" role="menuitem" aria-label="Help resources"><span>Help</span></a></li>
+</ul>
+</nav>
+<div class="cdsPageTitle"><h1>Spica</h1></div><div style="margin: 10px"> <TABLE CELLSPACING="6" CELLPADDING="6">
+  <TR ALIGN="LEFT" VALIGN="TOP" id="menu">
+   <TD>
+    <B>
+     <I>
+other query<br>modes :      </I>
+    </B>
+   </TD>
+   <TD ALIGN="CENTER" BGCOLOR="#CCCCFF" id="nav-1">
+    <A title="Query by object names, catalogue names, wildcards" HREF="sim-fid">
+     <FONT SIZE="+0" COLOR="#000000">
+Identifier<br>query     </FONT>
+    </A>
+   </TD>
+   <TD ALIGN="CENTER" BGCOLOR="#CCCCFF" id="nav-2">
+    <A title="Query by position with radius, epoch, equinox" HREF="sim-fcoo">
+     <FONT SIZE="+0" COLOR="#000000">
+Coordinate<br>query     </FONT>
+    </A>
+   </TD>
+   <TD ALIGN="CENTER" BGCOLOR="#CCCCFF" id="nav-3">
+    <A title="Query by filters on magnitude, velocity ..." HREF="sim-fsam">
+     <FONT SIZE="+0" COLOR="#000000">
+Criteria<br>query     </FONT>
+    </A>
+   </TD>
+   <TD ALIGN="CENTER" BGCOLOR="#CCCCFF" id="nav-5">
+    <A title="Query by publication, year, journal ..." HREF="sim-fref">
+     <FONT SIZE="+0" COLOR="#000000">
+Reference<br>query     </FONT>
+    </A>
+   </TD>
+   <TD ALIGN="CENTER" BGCOLOR="#CCCCFF" id="nav-6">
+    <A title="Simple query identifiers/coordinates" HREF="sim-fbasic">
+     <FONT SIZE="+0" COLOR="#000000">
+Basic<br>query     </FONT>
+    </A>
+   </TD>
+   <TD ALIGN="CENTER" BGCOLOR="#CCCCFF" id="nav-4">
+    <A title="Submit a list of queries, and customize the output" HREF="sim-fscript">
+     <FONT SIZE="+0" COLOR="#000000">
+Script<br>submission     </FONT>
+    </A>
+   </TD>
+   <TD ALIGN="CENTER" BGCOLOR="#CCCCFF" id="nav-7">
+    <A title="SQL like query editor" HREF="sim-tap">
+     <FONT SIZE="+0" COLOR="#000000">
+TAP     </FONT>
+    </A>
+   </TD>
+   <TD ALIGN="CENTER"/>
+   <TD ALIGN="CENTER" BGCOLOR="#FFFF99" id="nav-7">
+    <A title="Select the displayed data" HREF="sim-fout" target="_blank">
+     <FONT SIZE="+0" COLOR="#000000">
+Output<br>options     </FONT>
+    </A>
+   </TD>
+   <TD ALIGN="RIGHT" BGCOLOR="#CCFFCC">
+    <FONT SIZE="+0" COLOR="#000000">
+<A HREF="//simbad.cds.unistra.fr/simbad/../guide/otypes.htx">Object<br>types</A>    </FONT>
+   </TD>
+   <TD ALIGN="RIGHT" BGCOLOR="#CCFFCC">
+    <FONT SIZE="+0" COLOR="#000000">
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-help?Page=sim-basic">Help</A>    </FONT>
+   </TD>
+  </TR>
+ </TABLE>
+<P><P> <TABLE WIDTH="100%" CELLPADDING="3">
+  <TR>
+   <TD>
+    <FONT SIZE="-1">
+Query : Spica    </FONT>
+   </TD>
+   <TD ALIGN="CENTER" VALIGN="TOP" width="33%">
+
+   </TD>
+  </TR>
+ </TABLE>
+<HR><P><A NAME="lab_basic"></A>
+ <script language="JavaScript" type="text/javascript" src="/Simlib/viz2.js"> </script>
+ <TABLE WIDTH="100%" CELLSPACING="2">
+  <TR>
+   <TD>
+    <FONT SIZE="+1">
+     <B>
+Basic data : 
+     </B>
+    </FONT>
+   </TD>
+   <TD ALIGN="CENTER" VALIGN="MIDDLE"/>
+  </TR>
+  <TR>
+<P>   <TD VALIGN="TOP" id="basic_data" style="min-width: 830px;">
+    <TABLE>
+     <TR>
+      <TD NOWRAP colspan="2">
+       <FONT SIZE="+2">
+        <B>
+* alf Vir
+        </B>
+ -- 
+beta Cep Variable
+       </FONT>
+       <META NAME="description" CONTENT="The astronomical object called * alf Vir is a beta Cep Variable">
+      </TD>
+     </TR>
+     <TR>
+      <TD ALIGN="LEFT" VALIGN="TOP" NOWRAP>
+       <SPAN class="info-tooltip">
+        <DIV>
+<FONT SIZE='-1'>
+Origin of the objects types :
+
+<P>
+(Ref) Object type as listed in the reference "Ref"<BR>
+(acronym) Object type linked to the acronym according to the original reference<BR>
+() Anterior to 2007, before we can link the objet type to a reference, or given by the CDS team in some particular cases 
+</FONT>
+        </DIV>
+Other object types: 
+       </SPAN>
+       <A title="Object types in SIMBAD" target="_blank" HREF="//simbad.cds.unistra.fr/simbad/../guide/otypes.htx">
+        <IMG SRC="//simbad.cds.unistra.fr/icons/help.png" ALT="otypes_help" ID="otypes_help" ALIGN="TOP"/>
+       </A>
+      </TD>
+      <TD>
+<TT title="*,ALS,BD,CSI,FK5,GC,GCRV,GEN#,GSC,HD,HGAM,HIC,HIP,HR,JP11,MCW,N30,PLX,PMC,PPM,ROT,SACS,SAO,SKY#,TYC,UBV,uvby98,WEB">       <B>
+        <TT>
+*
+        </TT>
+       </B>
+(*,ALS,...)</TT>, 
+<TT title="2E,1ES,RBS,RE,RX,1RXS">       <B>
+        <TT>
+X
+        </TT>
+       </B>
+(2E,1ES,...)</TT>, 
+<TT title="CCDM,IDS,WDS">       <B>
+        <TT>
+**
+        </TT>
+       </B>
+(CCDM,IDS,...)</TT>, 
+<TT title="EUVE,2RE,TD1">       <B>
+        <TT>
+UV
+        </TT>
+       </B>
+(EUVE,2RE,...)</TT>, 
+<TT title="IRAS,IRC,RAFGL">       <B>
+        <TT>
+IR
+        </TT>
+       </B>
+(IRAS,IRC,...)</TT>, 
+<TT title="2012NewAR..56..143D">       <B>
+        <TT>
+bC*
+        </TT>
+       </B>
+(<A HREF="http://simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2012NewAR..56..143D">2012NewAR</A>)</TT>, 
+<TT title="SBC7,SBC9">       <B>
+        <TT>
+SB*
+        </TT>
+       </B>
+(SBC7,SBC9)</TT>, 
+<TT title="2017ARep...61...80S">       <B>
+        <TT>
+El*
+        </TT>
+       </B>
+(<A HREF="http://simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2017ARep...61...80S">2017ARep</A>)</TT>, 
+<TT title="V*">       <B>
+        <TT>
+V*
+        </TT>
+       </B>
+(V*)</TT>, 
+<TT title="2MASS">       <B>
+        <TT>
+NIR
+        </TT>
+       </B>
+(2MASS)</TT>      </TD>
+     </TR>
+     <TR>
+      <TD NOWRAP>
+       <SPAN class="info-tooltip">
+        <DIV>
+<FONT SIZE='-1'>
+Syntax of coordinates is : "ra dec (wtype) [error ellipse] quality bibcode" :
+<UL>
+<LI><EM>ra dec</EM> : right ascension and declination (unit and frame defined according to your Output Options)<BR>
+Grey values are increasing the original precision due to the computation of frame transformations
+<LI><EM>(wtype)</EM> : wavelength class for the origin of the coordinates (Rad, mm, IR, Optical, UV, Xray, Gam)
+<LI><EM>[error ellipse]</EM> :  measurement uncertainty, on (ra,dec) if the positional angle is 90 degrees, on (majaxis,minaxis) otherwise (in mas at defined epoch in the original catalogue),<BR>
+position angle (in degrees North celestial pole to East)
+<LI><EM>quality</EM> : flag of quality 
+<UL> 
+<LI>E &#8805; 10"
+<LI>D : 1-10" (and some old data)
+<LI>C : 0.1-1''; as well as Tycho2, UCAC4, and Gaia DR2/3 without proper motions
+<LI>B : 0.01-0.1''; as well as Tycho2 and UCAC4 with proper motions
+<LI>A : Hipparcos and Gaia DR2/3 with proper motions; sometimes VLBI
+</UL>
+<LI><EM>bibcode</EM> : bibcode of the coordinates reference
+</UL>
+
+</FONT>
+        </DIV>
+        <B>
+ICRS
+        </B>
+ coord. 
+        <I>
+(ep=J2000) : 
+        </I>
+       </SPAN>
+      </TD>
+      <TD NOWRAP>
+       <B>
+        <TT>
+13 25 11.57937 -11 09 40.7501
+ 
+         <SPAN title="wavelength class for the origin of the measure">
+(Optical)
+         </SPAN>
+         <SPAN title="error ellipse">
+[
+5.46 3.26 82
+] 
+         </SPAN>
+         <SPAN title="quality flag (A->E)">
+A
+ 
+         </SPAN>
+         <SPAN class="bibcode">
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2007A%26A...474..653V">2007A&A...474..653V</A>         </SPAN>
+        </TT>
+       </B>
+      </TD>
+     </TR>
+     <TR>
+      <TD NOWRAP>
+       <SPAN class="info-tooltip">
+        <DIV>
+<FONT SIZE='-1'>
+Syntax of coordinates is : "ra dec (wtype) [error ellipse] quality bibcode" :
+<UL>
+<LI><EM>ra dec</EM> : right ascension and declination (unit and frame defined according to your Output Options)<BR>
+Grey values are increasing the original precision due to the computation of frame transformations
+<LI><EM>(wtype)</EM> : wavelength class for the origin of the coordinates (Rad, mm, IR, Optical, UV, Xray, Gam)
+<LI><EM>[error ellipse]</EM> :  measurement uncertainty, on (ra,dec) if the positional angle is 90 degrees, on (majaxis,minaxis) otherwise (in mas at defined epoch in the original catalogue),<BR>
+position angle (in degrees North celestial pole to East)
+<LI><EM>quality</EM> : flag of quality 
+<UL> 
+<LI>E &#8805; 10"
+<LI>D : 1-10" (and some old data)
+<LI>C : 0.1-1''; as well as Tycho2, UCAC4, and Gaia DR2/3 without proper motions
+<LI>B : 0.01-0.1''; as well as Tycho2 and UCAC4 with proper motions
+<LI>A : Hipparcos and Gaia DR2/3 with proper motions; sometimes VLBI
+</UL>
+<LI><EM>bibcode</EM> : bibcode of the coordinates reference
+</UL>
+
+</FONT>
+        </DIV>
+        <B>
+FK5
+        </B>
+ coord. 
+        <I>
+(ep=J2000 eq=2000) : 
+        </I>
+       </SPAN>
+      </TD>
+      <TD NOWRAP>
+       <TT>
+13 25 11.58118 -11 09 40.7514
+ 
+        <SPAN title="error ellipse">
+[
+5.46 3.26 82
+] 
+        </SPAN>
+       </TT>
+      </TD>
+     </TR>
+     <TR>
+      <TD NOWRAP>
+       <SPAN class="info-tooltip">
+        <DIV>
+<FONT SIZE='-1'>
+Syntax of coordinates is : "ra dec (wtype) [error ellipse] quality bibcode" :
+<UL>
+<LI><EM>ra dec</EM> : right ascension and declination (unit and frame defined according to your Output Options)<BR>
+Grey values are increasing the original precision due to the computation of frame transformations
+<LI><EM>(wtype)</EM> : wavelength class for the origin of the coordinates (Rad, mm, IR, Optical, UV, Xray, Gam)
+<LI><EM>[error ellipse]</EM> :  measurement uncertainty, on (ra,dec) if the positional angle is 90 degrees, on (majaxis,minaxis) otherwise (in mas at defined epoch in the original catalogue),<BR>
+position angle (in degrees North celestial pole to East)
+<LI><EM>quality</EM> : flag of quality 
+<UL> 
+<LI>E &#8805; 10"
+<LI>D : 1-10" (and some old data)
+<LI>C : 0.1-1''; as well as Tycho2, UCAC4, and Gaia DR2/3 without proper motions
+<LI>B : 0.01-0.1''; as well as Tycho2 and UCAC4 with proper motions
+<LI>A : Hipparcos and Gaia DR2/3 with proper motions; sometimes VLBI
+</UL>
+<LI><EM>bibcode</EM> : bibcode of the coordinates reference
+</UL>
+
+</FONT>
+        </DIV>
+        <B>
+FK4
+        </B>
+ coord. 
+        <I>
+(ep=B1950 eq=1950) : 
+        </I>
+       </SPAN>
+      </TD>
+      <TD NOWRAP>
+       <TT>
+13 22 33.29940 -10 54 03.2955
+ 
+        <SPAN title="error ellipse">
+[
+5.46 3.26 82
+] 
+        </SPAN>
+       </TT>
+      </TD>
+     </TR>
+     <TR>
+      <TD NOWRAP>
+       <SPAN class="info-tooltip">
+        <DIV>
+<FONT SIZE='-1'>
+Syntax of coordinates is : "ra dec (wtype) [error ellipse] quality bibcode" :
+<UL>
+<LI><EM>ra dec</EM> : right ascension and declination (unit and frame defined according to your Output Options)<BR>
+Grey values are increasing the original precision due to the computation of frame transformations
+<LI><EM>(wtype)</EM> : wavelength class for the origin of the coordinates (Rad, mm, IR, Optical, UV, Xray, Gam)
+<LI><EM>[error ellipse]</EM> :  measurement uncertainty, on (ra,dec) if the positional angle is 90 degrees, on (majaxis,minaxis) otherwise (in mas at defined epoch in the original catalogue),<BR>
+position angle (in degrees North celestial pole to East)
+<LI><EM>quality</EM> : flag of quality 
+<UL> 
+<LI>E &#8805; 10"
+<LI>D : 1-10" (and some old data)
+<LI>C : 0.1-1''; as well as Tycho2, UCAC4, and Gaia DR2/3 without proper motions
+<LI>B : 0.01-0.1''; as well as Tycho2 and UCAC4 with proper motions
+<LI>A : Hipparcos and Gaia DR2/3 with proper motions; sometimes VLBI
+</UL>
+<LI><EM>bibcode</EM> : bibcode of the coordinates reference
+</UL>
+
+</FONT>
+        </DIV>
+        <B>
+Gal
+        </B>
+ coord. 
+        <I>
+(ep=J2000) : 
+        </I>
+       </SPAN>
+      </TD>
+      <TD NOWRAP>
+       <TT>
+316.11234750 +50.84455481
+ 
+        <SPAN title="error ellipse">
+[
+5.46 3.26 82
+] 
+        </SPAN>
+       </TT>
+      </TD>
+     </TR>
+     <TR>
+      <TD ALIGN="LEFT" VALIGN="TOP" NOWRAP>
+       <SPAN class="info-tooltip">
+        <DIV>
+<FONT SIZE='-1'>
+Syntax of proper motions is : "pm-ra pm-dec [error ellipse] quality bibcode"
+<UL>
+<LI><EM>pm-ra</EM> : mu-ra*cos(dec) (expressed in the ICRS system in mas/yr)
+<LI><EM>pm-dec</EM> : mu-dec (expressed in the ICRS system in mas/yr)
+<LI><EM>[error ellipse]</EM> : error major axis and minor axis (in mas), orientation angle (in deg)
+<LI><EM>quality</EM> : flag of quality (A=best quality  &#x2192;E=worst quality, &#8764; =unknown quality)
+<LI><EM>bibcode</EM> : bibcode of the proper motion reference
+</UL>
+
+</FONT>
+        </DIV>
+Proper motions <i>mas/yr</i> :        </SPAN>
+      </TD>
+      <TD>
+       <B>
+        <TT>
+-42.35  -30.67  [0.62 0.37 0] A  
+        </TT>
+       </B>
+       <B>
+        <TT>
+         <SPAN class="bibcode">
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2007A%26A...474..653V">2007A&A...474..653V</A>         </SPAN>
+        </TT>
+       </B>
+      </TD>
+     </TR>
+     <TR>
+      <TD ALIGN="LEFT" VALIGN="TOP" NOWRAP>
+       <SPAN class="info-tooltip">
+        <DIV>
+<FONT SIZE='-1'>
+Syntax of radial velocity (or/and redshift) is : "value [error] (wavelength) quality bibcode"
+<UL>
+<LI><EM>value</EM> : radial velocity or/and redshift (Heliocentric frame) according to your Output Options 
+<BR> (redshift may be not displayed if the data value is &lt;0 and the database inside value is a radial velocity)
+<LI><EM>[error]</EM> : error of the corresponding value displayed before
+<LI><EM>(wavelength)</EM> : wavelength range of the measurement :  Rad, mm, IR, Opt, UV, Xray, Gam or&#160;&#160;'&#8764;'(unknown)
+<LI><EM>quality</EM> : flag of quality ( A=best quality  &#x2192;E=worst quality, &#8764; =unknown quality) 
+<LI><EM>bibcode</EM> : bibcode of the value's origin 
+</UL>
+
+</FONT>
+        </DIV>
+Radial velocity / Redshift / cz :        </SPAN>
+      </TD>
+      <TD>
+       <B>
+        <TT>
+V(km/s) -3.310 [0.780] / 
+         <FONT SIZE="+0" COLOR="#969696">
+z(~) -0.000011 [0.000003]         </FONT>
+ / 
+         <FONT SIZE="+0" COLOR="#969696">
+cz -3.31 [0.78]         </FONT>
+<BR>&nbsp;&nbsp;         <SPAN title="wavelength class for the origin of the measure">
+(Opt)          </SPAN>
+         <SPAN title="quality flag (A->E)">
+A          </SPAN>
+         <SPAN class="bibcode">
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2023ApJS..266...11B">2023ApJS..266...11B</A>         </SPAN>
+        </TT>
+       </B>
+      </TD>
+     </TR>
+     <TR>
+      <TD ALIGN="LEFT" VALIGN="TOP" NOWRAP>
+       <SPAN class="info-tooltip">
+        <DIV>
+<FONT SIZE='-1'>
+Syntax of parallax is : 'value quality [error] bibcode'
+<UL>
+<LI><EM>value</EM> : parallax value
+<LI><EM>quality</EM> : flag of quality (A=best quality  &#x2192;E=worst quality, &#8764; =unknown quality)
+<LI><EM>[error]</EM> : mean error
+<LI><EM>bibcode</EM> : bibcode of the parallax reference
+</UL>
+
+</FONT>
+        </DIV>
+Parallaxes <i>(mas)</i>:        </SPAN>
+      </TD>
+      <TD>
+       <B>
+        <TT>
+13.06  [0.70] A  
+        </TT>
+       </B>
+       <B>
+        <TT>
+         <SPAN class="bibcode">
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2007A%26A...474..653V">2007A&A...474..653V</A>         </SPAN>
+        </TT>
+       </B>
+      </TD>
+     </TR>
+     <TR>
+      <TD ALIGN="LEFT" VALIGN="TOP" NOWRAP>
+       <SPAN class="info-tooltip">
+        <DIV>
+<FONT SIZE='-1'>
+Spectral type is made of 3 parts:
+%coding is composed of 4 parts :
+ <UL>
+ <LI>the <EM>spectral type</EM>, which is made of a
+  temperature class, eventually a luminosity class (roman number)
+  and/or spectral peculiarities;
+<LI>a <EM>quality</EM> letter: A=best quality  &#x2192;E=worst quality, &#8764; =unknown quality
+ <LI><EM>bibcode</EM> : bibcode of the spectral type reference
+ </UL>
+
+</FONT>
+        </DIV>
+Spectral type:        </SPAN>
+      </TD>
+      <TD>
+       <B>
+        <TT>
+B1V C  
+        </TT>
+       </B>
+       <B>
+        <TT>
+         <SPAN class="bibcode">
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=1953ApJ...117..313J">1953ApJ...117..313J</A>         </SPAN>
+        </TT>
+       </B>
+      </TD>
+     </TR>
+     <TR>
+      <TD ALIGN="LEFT" VALIGN="TOP" NOWRAP>
+       <SPAN class="info-tooltip">
+        <DIV>
+<FONT SIZE='-1'>
+Syntax of fluxes (or magnitudes) is : "filter-name (System) flux-value [error] quality MultVarFlags bibcode"
+<UL>
+<LI><EM>filter-name</EM> : U, B, V, R, I, G, J, H, K, u, g, r, i, z 
+<LI><EM>(System)</EM> : may be AB (default is Vega) 
+<LI><EM>flux-value</EM> : value of flux or magnitude
+<LI><EM>[error]</EM> : error value
+<LI><EM>quality</EM> : flag of quality of the flux value ( A=best quality  &#x2192;E=worst quality, ~&#8764; =unknown quality)
+<LI><EM>MultVarFlags</EM> : Mult is zero or one char (J) for joined photometry ; Var can be zero or two chars (V[0-4])
+<LI><EM>bibcode </EM> : bibcode of the flux reference
+</UL>
+
+</FONT>
+        </DIV>
+Fluxes (8) : 
+       </SPAN>
+      </TD>
+      <TD>
+       <TABLE>
+        <TR>
+         <TD>
+          <B>
+           <TT>
+U      -0.20 [~]  
+            <SPAN title="quality flag (A->E)">
+C
+            </SPAN>
+            <B>
+             <TT>
+              <SPAN class="bibcode">
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2002yCat.2237....0D">2002yCat.2237....0D</A>              </SPAN>
+             </TT>
+            </B>
+           </TT>
+          </B>
+         </TD>
+        </TR>
+        <TR>
+         <TD>
+          <B>
+           <TT>
+B      0.74 [~]  
+            <SPAN title="quality flag (A->E)">
+C
+            </SPAN>
+            <B>
+             <TT>
+              <SPAN class="bibcode">
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2002yCat.2237....0D">2002yCat.2237....0D</A>              </SPAN>
+             </TT>
+            </B>
+           </TT>
+          </B>
+         </TD>
+        </TR>
+        <TR>
+         <TD>
+          <B>
+           <TT>
+V      0.97 [~]  
+            <SPAN title="quality flag (A->E)">
+C
+            </SPAN>
+            <B>
+             <TT>
+              <SPAN class="bibcode">
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2002yCat.2237....0D">2002yCat.2237....0D</A>              </SPAN>
+             </TT>
+            </B>
+           </TT>
+          </B>
+         </TD>
+        </TR>
+        <TR>
+         <TD>
+          <B>
+           <TT>
+R      1.06 [~]  
+            <SPAN title="quality flag (A->E)">
+C
+            </SPAN>
+            <B>
+             <TT>
+              <SPAN class="bibcode">
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2002yCat.2237....0D">2002yCat.2237....0D</A>              </SPAN>
+             </TT>
+            </B>
+           </TT>
+          </B>
+         </TD>
+        </TR>
+        <TR>
+         <TD>
+          <B>
+           <TT>
+I      1.30 [~]  
+            <SPAN title="quality flag (A->E)">
+C
+            </SPAN>
+            <B>
+             <TT>
+              <SPAN class="bibcode">
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2002yCat.2237....0D">2002yCat.2237....0D</A>              </SPAN>
+             </TT>
+            </B>
+           </TT>
+          </B>
+         </TD>
+        </TR>
+        <TR>
+         <TD>
+          <B>
+           <TT>
+J      1.50 [~]  
+            <SPAN title="quality flag (A->E)">
+C
+            </SPAN>
+            <B>
+             <TT>
+              <SPAN class="bibcode">
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2002yCat.2237....0D">2002yCat.2237....0D</A>              </SPAN>
+             </TT>
+            </B>
+           </TT>
+          </B>
+         </TD>
+        </TR>
+        <TR>
+         <TD>
+          <B>
+           <TT>
+H      1.54 [~]  
+            <SPAN title="quality flag (A->E)">
+C
+            </SPAN>
+            <B>
+             <TT>
+              <SPAN class="bibcode">
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2002yCat.2237....0D">2002yCat.2237....0D</A>              </SPAN>
+             </TT>
+            </B>
+           </TT>
+          </B>
+         </TD>
+        </TR>
+        <TR>
+         <TD>
+          <B>
+           <TT>
+K      1.64 [~]  
+            <SPAN title="quality flag (A->E)">
+C
+            </SPAN>
+            <B>
+             <TT>
+              <SPAN class="bibcode">
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2002yCat.2237....0D">2002yCat.2237....0D</A>              </SPAN>
+             </TT>
+            </B>
+           </TT>
+          </B>
+         </TD>
+        </TR>
+       </TABLE>
+      </TD>
+     </TR>
+    </TABLE>
+   </TD>
+   <TD VALIGN="TOP" WIDTH="350">
+    <TABLE cellpadding="5px">
+     <TR>
+      <TD ALIGN="CENTER" VALIGN="TOP">
+       <DIV class="bloc RoundedS">
+        <FORM ACTION="sim-coo" METHOD="GET" target="_blank" class="bloc">
+         <INPUT TYPE="hidden" NAME="Coord" ID="Coord" VALUE="13 25 11.57937-11 09 40.7501" />
+         <INPUT TYPE="hidden" NAME="CooFrame" ID="CooFrame" VALUE="ICRS" />
+         <INPUT TYPE="hidden" NAME="CooEqui" ID="CooEqui" VALUE="2000.0" />
+         <INPUT TYPE="hidden" NAME="CooEpoch" ID="CooEpoch" VALUE="J2000" />
+         <INPUT TYPE="hidden" NAME="Radius.unit" ID="Radius.unit" VALUE="arcmin" />
+SIMBAD 
+         <INPUT TYPE="submit" NAME="submit" VALUE="Query around" />
+within
+         <INPUT TYPE="number" NAME="Radius" required="true" min="0" max="300" pattern="[0-9]{1,2}\.?[0-9]*" SIZE="5" ID="radius" step="any" MAXLENGTH="5" VALUE="2" />
+arcmin
+        </FORM>
+       </DIV>
+      </TD>
+     </TR>
+     <TR>
+      <TD ALIGN="CENTER" VALIGN="TOP">
+       <DIV>
+        <DIV style="color:darkcyan;cursor:pointer;" onclick="aladin.addCatalog(A.catalogFromURL('http://simbad.cds.unistra.fr/simbad/../cone?RA=201.29824736156317&DEC=-11.16131948511193&SR=1.5242604006099525&MAXREC=30', {sourceSize:12, color:'#30a090'})); aladin.on('objectClicked', function(object) {   var objName=object.data.MAIN_ID;	aladin.showPopup(object.ra,object.dec,'','<a href=\'http://simbad.cds.unistra.fr/simbad/sim-id?Ident='+encodeURIComponent(objName)+'\'>'+ objName+'</a>');    });" title="Show Simbad objects">
+Overlay 
+         <IMG style="vertical-align:middle" ALT="Simbad" SRC="//simbad.cds.unistra.fr/icons//simbad.png" HEIGHT="30"/>
+ points in this preview
+        </DIV>
+<div id="aladin-lite-div"></div>        <DIV ID="surveys">
+<img id="back-icon" src="/icons/aladinlite_back_icon.png"  width=20 height=20 onclick="gotoAladinLite('P%2fDSS2%2fcolor','*%20alf%20Vir',0.7621302003049762);" alt="Back" title="Go back to Simbad object" />         <INPUT NAME="surveysButtons" ID="2MASS" TYPE="radio" />
+         <LABEL FOR="2MASS">
+2MASS
+         </LABEL>
+         <INPUT NAME="surveysButtons" ID="DSS" TYPE="radio" />
+         <LABEL FOR="DSS">
+DSS
+         </LABEL>
+         <INPUT NAME="surveysButtons" ID="others" TYPE="radio" />
+<select id="surveysList" ><option value=SDSS>SDSS</option><option value=XMM>XMM</option><option value=AllWISE>AllWISE</option><option value=IRAC>IRAC</option><option value=IRIS>IRIS</option><option value=GALEX>GALEX</option></select>        </DIV>
+<meta itemprop="image" itemscope itemtype="https://schema.org/ImageObject" property="og:image" content="//alasky.cds.unistra.fr/cgi/simbad-thumbnails/get-thumbnail.py?name=*%20alf%20Vir&size=0.7621302003049762&legend=P%2fDSS2%2fcolor&reticle=true&reticleWidth=1&reticleColor=yellow&scale=true"/>        <noscript>
+not available (enable JS to use it)
+         <IMG SRC="//alasky.cds.unistra.fr/cgi/simbad-thumbnails/get-thumbnail.py?name=*%20alf%20Vir&size=0.7621302003049762&legend=P%2fDSS2%2fcolor&reticle=true&reticleWidth=1&reticleColor=yellow&scale=true" ALT=" " ID=" " ALIGN="CENTER"/>
+        </noscript>
+<script type="text/javascript">$(document).ready(function(){myAladinLite("P/DSS2/color","* alf Vir",0.7621302003049762)});</script>       </DIV>
+      </TD>
+     </TR>
+     <TR>
+      <TD ALIGN="CENTER" VALIGN="TOP">
+       <DIV class="bloc Rounded">
+        <TABLE>
+         <TR>
+          <TD ALIGN="CENTER" VALIGN="TOP" cellpadding="2px">
+           <DIV class="CDSPortal" style="color:darkblue;cursor:pointer;width:350px;" onclick="window.open('http://cdsportal.unistra.fr/?target=*%20alf%20Vir', '_blank');">
+All 
+            <IMG ALT="CDSPortal" SRC="//simbad.cds.unistra.fr/icons//cds.png" HEIGHT="20" style="vertical-align:middle"/>
+(CDSPortal)
+           </DIV>
+          </TD>
+         </TR>
+         <TR>
+          <TD cellpadding="5px" ALIGN="CENTER" VALIGN="TOP">
+           <HR style="margin-top:0; color:aliceblue;" />
+           <DIV class="bloc" NAME="sendBySAMP" ID="sendBySAMP" style="color:darkmagenta;cursor:pointer;">
+Send to 
+            <IMG style="vertical-align:middle" ALT="sendBySAMP" SRC="//simbad.cds.unistra.fr/icons//aladin.png" HEIGHT="25" style="color:blue" />
+            <IMG SRC="//simbad.cds.unistra.fr/icons//samp.png" ALT="sendBySAMP" ID="sendBySAMP" ALIGN="RIGHT"/>
+<BR>           </DIV>
+          </TD>
+         </TR>
+         <TR>
+          <TD ALIGN="CENTER" VALIGN="TOP">
+           <HR style="margin-top:0; color:aliceblue;" />
+           <script language="JavaScript" type="text/javascript" src="//simbad.cds.unistra.fr/js/sed.js">           </script>
+           <FORM ACTION="https://vizier.cds.unistra.fr/vizier/sed/" METHOD="GET" class="bloc" id="FormSED" target="_blank">
+            <IMG SRC="//simbad.cds.unistra.fr/icons/sed-icon.png" ALT="sedIcon" ID="sedIcon" ALIGN="LEFT" HEIGHT="36" WIDTH="45"/>
+            <DIV ALIGN="CENTER">
+             <INPUT TYPE="submit" NAME="submitSimbad" VALUE="Photometry" />
+within 
+             <INPUT TYPE="hidden" NAME="-c" ID="-c" VALUE="13 25 11.57937-11 09 40.7501" />
+             <INPUT TYPE="number" NAME="-c.r" required="true" min="1" max="30" pattern="[0-9]{1,2}\.?[0-9]*" SIZE="5" ID="radiusSED" step="any" MAXLENGTH="5" VALUE="5" />
+ arcsec
+             <INPUT TYPE="hidden" NAME="-c.u" ID="-c.u" VALUE="arcsec" />
+             <INPUT TYPE="hidden" NAME="show_settings" ID="show_settings" VALUE="1" />
+             <SPAN ID="sed-help-text" class="tooltip">
+<FONT SIZE='-1'> The <B>VizieR photometry tool</B> allows for easy visualization of photometry <B>points extracted around the Simbad position</B> from photometry-enabled catalogues in VizieR.  <BR> The search radius has to be specified by the user. It is currently limited to a maximum of 30 arcsec. It depends mostly on the precision or quality of the  coordinates (SIMBAD and VizieR catalogs), the resolution of the images from which the sources were extracted, source extent, and source crowding. <BR> <B>Suggestions are: crowded field: 0.5 to 1.5 arcsec, 3 arcsec otherwise</B>; uncertain coordinates (SIMBAD quality E or coordinates without reference): 5 to 30 arsec (risky!).   </FONT>              </SPAN>
+             <IMG SRC="//simbad.cds.unistra.fr/icons/help.png" ALT="sed-help-icon" ID="sed-help-icon" ALIGN="CENTER" class="tooltip-icon" tooltip-text="sed-help-text" style="vertical-align:top"/>
+            </DIV>
+           </FORM>
+          </TD>
+         </TR>
+        </TABLE>
+       </DIV>
+      </TD>
+     </TR>
+    </TABLE>
+   </TD>
+  </TR>
+  <TR>
+   <TD VALIGN="TOP" WIDTH="350">
+    <TABLE>
+     <TR>
+      <TD VALIGN="TOP">
+       <SPAN class="info-tooltip">
+        <DIV>
+<FONT SIZE='-1'>
+Some important notes on this object about identifications and objects associations.
+</FONT>
+        </DIV>
+notes:        </SPAN>
+<P>      </TD>
+      <TD VALIGN="TOP">
+       <UL>
+        <LI>
+<!-- Input on stdin (cgiprint-9.65 (2015-04-01)) -->
+In <A HREF="http://simbad.cds.unistra.fr/simbad/sim-id?Ident=NAME%20SPICA%20NEBULA">NAME SPICA NEBULA</A> - <A HREF="http://simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2010ApJ...719.1964P">2010ApJ...719.1964P</A>.
+        </LI>
+       </UL>
+      </TD>
+     </TR>
+    </TABLE>
+<P>   </TD>
+  </TR>
+ </TABLE>
+<HR><P><A NAME="lab_ident"></A>
+ <TABLE>
+  <TR>
+   <TD>
+    <SPAN class="info-tooltip">
+     <DIV>
+<FONT SIZE='-1'>
+The link on the acronym of the identifiers give access to the
+information for this acronym in the dictionary of nomenclature. 
+</FONT>
+     </DIV>
+     <FONT SIZE="+1">
+      <B>
+Identifiers (55) : 
+      </B>
+     </FONT>
+    </SPAN>
+   </TD>
+  </TR>
+ </TABLE>
+An access of full data is available using the icon Vizier near the identifier of the catalogue<P> <TABLE WIDTH="100%">
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?*">*</A> alf Vir
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?GEN%23">GEN#</A> +1.00116658
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?NAME">NAME</A> Spica
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?SAO">SAO</A> 157923
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?SAO%20157923" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue SAO" BORDER="0" />
+    </A>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?*">*</A> 67 Vir
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?GSC">GSC</A> 05547-01518
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?GSC%2005547-01518" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue GSC" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?PLX">PLX</A> 3063
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?PLX%203063" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue PLX" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?SBC7">SBC7</A> 487
+     </TT>
+    </B>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?AKARI">AKARI</A>-IRC-V1 J1325115-110940
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?AKARI-IRC-V1%20J1325115-110940" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue AKARI" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?HD">HD</A> 116658
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?HD%20116658" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue HD" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?PMC">PMC</A> 90-93 354
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?SBC9">SBC9</A> 766
+     </TT>
+    </B>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?ALS">ALS</A> 14813
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?ALS%2014813" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue ALS" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?HGAM">HGAM</A> 623
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?PPM">PPM</A> 227262
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?PPM%20227262" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue PPM" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?SKY%23">SKY#</A> 24751
+     </TT>
+    </B>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?BD">BD</A>-10 3672
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?BD-10%20%203672" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue BD" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?HIC">HIC</A> 65474
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?HIC%20%2065474" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue HIC" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?RAFGL">RAFGL</A> 1622
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?RAFGL%201622" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue RAFGL" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?TD1">TD1</A> 16831
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?TD1%2016831" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue TD1" BORDER="0" />
+    </A>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?CCDM">CCDM</A> J13252-1109A
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?CCDM%20J13252-1109A" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue CCDM" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?HIP">HIP</A> 65474
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?HIP%2065474" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue HIP" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?RBS">RBS</A> 1263
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?TIC">TIC</A> 178999156
+     </TT>
+    </B>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?CSI">CSI</A>-10 3672 1
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?HR">HR</A> 5056
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?HR%20%205056" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue HR" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?2RE">2RE</A> J132508-111117
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?2RE%20J132508-111117" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue 2RE" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?TYC">TYC</A> 5547-1518-1
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?TYC%205547-1518-1" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue TYC" BORDER="0" />
+    </A>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?2E">2E</A> 3039
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?2E%20%203039" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue 2E" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?IDS">IDS</A> 13200-1038 A
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?2RE">2RE</A> J1325-111
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?2RE%20J1325-111" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue 2RE" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?UBV">UBV</A> 12103
+     </TT>
+    </B>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?2E">2E</A> 1322.5-1053
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?IRAS">IRAS</A> 13225-1054
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?IRAS%2013225-1054" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue IRAS" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?RE">RE</A> J132512-110856
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?UBV">UBV</A> M 19362
+     </TT>
+    </B>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?1ES">1ES</A> 1322-10.8
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?IRC">IRC</A> -10286
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?IRC%20-10286" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue IRC" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?RE">RE</A> J1325-110
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?uvby98">uvby98</A> 100116658
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?uvby98%20100116658" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue uvby98" BORDER="0" />
+    </A>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?EUVE">EUVE</A> J1325-11.1
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?EUVE%20J1325-11.1" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue EUVE" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?JP11">JP11</A> 2392
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?ROT">ROT</A> 1963
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?V*">V*</A> alf Vir
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?V*%20alf%20Vir" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue V*" BORDER="0" />
+    </A>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?FK5">FK5</A> 498
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?FK5%20%20498" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue FK5" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?2MASS">2MASS</A> J13251158-1109404
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?2MASS%20J13251158-1109404" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue 2MASS" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?RX">RX</A> J1325.2-1109
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?WDS">WDS</A> J13252-1110A
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?WDS%20J13252-1110A" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue WDS" BORDER="0" />
+    </A>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?GC">GC</A> 18144
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?MCW">MCW</A> 553
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?1RXS">1RXS</A> J132511.6-110932
+     </TT>
+    </B>
+    <A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?1RXS%20J132511.6-110932" TARGET="_blank">
+     <IMG SRC="//simbad.cds.unistra.fr/icons/vizier_20.png" title="Full data in the catalogue 1RXS" BORDER="0" />
+    </A>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?WEB">WEB</A> 11556
+     </TT>
+    </B>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?GCRV">GCRV</A> 7963
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?N30">N30</A> 3066
+     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://cds.unistra.fr/cgi-bin/Dic-Simbad?SACS">SACS</A> 290
+     </TT>
+    </B>
+   </TD>
+   <TD/>
+  </TR>
+ </TABLE>
+<HR><P><A NAME="lab_bib"></A>
+ <TABLE WIDTH="100%">
+  <TR>
+   <TD VALIGN="TOP">
+    <FONT SIZE="+1">
+     <B>
+References (39 between 2021 and 2026) (Total 878)
+     </B>
+    </FONT>
+<BR>    <FONT SIZE="-1">
+     <I>
+Simbad bibliographic survey began in 1850 for stars (at least bright stars) and in 1983 for all other objects (outside the solar system).
+     </I>
+    </FONT>
+<BR>    <A HREF="http://simbad.cds.unistra.fr/tools/SimWatch/manage" TARGET="_blank">
+     <IMG SRC="/icons/simWatch.png" BORDER="0" />
+    </A>
+    <A HREF="http://simbad.cds.unistra.fr/tools/SimWatch/manage/?add_object=*%20alf%20Vir">
+Follow    </A>
+ new references on this object
+   </TD>
+   <TD VALIGN="TOP"/>
+  </TR>
+ </TABLE>
+ <FORM ACTION="sim-id#lab_bib" METHOD="GET" id="formSort" accept-charset="utf-8">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reference summaries : 
+<P>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;from: 
+  <INPUT TYPE="text" NAME="bibyear1" SIZE="10" MAXLENGTH="12" VALUE="2021" />
+ to: 
+  <INPUT TYPE="text" NAME="bibyear2" SIZE="10" MAXLENGTH="12" VALUE="2026" />
+<P>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <INPUT TYPE="submit" NAME="submit" VALUE="Display" />
+ or select by :
+ (not exhaustive, 
+<A HREF="//simbad.cds.unistra.fr/simbad/../Pages/data_bibobjinfo.htx">explanation here</A>)  <INPUT TYPE="submit" NAME="submit" VALUE="In table" />
+  <INPUT TYPE="submit" NAME="submit" VALUE="Title|Abstract|Keyword" />
+  <INPUT TYPE="hidden" NAME="Ident" ID="Ident" VALUE="@2140887" />
+  <INPUT TYPE="hidden" NAME="Name" ID="Name" VALUE="* alf Vir" />
+  <INPUT TYPE="hidden" NAME="bibdisplay" ID="bibdisplay" VALUE="refsum" />
+  <INPUT TYPE="hidden" NAME="bibyear1" ID="bibyear1" VALUE="2021" />
+  <INPUT TYPE="hidden" NAME="bibyear2" ID="bibyear2" VALUE="2026" />
+  <INPUT TYPE="button" NAME="Score" onclick="window.open('//simbad.cds.unistra.fr/simbad/sim-id-refs?Ident=%402140887&Name=*%20alf%20Vir','_blank');" VALUE="Score" />
+ </FORM>
+<P> <script language="JavaScript" type="text/javascript">
+$('#formSort input[value="Title|Abstract|Keyword"]').removeAttr("disabled");
+$('#formSort input[value="In table"]').removeAttr("disabled");
+ </script>
+<HR><P><P><A NAME="lab_meas"></A>
+ <FONT SIZE="+1">
+  <B>
+Collections of Measurements
+  </B>
+  <A target="_blank" HREF="http://simbad.cds.unistra.fr/guide/chMeas.htx">
+   <IMG SRC="//simbad.cds.unistra.fr/icons/help.png" ALT="Description of Measurements" ID="Description of Measurements" ALIGN="TOP"/>
+  </A>
+ </FONT>
+ <FORM ACTION="sim-id#lab_meas" METHOD="GET">
+  <INPUT TYPE="checkbox" NAME="mescat.velocities" CHECKED />
+<TT title="collection of HRV, Vlsr, cz and redshifts">  <B>
+   <TT>
+Velocities
+   </TT>
+  </B>
+</TT>:
+  <B>
+11
+  </B>
+&nbsp;&nbsp;  <INPUT TYPE="checkbox" NAME="mescat.distance" CHECKED />
+<TT title="collection of distances (pc, kpc or Mpc) by several means.">  <B>
+   <TT>
+Distance
+   </TT>
+  </B>
+</TT>:
+  <B>
+1
+  </B>
+&nbsp;&nbsp;  <INPUT TYPE="checkbox" NAME="mescat.rot" CHECKED />
+<TT title="Stellar Rotational Velocities.">  <B>
+   <TT>
+Rot
+   </TT>
+  </B>
+</TT>:
+  <B>
+7
+  </B>
+&nbsp;&nbsp;  <INPUT TYPE="checkbox" NAME="mescat.fe_h" CHECKED />
+<TT title="collection of stellar parameters (Teff, log(g) and [Fe/H] metallicity) taken from the literature.">  <B>
+   <TT>
+Fe/H
+   </TT>
+  </B>
+</TT>:
+  <B>
+2
+  </B>
+&nbsp;&nbsp;  <INPUT TYPE="checkbox" NAME="mescat.plx" CHECKED />
+<TT title="collection of trigonometric parallaxs">  <B>
+   <TT>
+Plx
+   </TT>
+  </B>
+</TT>:
+  <B>
+2
+  </B>
+&nbsp;&nbsp;  <INPUT TYPE="checkbox" NAME="mescat.pm" CHECKED />
+<TT title="collection of proper motions">  <B>
+   <TT>
+PM
+   </TT>
+  </B>
+</TT>:
+  <B>
+4
+  </B>
+&nbsp;&nbsp;  <INPUT TYPE="checkbox" NAME="mescat.mk" CHECKED />
+<TT title="collection of spectral types">  <B>
+   <TT>
+SpT
+   </TT>
+  </B>
+</TT>:
+  <B>
+29
+  </B>
+&nbsp;&nbsp;<P>  <INPUT TYPE="hidden" NAME="Ident" ID="Ident" VALUE="@2140887" />
+  <INPUT TYPE="hidden" NAME="Name" ID="Name" VALUE="* alf Vir" />
+  <INPUT TYPE="submit" NAME="submit" VALUE="display selected measurements" />
+&nbsp;  <INPUT TYPE="submit" NAME="submit" VALUE="display all measurements" />
+&nbsp;  <INPUT TYPE="submit" NAME="submit" VALUE="clear" />
+ </FORM>
+<P> <B>
+  <TT>
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-display?data=meas#velocities">Velocities</A>  </TT>
+ </B>
+ (11)
+<P> <PRE>
+ |typ|    Value    R   m.e.  |A (Nmes)|na,Q,dom ,   res    D| Obs.date |        Rem.        |Or|     Reference     |
+ -------------------------------------------------------------------------------------------------------------------
+ |v  |   -3.310       0.780  |A (    )|s , ,Opt ,           |          |                    |  |<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2023ApJS..266...11B">2023ApJS..266...11B</A>|
+ </PRE>
+<P> <B>
+  <TT>
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-display?data=meas#distance">Distance</A>  </TT>
+ </B>
+ (1)
+<P> <PRE>
+ | distance Q unit|  err-        err+     | method |     reference     |
+ -----------------------------------------------------------------------
+ |   93       pc  | -20         +20       |CaIIHK  |<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2009A%26A...507..833M">2009A&A...507..833M</A>|
+ </PRE>
+<P> <B>
+  <TT>
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-display?data=meas#rot">Rot</A>  </TT>
+ </B>
+ (7)
+<P> <PRE>
+ |  Vsini  [   err   ] (mes)|Q|     reference     |
+ --------------------------------------------------
+ |  90.0   [         ] (   )| |<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2005yCat.3244....0G">2005yCat.3244....0G</A>|
+ </PRE>
+<P> <B>
+  <TT>
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-display?data=meas#fe_h">Fe/H</A>  </TT>
+ </B>
+ (2)
+<P> <PRE>
+ | Teff  log.g | Fe_H   c|CompStar |CatNo|     Reference     |
+ -------------------------------------------------------------
+ | 24683 3.8063|-0.0200  |SUN      |     |<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2023ApJS..266...11B">2023ApJS..266...11B</A>|
+ </PRE>
+<P> <B>
+  <TT>
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-display?data=meas#plx">Plx</A>  </TT>
+ </B>
+ (2)
+<P> <PRE>
+ |    plx    :    m.e     R |     reference     |
+ ------------------------------------------------
+ |  12.44    :   0.86       |<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=1997A%26A...323L..49P">1997A&A...323L..49P</A>|
+ </PRE>
+<P> <B>
+  <TT>
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-display?data=meas#pm">PM</A>  </TT>
+ </B>
+ (4)
+<P> <PRE>
+ |  pm-ra  [   m.e   ]|  pm-de  [   m.e   ]|syst|     reference     |
+ --------------------------------------------------------------------
+ |  -42.35 [    0.62 ]|  -30.67 [    0.37 ]|ICRS|<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2007A%26A...474..653V">2007A&A...474..653V</A>|
+ </PRE>
+<P> <B>
+  <TT>
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-display?data=meas#mk">SpT</A>  </TT>
+ </B>
+ (29)
+<P> <PRE>
+ |ds/mss|           Spectral type            |     reference     |
+ -----------------------------------------------------------------
+ |  /   |B2V                                 |<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=2020MNRAS.491.2280S">2020MNRAS.491.2280S</A>|
+ </PRE>
+<P> <FONT SIZE="+1">
+  <B>
+Observing logs
+  </B>
+ </FONT>
+ <FORM ACTION="sim-id#lab_meas" METHOD="GET">
+  <INPUT TYPE="checkbox" NAME="mescat.iso" CHECKED />
+<TT title="Infrared Space Observatory (ISO) observing log">  <B>
+   <TT>
+ISO
+   </TT>
+  </B>
+</TT>:
+  <B>
+9
+  </B>
+&nbsp;&nbsp;  <INPUT TYPE="checkbox" NAME="mescat.iue" CHECKED />
+<TT title="International Ultraviolet Explorer observing log">  <B>
+   <TT>
+IUE
+   </TT>
+  </B>
+</TT>:
+  <B>
+23
+  </B>
+&nbsp;&nbsp;<P>  <INPUT TYPE="hidden" NAME="Ident" ID="Ident" VALUE="@2140887" />
+  <INPUT TYPE="hidden" NAME="Name" ID="Name" VALUE="* alf Vir" />
+  <INPUT TYPE="submit" NAME="submit" VALUE="display selected measurements" />
+&nbsp;  <INPUT TYPE="submit" NAME="submit" VALUE="display all measurements" />
+&nbsp;  <INPUT TYPE="submit" NAME="submit" VALUE="clear" />
+ </FORM>
+<P> <B>
+  <TT>
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-display?data=meas#iso">ISO</A>  </TT>
+ </B>
+ (9)
+<P><!-- Input on stdin (cgiprint-9.68 (2016-01-16)) -->
+
+
+<div id='VizieR-4'>
+<NOSCRIPT>
+<TABLE WIDTH="100%" BORDER=0 bgcolor="#FF0000"><TR VALIGN=BASELINE><TD><FONT SIZE='+1'><B><FONT COLOR='Cyan'>&#160;&#160;JavaScript is used, and should be enabled to get full functionality.</FONT></B></FONT></TD></TR></TABLE>
+</NOSCRIPT>
+<SCRIPT LANGUAGE="JavaScript" SRC="http://vizier.cds.unistra.fr/vizier/lib/sortable/tablesort.js"></SCRIPT>
+<script type='text/javascript' src='https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js' charset='utf-8'/></script><SCRIPT LANGUAGE="JavaScript" SRC="http://vizier.cds.unistra.fr/vizier/lib/viz2.js"></SCRIPT>
+
+<SCRIPT LANGUAGE="JavaScript">
+document.bgcolor="FFFF00"
+setMozilla(0.0);
+envURLbase="http://vizier.cds.unistra.fr/viz-bin/";
+envURLhost="http://vizier.cds.unistra.fr";
+envHTTP_USER_AGENT="Java/11.0.10";
+</SCRIPT>
+<SCRIPT LANGUAGE="JavaScript">window.focus();</SCRIPT>
+
+<VizieRNote>The 2 columns in <EM><B><FONT COLOR='#CD5B45'>color</FONT></B></EM>             are computed by VizieR, and are             <EM><B><FONT COLOR='#CD5B45'>not part of the original data</FONT></B></EM></VizieRNote>.
+<BR><EM><FONT COLOR='#0000FF'><B>Note: </B> Quick-look images of the data, and specific documentation, are accessible by clicking on the <B>TDT</B> observation identifier</FONT></EM>
+<TABLE WIDTH="100%" BORDER=0 CELLPADDING=5 CELLSPACING=2  class='tablist Vbgcol2'><TR VALIGN=BASELINE><TD ALIGN=LEFT NOWRAP VALIGN=MIDDLE><B><A HREF="http://vizier.cds.unistra.fr/viz-bin/VizieR?-source=VI/111/isolog&-c=201.29824736-11.16131949&-c.u=arcmin&-c.r=6000&-out.max=9999&-out.form=a&-sort=_r">VI/111/isolog</A></B><BR><span id='annot_VI_111_isolog' class='a_VI_111 annotation'> <a title='Add an annotation to this object (or report an error)' href="https://cdsannotations.cds.unistra.fr/annotations/vizierTable/VI%252f111%252fisolog/new"> Post annotation </a></span>
+</TD> <TD WIDTH="80%"><a href='http://vizier.cds.unistra.fr/viz-bin/VizieR?-source=VI/111'>ISO Observation Log (ISO Data Centre, 2004)</a>  [<A HREF="http://vizier.cds.unistra.fr/viz-bin/Cat?VI/111" onMouseOver="lay('Standardized Description of the Catalogue ReadMe')" onMouseOut="laz()">ReadMe+ftp</A>]<div class='catflag bibcode'> <A HREF="https://ui.adsabs.harvard.edu/abs/"></A></div><div class='catflag metaflag hidden'>meta<A HREF="">VI/111/isolog</A></div><BR>
+*The ISO Observation Log[image] <EM>(36737 rows)</EM> <EM><A HREF="javascript:Note(6111,1)">(Note)</A></EM></TD><TD ALIGN=LEFT NOWRAP  class='footprint'><A HREF="javascript:aW('ft_820x680','/vizier/cat/aladinLite.html?VI/111')"><FONT COLOR='#008B8B'><img src="https://cdsarc.cds.unistra.fr/viz-bin/footprint?catid=6111&VI/111&-gal&-z&5&-swing&1" align="middle" border='0' alt="img(gal)"/></FONT></A></TD></TR></TABLE>
+<div ><span class='aladinflag' onClick='aladinLite(2);'>start AladinLite</span>
+<span class='widgeturl'><div class='hidden'>http://cdsportal.u-strasbg.fr/widgets/dataplot/dataplot.html?dataset_url_1=</div></span>
+</div>
+<PRE><HR><EM> <A HREF="javascript:alert('This column provides a link to a detailed full record (Not to be used for identification)')" onMouseOver="lay('This column provides a link to a detailed full record (Not to be used for identification)')" onMouseOut="laz()"><FONT COLOR='#CD5B45'>Full</FONT></A></EM>     <EM> <A HREF="javascript:alert('Distance from center (201.2982-11.1613)[FK5/J2000]')" onMouseOver="lay('Distance from center (201.2982-11.1613)[FK5/J2000]')" onMouseOut="laz()"><FONT COLOR='#CD5B45'>_r</FONT></A></EM>        <A HREF="javascript:vNote('//%2a&-5N&&lt;&quot;Label&quot;&catid=6111&tabid=1&colid=4')" onMouseOver="lay('Number that identifies an ISO Observation')" onMouseOut="laz()">TDT</A>    <A HREF="javascript:vNote('//%2a&-5N&&lt;&quot;Label&quot;&catid=6111&tabid=1&colid=3')" onMouseOver="lay('Astronomical observing template (2)')" onMouseOut="laz()">AOT</A>    <A HREF="javascript:vNote('//%2a&-5N&&lt;&quot;Label&quot;&catid=6111&tabid=1&colid=7')" onMouseOver="lay('The shortest wavelength (4)')" onMouseOut="laz()">minLam</A>  <A HREF="javascript:vNote('//%2a&-5N&&lt;&quot;Label&quot;&catid=6111&tabid=1&colid=8')" onMouseOver="lay('The longest wavelength (4)')" onMouseOut="laz()">maxLam</A>  <A HREF="javascript:vNote('//%2a&-5N&&lt;&quot;Label&quot;&catid=6111&tabid=1&colid=2')" onMouseOver="lay('Target Name, as given by the observer')" onMouseOut="laz()">Target</A>                                 <A HREF="javascript:vNote('//%2a&-5N&&lt;&quot;Label&quot;&catid=6111&tabid=1&colid=13')" onMouseOver="lay('Start day of observation (UTC)')" onMouseOut="laz()">oStart</A>         <A HREF="javascript:vNote('//%2a&-5N&&lt;&quot;Label&quot;&catid=6111&tabid=1&colid=14')" onMouseOver="lay('Duration of observation')" onMouseOut="laz()">oLen</A>    <A HREF="javascript:vNote('//%2a&-5N&&lt;&quot;Label&quot;&catid=6111&tabid=1&colid=0')" onMouseOver="lay('&lt;FONT COLOR=\&apos;#CD5B45\&apos;>Record number assigned by the VizieR team. Should Not be used for identification.</FONT>')" onMouseOut="laz()"><FONT COLOR='#CD5B45'>recno</FONT></A>   <A HREF="javascript:vNote('//%2a&-5N&&lt;&quot;Label&quot;&catid=6111&tabid=1&colid=1')" onMouseOver="lay('Maximum field of view of the observation (1)')" onMouseOut="laz()">FOV</A>                  <A HREF="javascript:vNote('//%2a&-5N&&lt;&quot;Label&quot;&catid=6111&tabid=1&colid=5')" onMouseOver="lay('Actual pointing Right Ascension (J2000) (3)')" onMouseOut="laz()">RAJ2000</A>   <A HREF="javascript:vNote('//%2a&-5N&&lt;&quot;Label&quot;&catid=6111&tabid=1&colid=6')" onMouseOver="lay('Actual pointing Declination (J2000) (3)')" onMouseOut="laz()">DEJ2000</A> <A HREF="javascript:vNote('//%2a&-5N&&lt;&quot;Label&quot;&catid=6111&tabid=1&colid=9')" onMouseOver="lay('[*] indicates calibration observations (6) \\vizQual{![*]}')" onMouseOut="laz()">cal</A>  <A HREF="javascript:vNote('//%2a&-5N&&lt;&quot;Label&quot;&catid=6111&tabid=1&colid=10')" onMouseOver="lay('Observer identification of the proposal')" onMouseOut="laz()">ObsID</A>    <A HREF="javascript:vNote('//%2a&-5N&&lt;&quot;Label&quot;&catid=6111&tabid=1&colid=11')" onMouseOver="lay('[+] \&apos;+\&apos; when the abstract is available (5)')" onMouseOut="laz()">abs</A>  <A HREF="javascript:vNote('//%2a&-5N&&lt;&quot;Label&quot;&catid=6111&tabid=1&colid=12')" onMouseOver="lay('Proposal designation')" onMouseOut="laz()">PropID</A>  
+        <A HREF="javascript:Unit('arcmin')" onMouseOver="lay('minute of arc')" onMouseOut="laz()">arcmin</A>                      <A HREF="javascript:Unit('um')" onMouseOver="lay('micrometre')" onMouseOut="laz()">um</A>      <A HREF="javascript:Unit('um')" onMouseOver="lay('micrometre')" onMouseOut="laz()">um</A>                                             <A HREF="javascript:Unit('s')" onMouseOver="lay('second')" onMouseOut="laz()">s</A>             <A HREF="javascript:Unit('s')" onMouseOver="lay('second')" onMouseOut="laz()">s</A>                                     <A HREF="javascript:Unit('deg')" onMouseOver="lay('degree')" onMouseOut="laz()">deg</A>       <A HREF="javascript:Unit('deg')" onMouseOver="lay('degree')" onMouseOut="laz()">deg</A>                              
+<HR>
+   <A href='http://vizier.cds.unistra.fr/viz-bin/VizieR-5?-out.add=.&amp;-source=VI/111/isolog&amp;recno=10297' class='full'><EM> 1</EM></A>  <FONT COLOR='#CD5B45'>   0.003  </FONT><A HREF="http://nida.esac.esa.int/nida-cl-web/?ACTION=OBSERVATION&amp;ID=25302001" TARGET="wLog">25302001</A>  SWS01    2.38   45.20  ALPHA VIR                       1996-07-27T06:27:05   6538  <FONT COLOR='#CD5B45'>   10297  </FONT>33"x20"             201.2982  -11.1613      JCASSINE <A HREF="http://vizier.cds.unistra.fr/viz-bin/getCatFile?-plus=-%2b&amp;VI/111/./abstract/JCASSINE_PROP_BST.abs" TARGET="wFile"><span class='CDScol5' title='preview +'><IMG SRC="/vizier/preview.png" ALT="" TITLE="">+</span></A>    PROP_BST
+   <A href='http://vizier.cds.unistra.fr/viz-bin/VizieR-5?-out.add=.&amp;-source=VI/111/isolog&amp;recno=2596' class='full'><EM> 2</EM></A>  <FONT COLOR='#CD5B45'>   0.011  </FONT><A HREF="http://nida.esac.esa.int/nida-cl-web/?ACTION=OBSERVATION&amp;ID=08201001" TARGET="wLog">08201001</A>  SWS01    2.38   45.21  Alpha Vir                       1996-02-07T11:03:16   1044  <FONT COLOR='#CD5B45'>    2596  </FONT>33"x20"             201.2984  -11.1612      SPRICE   <A HREF="http://vizier.cds.unistra.fr/viz-bin/getCatFile?-plus=-%2b&amp;VI/111/./abstract/SPRICE_STARTYP1.abs" TARGET="wFile"><span class='CDScol5' title='preview +'><IMG SRC="/vizier/preview.png" ALT="" TITLE="">+</span></A>    STARTYP1
+   <A href='http://vizier.cds.unistra.fr/viz-bin/VizieR-5?-out.add=.&amp;-source=VI/111/isolog&amp;recno=10291' class='full'><EM> 3</EM></A>  <FONT COLOR='#CD5B45'>   0.015  </FONT><A HREF="http://nida.esac.esa.int/nida-cl-web/?ACTION=OBSERVATION&amp;ID=25301728" TARGET="wLog">25301728</A>  SWS02    3.06   27.99  Alf Vir                         1996-07-27T05:10:03   1566  <FONT COLOR='#CD5B45'>   10291  </FONT>27"x20"             201.2980  -11.1613      RWATERS  <A HREF="http://vizier.cds.unistra.fr/viz-bin/getCatFile?-plus=-%2b&amp;VI/111/./abstract/RWATERS_BESTARS.abs" TARGET="wFile"><span class='CDScol5' title='preview +'><IMG SRC="/vizier/preview.png" ALT="" TITLE="">+</span></A>    BESTARS 
+   <A href='http://vizier.cds.unistra.fr/viz-bin/VizieR-5?-out.add=.&amp;-source=VI/111/isolog&amp;recno=10292' class='full'><EM> 4</EM></A>  <FONT COLOR='#CD5B45'>   0.015  </FONT><A HREF="http://nida.esac.esa.int/nida-cl-web/?ACTION=OBSERVATION&amp;ID=25301729" TARGET="wLog">25301729</A>  PHT40    2.47    8.95  Alf Vir                         1996-07-27T05:36:53    140  <FONT COLOR='#CD5B45'>   10292  </FONT>24"x24"             201.2980  -11.1613      RWATERS  <A HREF="http://vizier.cds.unistra.fr/viz-bin/getCatFile?-plus=-%2b&amp;VI/111/./abstract/RWATERS_BESTARS.abs" TARGET="wFile"><span class='CDScol5' title='preview +'><IMG SRC="/vizier/preview.png" ALT="" TITLE="">+</span></A>    BESTARS 
+   <A href='http://vizier.cds.unistra.fr/viz-bin/VizieR-5?-out.add=.&amp;-source=VI/111/isolog&amp;recno=10298' class='full'><EM> 5</EM></A>  <FONT COLOR='#CD5B45'>   2.999  </FONT><A HREF="http://nida.esac.esa.int/nida-cl-web/?ACTION=OBSERVATION&amp;ID=25302002" TARGET="wLog">25302002</A>  SWS01    2.38   45.20  ALPHA VIR OFF                   1996-07-27T08:16:55   1140  <FONT COLOR='#CD5B45'>   10298  </FONT>33"x20"             201.2983  -11.2113      JCASSINE <A HREF="http://vizier.cds.unistra.fr/viz-bin/getCatFile?-plus=-%2b&amp;VI/111/./abstract/JCASSINE_PROP_BST.abs" TARGET="wFile"><span class='CDScol5' title='preview +'><IMG SRC="/vizier/preview.png" ALT="" TITLE="">+</span></A>    PROP_BST
+   <A href='http://vizier.cds.unistra.fr/viz-bin/VizieR-5?-out.add=.&amp;-source=VI/111/isolog&amp;recno=10299' class='full'><EM> 6</EM></A>  <FONT COLOR='#CD5B45'>   3.001  </FONT><A HREF="http://nida.esac.esa.int/nida-cl-web/?ACTION=OBSERVATION&amp;ID=25302015" TARGET="wLog">25302015</A>  SWS01    2.38   45.20  ALPHA VIR OFF2                  1996-07-27T06:07:11   1140  <FONT COLOR='#CD5B45'>   10299  </FONT>33"x20"             201.2981  -11.1113      JCASSINE <A HREF="http://vizier.cds.unistra.fr/viz-bin/getCatFile?-plus=-%2b&amp;VI/111/./abstract/JCASSINE_PROP_BST.abs" TARGET="wFile"><span class='CDScol5' title='preview +'><IMG SRC="/vizier/preview.png" ALT="" TITLE="">+</span></A>    PROP_BST
+   <A href='http://vizier.cds.unistra.fr/viz-bin/VizieR-5?-out.add=.&amp;-source=VI/111/isolog&amp;recno=2594' class='full'><EM> 7</EM></A>  <FONT COLOR='#CD5B45'>  16.165  </FONT><A HREF="http://nida.esac.esa.int/nida-cl-web/?ACTION=OBSERVATION&amp;ID=08200985" TARGET="wLog">08200985</A>  CAM01    5.05    8.35  SPICA_LW2                       1996-02-07T09:34:00   2616  <FONT COLOR='#CD5B45'>    2594  </FONT>28'x360"            201.0640  -11.3020      FBOULANG <A HREF="http://vizier.cds.unistra.fr/viz-bin/getCatFile?-plus=-%2b&amp;VI/111/./abstract/FBOULANG_SMALLPAR.abs" TARGET="wFile"><span class='CDScol5' title='preview +'><IMG SRC="/vizier/preview.png" ALT="" TITLE="">+</span></A>    SMALLPAR
+   <A href='http://vizier.cds.unistra.fr/viz-bin/VizieR-5?-out.add=.&amp;-source=VI/111/isolog&amp;recno=2595' class='full'><EM> 8</EM></A>  <FONT COLOR='#CD5B45'>  16.165  </FONT><A HREF="http://nida.esac.esa.int/nida-cl-web/?ACTION=OBSERVATION&amp;ID=08200986" TARGET="wLog">08200986</A>  CAM01   11.55   17.05  SPICA_LW3                       1996-02-07T10:18:28   2614  <FONT COLOR='#CD5B45'>    2595  </FONT>28'x360"            201.0640  -11.3020      FBOULANG <A HREF="http://vizier.cds.unistra.fr/viz-bin/getCatFile?-plus=-%2b&amp;VI/111/./abstract/FBOULANG_SMALLPAR.abs" TARGET="wFile"><span class='CDScol5' title='preview +'><IMG SRC="/vizier/preview.png" ALT="" TITLE="">+</span></A>    SMALLPAR
+   <A href='http://vizier.cds.unistra.fr/viz-bin/VizieR-5?-out.add=.&amp;-source=VI/111/isolog&amp;recno=18448' class='full'><EM> 9</EM></A>  <FONT COLOR='#CD5B45'>  29.917  </FONT><A HREF="http://nida.esac.esa.int/nida-cl-web/?ACTION=OBSERVATION&amp;ID=42900203" TARGET="wLog">42900203</A>  CAM01    5.05   17.05  SPICAN                          1997-01-18T09:38:47   3622  <FONT COLOR='#CD5B45'>   18448  </FONT>672"x462"           201.5303  -10.7178      FBOULANG <A HREF="http://vizier.cds.unistra.fr/viz-bin/getCatFile?-plus=-%2b&amp;VI/111/./abstract/FBOULANG_WISMDUS2.abs" TARGET="wFile"><span class='CDScol5' title='preview +'><IMG SRC="/vizier/preview.png" ALT="" TITLE="">+</span></A>    WISMDUS2
+<HR></PRE>
+<script type='text/javascript'>
+ts_init('isolog_0');
+</script>
+
+<!-- ++Closing tex environment[1] 'div' -->
+</div>
+<P><P> <B>
+  <TT>
+<A HREF="//simbad.cds.unistra.fr/simbad/sim-display?data=meas#iue">IUE</A>  </TT>
+ </B>
+ (23)
+<P> <PRE>
+ |Homogenized Name:  ComplID   |PROG |CL|D CAM IMAGE A| FES  MD|Obs.da  Time |ExpTim|m|CEB|S|      Comments      |F|     reference     |
+ ---------------------------------------------------------------------------------------------------------------------------------------
+ |HD 116658       :            |UK022|20|<A HREF="http://sdc.cab.inta-csic.es/ines/jsp/plotspectra.jsp?filename=SWP02418RS.FITS">H SWP 02418 S</A>|        |780830 231900|000005| |60 |V|                    |*|<A HREF="//simbad.cds.unistra.fr/simbad/sim-ref?bibcode=1996IUEML.C......0I">1996IUEML.C......0I</A>|
+ </PRE>
+<P><HR><P><P><A NAME="lab_arch"></A>
+<A NAME="lab_external"></A>
+ <FONT SIZE="+1">
+  <B>
+External archives : 
+  </B>
+ </FONT>
+<P>Archive data at 
+<A HREF="//simbad.cds.unistra.fr/simbad/../heasarc/W3Browse/w3basic.pl?Tables=%40All+Archives&Coordinates=Equatorial:+R.A.+Dec&Equinox=2000&Radius=Default&NR=SIMBAD&Fields=Standard&GIFsize=1000&Action=Query+Submittal&Entry=13%2025%2011.57937%2c-11%2009%2040.7501">HEASARC - High-Energy Astrophysics Science Archive Research Center</A><P>Data at 
+<A HREF="http://ned.ipac.caltech.edu/uri/NED::ByName/IRAS%2013225-1054">NED - NASA/IPAC Extragalactic Database  :  Spica</A><P>Link by name to the catalogue in 
+<A HREF="https://vizier.cds.unistra.fr/">VizieR</A> :
+ <TABLE WIDTH="100%">
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?AKARI-IRC-V1%20J1325115-110940">AKARI-IRC-V1 J1325115-110940</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?ALS%2014813">ALS 14813</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?BD-10%203672">BD-10 3672</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?CCDM%20J13252-1109A">CCDM J13252-1109A</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?2E%203039">2E 3039</A>     </TT>
+    </B>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?EUVE%20J1325-11.1">EUVE J1325-11.1</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?FK5%20498">FK5 498</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?GSC%2005547-01518">GSC 05547-01518</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?HD%20116658">HD 116658</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?HIC%2065474">HIC 65474</A>     </TT>
+    </B>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?HIP%2065474">HIP 65474</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?HR%205056">HR 5056</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?IRAS%2013225-1054">IRAS 13225-1054</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?IRC%20-10286">IRC -10286</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?2MASS%20J13251158-1109404">2MASS J13251158-1109404</A>     </TT>
+    </B>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?PLX%203063">PLX 3063</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?PPM%20227262">PPM 227262</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?RAFGL%201622">RAFGL 1622</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?2RE%20J132508-111117">2RE J132508-111117</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?2RE%20J1325-111">2RE J1325-111</A>     </TT>
+    </B>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?1RXS%20J132511.6-110932">1RXS J132511.6-110932</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?SAO%20157923">SAO 157923</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?TD1%2016831">TD1 16831</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?TYC%205547-1518-1">TYC 5547-1518-1</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?uvby98%20100116658">uvby98 100116658</A>     </TT>
+    </B>
+   </TD>
+  </TR>
+  <TR>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?V*%20alf%20Vir">V* alf Vir</A>     </TT>
+    </B>
+   </TD>
+   <TD>
+    <B>
+     <TT>
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-S?WDS%20J13252-1110A">WDS J13252-1110A</A>     </TT>
+    </B>
+   </TD>
+  </TR>
+ </TABLE>
+<P>Search by coordinates in 
+<A HREF="https://vizier.cds.unistra.fr/viz-bin/VizieR-4?-c=201.29824736-11.16131949&-c.rs=5&-out.add=_r&-sort=_r&-out.max=$4">Vizier (radius: 5 arcsec)</A><P><HR><P><P> <FONT SIZE="+1">
+  <B>
+Annotations :
+  </B>
+ </FONT>
+<BR> <FONT SIZE="+0">
+  <I>
+Annotations allow a user to add a note or report an error concerning the astronomical object and its data. It requires registration to post a note. See <A HREF="https://cdsannotations.cds.unistra.fr/annotations/doc/">description</A> .<br> Please, have a look at <A HREF="http://simbad.cds.unistra.fr/guide/annotations.htx">Best practices</A>. The list of all annotations to SIMBAD objects can be found <A HREF="https://cdsannotations.cds.unistra.fr">here</A> .  </I>
+ </FONT>
+<P>Currently no annotations available
+<P><A HREF="https://cdsannotations.cds.unistra.fr/annotations/simbadObject/2140887/new">add an annotation to this object</A><P><A HREF="https://cdsannotations.cds.unistra.fr/annotations/simbadObject/2140887/new?isErrorNotification=true">report an error concerning the data of this object</A><HR><P><P></div>
+     <!--
+#######################################################################
+#                                                                     #
+#                             CDS FOOTER                              #
+#                                                                     #
+#######################################################################
+-->
+<footer class="cds-footer for-simbad" data-pagefind-ignore="all">
+<div class="cds">
+<!-- CDS Logo and link -->
+<a class="cds logo" href="https://cds.unistra.fr" title="CDS - Centre de Données astronomiques de Strasbourg" target="_blank"></a>
+<!-- Social networks links -->
+<div class="socials">
+<a class="email"    title="Send an email to the CDS team." href="mailto:cds-question@unistra.fr?Subject=Simbad"></a>
+<a class="rss"      title="RSS Feed of the CDS news"       href="https://cds.unistra.fr/news/rss.php" target="_blank" rel="noopener noreferrer"></a>
+<a class="bluesky"  title="CDS' BlueSky page."             href="https://bsky.app/profile/cdsportal.bsky.social" target="_blank" rel="noopener noreferrer"></a>
+<a class="facebook" title="CDS' Facebook page."            href="https://www.facebook.com/CDSportal/" target="_blank" rel="noopener noreferrer"></a>
+<a class="youtube"  title="CDS' Youtube channel."          href="https://www.youtube.com/@CDSportal" target="_blank" rel="noopener noreferrer"></a>
+<a class="github"   title="CDS' GitHub page."              href="https://github.com/cds-astro" target="_blank" rel="noopener noreferrer"></a>
+</div>
+</div>
+<div class="service">
+<div class="content">
+2026.07.21-15:12:48
+</div>
+</div>
+<div class="legal-links">
+<a href="https://cds.unistra.fr/about/contact/">Contact</a> - <a href="https://cds.unistra.fr/legals/">Legals</a>
+</div>
+</footer></body>
+</HTML>
