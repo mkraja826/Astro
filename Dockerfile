@@ -28,13 +28,15 @@ RUN addgroup --system api && adduser --system --ingroup api api
 
 COPY pyproject.toml README.md ./
 COPY scripts/download_jpl_kernel.py ./scripts/download_jpl_kernel.py
+COPY deploy/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY app ./app
 
 RUN python scripts/download_jpl_kernel.py \
         --destination app/data/jpl/de440s.bsp \
         --url "${JPL_EPHEMERIS_URL}" \
         --sha256 "${JPL_EPHEMERIS_SHA256}" \
-    && python -m pip install --no-cache-dir .
+    && python -m pip install --no-cache-dir . \
+    && chmod 0555 /usr/local/bin/docker-entrypoint.sh
 
 USER api
 
@@ -43,4 +45,5 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
     CMD python -c "import os, urllib.request; urllib.request.urlopen('http://127.0.0.1:' + os.getenv('PORT', '8080') + '/health/ready', timeout=4).read()" || exit 1
 
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]
