@@ -36,6 +36,7 @@ RUN python scripts/download_jpl_kernel.py \
         --url "${JPL_EPHEMERIS_URL}" \
         --sha256 "${JPL_EPHEMERIS_SHA256}" \
     && python -m pip install --no-cache-dir . \
+    && sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh \
     && chmod 0555 /usr/local/bin/docker-entrypoint.sh
 
 USER api
