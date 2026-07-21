@@ -15,9 +15,9 @@ The Python API validates the bearer service key before trusting the consumer UUI
 
 ## Backends
 
-- `memory`: deterministic local and test backend. It is process-local and is not accepted as durable when usage enforcement is required in staging or production.
-- `supabase`: shared durable backend using two security-definer Postgres RPCs.
-- `disabled`: permitted only when usage enforcement is not required.
+- `disabled`: the default for development and tests so existing local workflows are not globally throttled. It is permitted only when usage enforcement is not required.
+- `memory`: opt-in deterministic local and test backend. It is process-local and is not accepted as durable when usage enforcement is required in staging or production.
+- `supabase`: shared durable backend using two security-definer Postgres RPCs. It is the default for staging and production.
 
 The production Docker image defaults to `supabase` and requires usage readiness. A deployment without the Astro project URL and service-role key remains unready.
 
@@ -25,7 +25,7 @@ The production Docker image defaults to `supabase` and requires usage readiness.
 
 Version 1 uses one credit for every admitted calculation request. Endpoint-specific billing weights are intentionally deferred until commercial plans are approved.
 
-- default rate: 60 requests per minute per consumer
+- staging and production default rate: 60 requests per minute per consumer
 - default monthly credit limit: 0, meaning usage is recorded without enforcing a monthly ceiling
 - response statuses 200–399 consume the reserved credit
 - response statuses 400–599 release the reserved credit
