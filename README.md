@@ -5,10 +5,10 @@ FastAPI, Skyfield, and JPL DE440s.
 
 ## Production astronomy engine
 
-Jyothisyam now uses a single astronomical runtime:
+Jyothisyam uses a single astronomical runtime:
 
 ```text
-Skyfield + local JPL DE440s
+Skyfield 1.54 + local JPL DE440s
 ```
 
 Canonical calculation profile:
@@ -19,7 +19,7 @@ south_indian_drik_lahiri_jpl_de440s_v1
 
 The earlier profile strings remain accepted for client compatibility, but they
 resolve to the same JPL engine. The runtime contains no Swiss Ephemeris package,
-data files, license switch, comparison route, or fallback path.
+data files, licence switch, comparison route, or fallback path.
 
 ## Current capabilities
 
@@ -53,9 +53,16 @@ data files, license switch, comparison route, or fallback path.
 - `POST /v1/classical/varahamihira_v1/dasha/current`
 - `POST /v1/classical/varahamihira_v1/dasha/current/weighted`
 - `GET /v1/classical/varahamihira_v1/weighting/profile`
+
+### Validation and JPL regression baselines
+
 - `GET /v1/classical/varahamihira_v1/validation/profile`
 - `GET /v1/classical/varahamihira_v1/validation/cases`
 - `POST /v1/classical/varahamihira_v1/validation/compare`
+- `GET /v1/classical/varahamihira_v1/validation/baseline/manifest`
+- `GET /v1/classical/varahamihira_v1/validation/baseline/integrity`
+- `GET /v1/classical/varahamihira_v1/validation/baseline/cases/{case_id}`
+- `POST /v1/classical/varahamihira_v1/validation/baseline/verify-current`
 
 ### Calculation features
 
@@ -70,7 +77,24 @@ data files, license switch, comparison route, or fallback path.
 - Vimshottari Mahadasha through optional Sookshma
 - Varahamihira dignity, aspects, Aṣṭakavarga, relationships, career, and strength
 - controlled transparent weighting
-- twelve frozen golden-chart inputs and discrepancy reporting
+- twelve frozen validation inputs
+- twelve digest-locked JPL regression snapshots
+- field-level external snapshot discrepancy reporting
+
+## Internal baseline versus external validation
+
+The committed JPL baseline set freezes Jyothisyam's own deterministic output. It
+protects against accidental code, dependency, and calculation drift.
+
+```text
+baseline set: jyothisyam_jpl_de440s_golden_baselines_v1
+full digest:  e4c97e2c62ce380dfd361f645cc18682849085b823541ae509edd2d1f3568da0
+case count:   12
+```
+
+These snapshots are **not independent evidence**. The external validation status
+remains zero approved snapshots and zero externally validated cases until exports
+from two independent Jyotisha programs per case are reviewed and committed.
 
 ## Local setup
 
@@ -121,6 +145,7 @@ Open:
 - Swagger: `http://127.0.0.1:8000/docs`
 - General health: `http://127.0.0.1:8000/health`
 - Ephemeris readiness: `http://127.0.0.1:8000/health/ephemeris`
+- Baseline integrity: `http://127.0.0.1:8000/v1/classical/varahamihira_v1/validation/baseline/integrity`
 
 ## Positions request
 
@@ -140,10 +165,22 @@ Open:
 ## Panchanga convention
 
 `POST /v1/panchanga` searches the requested local calendar date for the Sun's
-geometric center crossing local altitude 0°. It applies no atmospheric
-refraction and no upper-limb correction. Sun and Moon sidereal longitudes are
-evaluated geocentrically at sunrise. Polar dates without a real crossing return
-HTTP 422 instead of a fabricated result.
+geometric center crossing local altitude 0°. It applies no atmospheric refraction
+and no upper-limb correction. Sun and Moon sidereal longitudes are evaluated
+geocentrically at sunrise. Polar dates without a real crossing return HTTP 422
+instead of a fabricated result.
+
+## Regenerating golden baselines
+
+Regenerate only after an intentional calculation-contract change:
+
+```powershell
+python scripts/generate_jpl_golden_baselines.py
+python -m pytest tests/test_jpl_golden_baselines.py
+```
+
+Never regenerate snapshots merely to hide a regression. Review every changed field
+and version the calculation contract when the change is intentional.
 
 ## Docker
 
@@ -194,8 +231,8 @@ claims.
 
 ## Next validation milestone
 
-1. Freeze JPL results for all twelve golden cases.
-2. Import two independent external snapshots per case.
-3. Review Lagna, node, sign, Nakshatra, Pada, and Navamsa boundaries.
-4. Version any future astronomical-convention change instead of silently altering v1.
+1. Add generic external-export normalization and planet-name aliases.
+2. Commit approved exports from two independent Jyotisha programs per case.
+3. Review Lagna, node, sign, Nakshatra, Pada, and Navamsa boundary differences.
+4. Mark a case externally validated only after both sources are reviewed.
 5. Add authentication, metering, and commercial API plans.
