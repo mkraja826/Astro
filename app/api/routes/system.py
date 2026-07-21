@@ -9,6 +9,7 @@ from app import __version__
 from app.core.config import RuntimeSettings
 from app.core.jpl_ephemeris import inspect_jpl_ephemeris
 from app.core.security import inspect_api_security
+from app.core.usage import inspect_usage_policy
 
 router = APIRouter(tags=["System"])
 _UNAVAILABLE_RESPONSES = {503: {"description": "A production dependency is not ready"}}
@@ -75,14 +76,29 @@ class RuntimeHealthResponse(BaseModel):
     request_timeout_seconds: float
 
 
+class UsageHealthResponse(BaseModel):
+    """Non-secret readiness details for shared rate limiting and usage metering."""
+
+    status: str
+    ready: bool
+    backend: str
+    required: bool
+    durable: bool
+    configured: bool
+    requests_per_minute: int
+    monthly_credit_limit: int
+    consumer_header: str
+
+
 class ReadinessResponse(BaseModel):
-    """Combined production readiness for data, authentication, and runtime policy."""
+    """Combined production readiness for all mandatory service policies."""
 
     status: str
     ready: bool
     ephemeris: EphemerisHealthResponse
     security: SecurityHealthResponse
     runtime: RuntimeHealthResponse
+    usage: UsageHealthResponse
 
 
 def _runtime_settings(request: Request) -> RuntimeSettings:
@@ -160,6 +176,21 @@ def _runtime_payload(request: Request) -> RuntimeHealthResponse:
     )
 
 
+def _usage_payload(request: Request) -> UsageHealthResponse:
+    report = inspect_usage_policy(_runtime_settings(request))
+    return UsageHealthResponse(
+        status=report.status,
+        ready=report.ready,
+        backend=report.backend,
+        required=report.required,
+        durable=report.durable,
+        configured=report.configured,
+        requests_per_minute=report.requests_per_minute,
+        monthly_credit_limit=report.monthly_credit_limit,
+        consumer_header=report.consumer_header,
+    )
+
+
 @router.get(
     "/health/ephemeris",
     response_model=EphemerisHealthResponse,
@@ -214,18 +245,34 @@ def runtime_health_check(request: Request) -> RuntimeHealthResponse:
 
 
 @router.get(
+    "/health/usage",
+    response_model=UsageHealthResponse,
+    summary="Rate limiting and usage metering readiness",
+    responses=_UNAVAILABLE_RESPONSES,
+)
+def usage_health_check(request: Request, response: Response) -> UsageHealthResponse:
+    """Report whether a safe usage backend is configured for this environment."""
+
+    payload = _usage_payload(request)
+    if not payload.ready:
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+    return payload
+
+
+@router.get(
     "/health/ready",
     response_model=ReadinessResponse,
     summary="Combined production readiness",
     responses=_UNAVAILABLE_RESPONSES,
 )
 def readiness_check(request: Request, response: Response) -> ReadinessResponse:
-    """Require verified JPL data, a ready API-key policy, and validated runtime settings."""
+    """Require verified astronomy, auth, runtime, and durable usage policy readiness."""
 
     ephemeris = _ephemeris_payload()
     security = _security_payload()
     runtime = _runtime_payload(request)
-    ready = ephemeris.ready and security.ready and runtime.ready
+    usage = _usage_payload(request)
+    ready = ephemeris.ready and security.ready and runtime.ready and usage.ready
     if not ready:
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     return ReadinessResponse(
@@ -234,4 +281,5 @@ def readiness_check(request: Request, response: Response) -> ReadinessResponse:
         ephemeris=ephemeris,
         security=security,
         runtime=runtime,
+        usage=usage,
     )
