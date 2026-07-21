@@ -44,6 +44,16 @@ jobs:
           python -m pip install --quiet --upgrade pip
           pip install --quiet -e ".[dev]"
 
+      - name: Generate JPL golden baselines
+        run: python scripts/generate_jpl_golden_baselines.py --output jpl_de440s_v1.json
+
+      - name: Upload JPL golden baselines
+        uses: actions/upload-artifact@v4
+        with:
+          name: jpl-golden-baselines
+          path: jpl_de440s_v1.json
+          if-no-files-found: error
+
       - name: Lint
         run: ruff check .
 
