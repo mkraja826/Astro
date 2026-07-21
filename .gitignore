@@ -8,6 +8,8 @@ __pycache__/
 
 # Virtual environments
 .venv/
+.venv-1/
+.source2-venv/
 venv/
 
 # Environment and secrets
