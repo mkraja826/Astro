@@ -77,8 +77,8 @@ declare
     v_request_count integer;
     v_remaining integer;
     v_retry_after integer := greatest(1, ceil(60 - extract(second from v_now))::integer);
-    v_released bigint := 0;
     v_existing_outcome text;
+    v_expired record;
 begin
     if p_request_id is null or char_length(p_request_id) not between 1 and 64 then
         raise exception 'invalid request id';
@@ -124,39 +124,28 @@ begin
         );
     end if;
 
-    with expired as (
-        update public.api_usage_events
-           set outcome = 'expired',
-               completed_at = v_now,
-               billable = false
-         where consumer_id = p_consumer_id
-           and outcome = 'pending'
-           and admitted_at < v_now - interval '10 minutes'
-        returning credit_cost
-    )
-    select coalesce(sum(credit_cost), 0) into v_released from expired;
-
-    if v_released > 0 then
-        insert into public.api_usage_monthly (
-            consumer_id,
-            month_start,
-            credits_used,
-            credits_reserved,
-            updated_at
-        ) values (
-            p_consumer_id,
-            v_month_start,
-            0,
-            0,
-            v_now
+    for v_expired in
+        with expired as (
+            update public.api_usage_events
+               set outcome = 'expired',
+                   completed_at = v_now,
+                   billable = false
+             where consumer_id = p_consumer_id
+               and outcome = 'pending'
+               and admitted_at < v_now - interval '10 minutes'
+            returning admitted_at, credit_cost
         )
-        on conflict (consumer_id, month_start) do update
-            set credits_reserved = greatest(
-                    public.api_usage_monthly.credits_reserved - v_released,
-                    0
-                ),
-                updated_at = v_now;
-    end if;
+        select date_trunc('month', admitted_at)::date as month_start,
+               sum(credit_cost)::bigint as credits
+          from expired
+         group by 1
+    loop
+        update public.api_usage_monthly
+           set credits_reserved = greatest(credits_reserved - v_expired.credits, 0),
+               updated_at = v_now
+         where consumer_id = p_consumer_id
+           and month_start = v_expired.month_start;
+    end loop;
 
     insert into public.api_rate_limit_windows (
         consumer_id,
