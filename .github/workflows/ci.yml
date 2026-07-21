@@ -47,22 +47,5 @@ jobs:
       - name: Lint
         run: ruff check .
 
-      - name: Capture test report
-        run: |
-          set +e
-          pytest -vv > pytest-report.txt 2>&1
-          echo $? > pytest-exit-code.txt
-          exit 0
-
-      - name: Upload test report
-        uses: actions/upload-artifact@v4
-        with:
-          name: jpl-baseline-pytest-report
-          path: |
-            pytest-report.txt
-            pytest-exit-code.txt
-
-      - name: Fail on test errors
-        run: |
-          code=$(cat pytest-exit-code.txt)
-          test "$code" -eq 0
+      - name: Test
+        run: pytest
