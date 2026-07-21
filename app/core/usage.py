@@ -10,9 +10,8 @@ from datetime import UTC, datetime
 from os import getenv
 from threading import Lock
 from typing import Annotated, Any, Protocol
-from urllib.error import HTTPError, URLError
-from urllib.request import Request as UrlRequest
-from urllib.request import urlopen
+from urllib.error import URLError
+from urllib.request import Request as UrlRequest, urlopen
 from uuid import UUID
 
 from fastapi import Depends, Header, Request
@@ -246,7 +245,7 @@ class SupabaseUsageBackend:
         try:
             with urlopen(request, timeout=self.timeout_seconds) as response:
                 raw = response.read()
-        except (HTTPError, URLError, TimeoutError) as error:
+        except (URLError, TimeoutError) as error:
             raise UsageBackendError("The usage backend request failed") from error
         try:
             decoded = json.loads(raw.decode("utf-8"))
