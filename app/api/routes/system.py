@@ -30,7 +30,7 @@ class HealthResponse(BaseModel):
 
 
 class EphemerisHealthResponse(BaseModel):
-    """Readiness response for the local Skyfield/JPL kernel."""
+    """Readiness and integrity response for the local Skyfield/JPL kernel."""
 
     status: str
     ready: bool
@@ -39,6 +39,9 @@ class EphemerisHealthResponse(BaseModel):
     configured_path: str
     file_exists: bool
     file_size_bytes: int | None
+    expected_sha256: str
+    actual_sha256: str | None
+    integrity_verified: bool
     automatic_download_enabled: bool
     issues: tuple[str, ...]
 
@@ -80,6 +83,9 @@ def _jpl_health(response: Response) -> EphemerisHealthResponse:
         configured_path=report.configured_path,
         file_exists=report.file_exists,
         file_size_bytes=report.file_size_bytes,
+        expected_sha256=report.expected_sha256,
+        actual_sha256=report.actual_sha256,
+        integrity_verified=report.integrity_verified,
         automatic_download_enabled=report.automatic_download_enabled,
         issues=report.issues,
     )
@@ -88,11 +94,11 @@ def _jpl_health(response: Response) -> EphemerisHealthResponse:
 @router.get(
     "/health/ephemeris",
     response_model=EphemerisHealthResponse,
-    summary="Production JPL ephemeris readiness check",
-    responses={503: {"description": "Local JPL DE440s kernel is not ready"}},
+    summary="Production JPL ephemeris readiness and integrity check",
+    responses={503: {"description": "Local JPL DE440s kernel is not ready or failed integrity"}},
 )
 def ephemeris_health_check(response: Response) -> EphemerisHealthResponse:
-    """Report whether the production DE440s kernel is ready."""
+    """Report whether the production DE440s kernel is present and verified."""
 
     return _jpl_health(response)
 
@@ -101,7 +107,7 @@ def ephemeris_health_check(response: Response) -> EphemerisHealthResponse:
     "/health/ephemeris/jpl",
     response_model=EphemerisHealthResponse,
     summary="JPL ephemeris readiness compatibility route",
-    responses={503: {"description": "Local JPL DE440s kernel is not ready"}},
+    responses={503: {"description": "Local JPL DE440s kernel is not ready or failed integrity"}},
 )
 def jpl_ephemeris_health_check(response: Response) -> EphemerisHealthResponse:
     """Retain the earlier JPL-specific readiness URL as an additive alias."""
