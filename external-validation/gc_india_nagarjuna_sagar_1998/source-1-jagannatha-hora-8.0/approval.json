@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0.0",
+  "case_id": "gc_india_nagarjuna_sagar_1998",
+  "source_number": 1,
+  "source_name": "Jagannatha Hora",
+  "source_version": "8.0",
+  "status": "approved",
+  "approved_by": "mkraja826",
+  "approved_on": "2026-07-21",
+  "approval_scope": "external_source_1",
+  "evidence_sufficiency": "sufficient_for_formal_comparison",
+  "diagnostic_comparison": {
+    "fields_compared": 31,
+    "matched": 31,
+    "mismatched": 0,
+    "passed": true
+  },
+  "strict_comparison": {
+    "fields_compared": 31,
+    "matched": 31,
+    "mismatched": 0,
+    "passed": true
+  },
+  "d1_agreement": {
+    "matched": 10,
+    "total": 10
+  },
+  "d9_agreement": {
+    "matched": 10,
+    "total": 10
+  },
+  "differences_degrees": {
+    "ayanamsha": 0.0029826256,
+    "ascendant": 0.0022367278,
+    "rahu": 0.0000654211,
+    "ketu": 0.0000654211,
+    "moon": 0.0000289889
+  },
+  "limitations": [
+    "Stale city-search text is visible in one birth-input screenshot.",
+    "Natal summary displays Unknown country.",
+    "Natal summary longitude is rounded to whole seconds.",
+    "Exact manual input form is authoritative."
+  ],
+  "case_external_validation_complete": false,
+  "remaining_requirement": "One additional independent approved source is required."
+}

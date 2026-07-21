@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0.0",
+  "case_id": "gc_india_nagarjuna_sagar_1998",
+  "source_number": 1,
+  "source_name": "Jagannatha Hora",
+  "source_version": "8.0",
+  "hash_algorithm": "SHA-256",
+  "files": [
+    {
+      "relative_filename": "01-options-superseded-true-positions-mean-nodes.png",
+      "byte_size": 128252,
+      "sha256": "6251217abbd48f5c4c185b73aa1a8a4cc19720d39c5aef34966de59bce6352a2"
+    },
+    {
+      "relative_filename": "01-software-version.png",
+      "byte_size": 672546,
+      "sha256": "82996d043e900a893b187660d128ea954ec7829307c10271c625ab61a4e0b9b1"
+    },
+    {
+      "relative_filename": "02-birth-input-partial-city-label-not-clean.png",
+      "byte_size": 113404,
+      "sha256": "9ae75fc1c31a0820907858d8e0f0c5820890c0d19717aa29edff7b81bf8b5ddd"
+    },
+    {
+      "relative_filename": "02-planetary-table.png",
+      "byte_size": 146859,
+      "sha256": "233438f73114cfc1f2f24f9ea9f4b58fef8fd332790e9f98dbfe0355965e69c4"
+    },
+    {
+      "relative_filename": "03-coordinates-timezone-summary.png",
+      "byte_size": 517793,
+      "sha256": "8f2d04f769cc59eaa46724bfbc295e2fc5b2c75c5a5c88cad712c67f1594b1f5"
+    },
+    {
+      "relative_filename": "04-ayanamsha-settings.png",
+      "byte_size": 85464,
+      "sha256": "6d6f48ff9040ade72cd73cc43dab04b4f1f80a09a4de8288d3683c794be53faa"
+    },
+    {
+      "relative_filename": "05-final-planet-settings.png",
+      "byte_size": 123199,
+      "sha256": "1697c95646343de77e9ed933fe7ea93d5b6b373cc3a1545511d530174fb928c7"
+    },
+    {
+      "relative_filename": "05-natal-chart-key-info-ayanamsa.png",
+      "byte_size": 151099,
+      "sha256": "986c15054ffc9c1b2d8a0dc7207257b73b3b080eccee3bfdf086e78848ae21b4"
+    },
+    {
+      "relative_filename": "06-planetary-longitudes.png",
+      "byte_size": 746406,
+      "sha256": "233a29f9610696b07867db905bf561d61636b833150f6f5ada3eb1a8ba0a265f"
+    },
+    {
+      "relative_filename": "06-rasi-navamsa-chart-support.png",
+      "byte_size": 50148,
+      "sha256": "119414a80a222f61b477e01bd3acd46fd5d47335475a62335e3dfff371715674"
+    },
+    {
+      "relative_filename": "07-d1-bhinnashtakavarga-supporting.png",
+      "byte_size": 105058,
+      "sha256": "a701678b229d94c1c2d8d88f5e7e1309c4cfe1aec7e9f922ce8915cc9bb391be"
+    },
+    {
+      "relative_filename": "approval.json",
+      "byte_size": 1261,
+      "sha256": "1704040c4a1d62d0837191eefbd19ba499c383f5db2d3c572985daf3ff0ab954"
+    },
+    {
+      "relative_filename": "capture-sheet.md",
+      "byte_size": 2517,
+      "sha256": "b23dc39ddf171f3bb57f8c1fe9e5b9fcff6a8bdc60412120deee62cf50c891bb"
+    },
+    {
+      "relative_filename": "comparison-diagnostic.json",
+      "byte_size": 36333,
+      "sha256": "b75b92597e9658d7693bc668704346f83138953b9365b0c5e1e7f11e92d18a7d"
+    },
+    {
+      "relative_filename": "comparison-report.md",
+      "byte_size": 8041,
+      "sha256": "fdaa3bc9104dae546dfcf277c217aef86e023b5ef24cf63c24c45313c8b5c4a6"
+    },
+    {
+      "relative_filename": "comparison-strict.json",
+      "byte_size": 36333,
+      "sha256": "6e0b636fa220c8be254f24ab01198f93950fcd1c45e0f2c6df817b2f02f45abb"
+    },
+    {
+      "relative_filename": "evidence-transcription.md",
+      "byte_size": 9874,
+      "sha256": "08a9bc8b8a25ffa66a3d54f678e352da048cfe4f564e60750e5a69b0ae74e8c4"
+    },
+    {
+      "relative_filename": "normalized.json",
+      "byte_size": 7985,
+      "sha256": "9ca01395194e3e89982edf41b32f7394074144a083bcb0c54b799a5e83c19bee"
+    },
+    {
+      "relative_filename": "raw.json",
+      "byte_size": 2884,
+      "sha256": "61c44e3e6e11eb6f9df9251ddbce41e659cfb3588ccdf0ba5e5b3b5be8e07c52"
+    },
+    {
+      "relative_filename": "raw.template.json",
+      "byte_size": 1463,
+      "sha256": "1a81770aa09db5cad39702065327d3f88f683afdec815bca42e4d4649744f94d"
+    },
+    {
+      "relative_filename": "README.md",
+      "byte_size": 2083,
+      "sha256": "0cdcc87dad77e71318cfde25fa4d16d1e86bed9ffd531e002f49c4d533f8d0bf"
+    },
+    {
+      "relative_filename": "README-recovered-evidence.md",
+      "byte_size": 1391,
+      "sha256": "ee7eeb5e535c790fb7322a7349dc2a6f76655daf964b175380db11e77c655af6"
+    }
+  ]
+}
