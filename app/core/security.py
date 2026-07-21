@@ -5,10 +5,18 @@ from __future__ import annotations
 from dataclasses import dataclass
 from hmac import compare_digest
 from os import getenv
+from typing import Annotated
+
+from fastapi import Security
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 API_KEY_MIN_LENGTH = 32
-PROTECTED_PREFIX = "/v1"
 _TRUE_VALUES = frozenset({"1", "true", "yes", "on"})
+_bearer = HTTPBearer(
+    auto_error=False,
+    scheme_name="AstroServiceKey",
+    description="Opaque service key used by the Horos Supabase Edge Function.",
+)
 
 
 @dataclass(frozen=True)
@@ -25,13 +33,14 @@ class ApiSecurityStatus:
     minimum_key_length: int = API_KEY_MIN_LENGTH
 
 
-@dataclass(frozen=True)
-class ApiSecurityRejection:
-    """HTTP-safe rejection returned before a protected route is evaluated."""
+class ApiSecurityError(Exception):
+    """Stable authentication failure translated to a JSON API response."""
 
-    status_code: int
-    code: str
-    message: str
+    def __init__(self, status_code: int, code: str, message: str) -> None:
+        super().__init__(message)
+        self.status_code = status_code
+        self.code = code
+        self.message = message
 
 
 def _is_true(value: str | None) -> bool:
@@ -61,42 +70,31 @@ def inspect_api_security() -> ApiSecurityStatus:
     )
 
 
-def authorize_api_request(
-    path: str,
-    method: str,
-    authorization: str | None,
-) -> ApiSecurityRejection | None:
-    """Authorize one request, protecting every current and future ``/v1`` route."""
-
-    if method.upper() == "OPTIONS":
-        return None
-    if path != PROTECTED_PREFIX and not path.startswith(f"{PROTECTED_PREFIX}/"):
-        return None
+def require_api_key(
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Security(_bearer)],
+) -> None:
+    """Require the configured bearer key when calculation protection is enabled."""
 
     status = inspect_api_security()
     if not status.protection_enabled:
-        return None
+        return
     if not status.ready:
-        return ApiSecurityRejection(
+        raise ApiSecurityError(
             status_code=503,
             code="API_AUTH_NOT_CONFIGURED",
             message=(
                 "Calculation API authentication is required but no valid service key is configured."
             ),
         )
-
-    scheme, separator, supplied = (authorization or "").partition(" ")
-    if not separator or scheme.lower() != "bearer" or not supplied.strip():
-        return ApiSecurityRejection(
+    if credentials is None or credentials.scheme.lower() != "bearer":
+        raise ApiSecurityError(
             status_code=401,
             code="API_KEY_REQUIRED",
             message="A bearer API key is required for calculation routes.",
         )
-
-    if not compare_digest(supplied.strip(), _configured_key()):
-        return ApiSecurityRejection(
+    if not compare_digest(credentials.credentials.strip(), _configured_key()):
+        raise ApiSecurityError(
             status_code=403,
             code="API_KEY_INVALID",
             message="The supplied API key is not valid.",
         )
-    return None
