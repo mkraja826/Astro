@@ -56,6 +56,9 @@ def extend_varahamihira_profile(
     return extended.model_copy(
         update={
             "profile_version": "1.10.0",
+            "astronomical_profile_dependency": (
+                "south_indian_drik_lahiri_jpl_de440s_v1"
+            ),
             "endpoints": endpoints,
             "caveats": [
                 "The controlled weighting profile is an API convention, not a textual rule.",
