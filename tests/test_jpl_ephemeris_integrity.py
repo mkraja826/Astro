@@ -2,8 +2,8 @@
 
 from hashlib import sha256
 
-from app.core.jpl_ephemeris import inspect_jpl_ephemeris, require_jpl_ephemeris
 from app.core.ephemeris import EphemerisUnavailableError
+from app.core.jpl_ephemeris import inspect_jpl_ephemeris, require_jpl_ephemeris
 
 
 def _configure_kernel(monkeypatch, path, expected_sha256: str) -> None:
@@ -53,7 +53,10 @@ def test_ephemeris_rejected_when_digest_mismatches(tmp_path, monkeypatch) -> Non
         raise AssertionError("require_jpl_ephemeris() accepted an unverified kernel")
 
 
-def test_ephemeris_rejected_when_expected_digest_is_invalid(tmp_path, monkeypatch) -> None:
+def test_ephemeris_rejected_when_expected_digest_is_invalid(
+    tmp_path,
+    monkeypatch,
+) -> None:
     kernel = tmp_path / "de440s.bsp"
     kernel.write_bytes(b"kernel")
     _configure_kernel(monkeypatch, kernel, "not-a-sha256")
