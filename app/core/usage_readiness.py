@@ -50,7 +50,11 @@ def _decode_payload(raw: bytes) -> dict[str, Any] | None:
     return payload if isinstance(payload, dict) else None
 
 
-def _probe_sync(base_url: str, service_role_key: str, timeout_seconds: float) -> tuple[dict[str, Any] | None, float, str | None]:
+def _probe_sync(
+    base_url: str,
+    service_role_key: str,
+    timeout_seconds: float,
+) -> tuple[dict[str, Any] | None, float, str | None]:
     started = perf_counter()
     request = UrlRequest(
         f"{base_url.rstrip('/')}/rest/v1/rpc/api_usage_health_v1",
