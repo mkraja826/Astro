@@ -14,9 +14,6 @@ WEIGHTED_CAREER_ENDPOINT = "/v1/classical/varahamihira_v1/career/weighted"
 WEIGHTED_DASHA_ENDPOINT = "/v1/classical/varahamihira_v1/dasha/current/weighted"
 VALIDATION_PROFILE_ENDPOINT = "/v1/classical/varahamihira_v1/validation/profile"
 VALIDATION_CASES_ENDPOINT = "/v1/classical/varahamihira_v1/validation/cases"
-VALIDATION_NORMALIZE_ENDPOINT = (
-    "/v1/classical/varahamihira_v1/validation/normalize/external"
-)
 VALIDATION_COMPARE_ENDPOINT = "/v1/classical/varahamihira_v1/validation/compare"
 BASELINE_MANIFEST_ENDPOINT = (
     "/v1/classical/varahamihira_v1/validation/baseline/manifest"
@@ -46,7 +43,6 @@ def extend_varahamihira_profile(
         WEIGHTED_DASHA_ENDPOINT,
         VALIDATION_PROFILE_ENDPOINT,
         VALIDATION_CASES_ENDPOINT,
-        VALIDATION_NORMALIZE_ENDPOINT,
         VALIDATION_COMPARE_ENDPOINT,
         BASELINE_MANIFEST_ENDPOINT,
         BASELINE_INTEGRITY_ENDPOINT,
@@ -59,7 +55,7 @@ def extend_varahamihira_profile(
 
     return extended.model_copy(
         update={
-            "profile_version": "1.11.0",
+            "profile_version": "1.10.0",
             "astronomical_profile_dependency": (
                 "south_indian_drik_lahiri_jpl_de440s_v1"
             ),
@@ -70,7 +66,6 @@ def extend_varahamihira_profile(
                 "Weighted career and Dasha routes are additive; old contracts are unchanged.",
                 "Twelve globally diverse validation inputs are frozen in case set v1.",
                 "Twelve digest-locked JPL outputs are committed as internal regressions.",
-                "External JSON exports can be normalized but are not automatically approved.",
                 "Internal JPL baselines are not independent external evidence.",
                 "No external software snapshots are approved or committed yet.",
                 "Two independent external sources per case remain required.",
