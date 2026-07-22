@@ -57,6 +57,9 @@ class PredictionDomainResult(BaseModel):
     challenging_score: float
     net_score: float
     statement: str
+    advisory: str
+    favourable_timing: str | None
+    challenging_timing: str | None
     supporting_factors: list[PredictionEvidence]
     challenging_factors: list[PredictionEvidence]
     contextual_factors: list[PredictionEvidence]

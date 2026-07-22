@@ -56,6 +56,14 @@ def _dasha_payload() -> dict:
                             "rule_ids": ["VM-BJ-C02-DIGNITY-001"],
                         }
                     ],
+                    "contextual_evidence": [
+                        {
+                            "fact": "owned_houses",
+                            "value": "2,3",
+                            "reason": "Synthetic house ownership fixture.",
+                            "rule_ids": [],
+                        }
+                    ],
                 },
                 {**empty_level, "level": "antardasha", "lord": "Jupiter"},
                 {**empty_level, "level": "pratyantardasha", "lord": "Moon"},
@@ -94,7 +102,12 @@ def test_prediction_composes_existing_astro_modules(monkeypatch) -> None:
     response = classical_prediction.calculate_varahamihira_prediction(request)
     results = {result.domain: result for result in response.results}
 
-    assert response.engine_version == "horos_brihat_jataka_v1"
+    assert response.engine_version == "horos_brihat_jataka_v2"
     assert results["career"].outlook == "challenging"
     assert "negative" in results["career"].statement
+    assert results["career"].challenging_timing
+    assert results["money_resources"].outlook == "challenging"
+    assert results["travel_change"].outlook == "challenging"
+    assert results["family_home"].outlook == "insufficient_evidence"
+    assert len(results) == 9
     assert response.disclaimer
