@@ -7,6 +7,7 @@ from app.engine.classical_ashtakavarga import calculate_varahamihira_ashtakavarg
 from app.engine.classical_aspects import calculate_varahamihira_aspects
 from app.engine.classical_career import calculate_varahamihira_career
 from app.engine.classical_conditions import calculate_varahamihira_conditions
+from app.engine.classical_prediction import calculate_varahamihira_prediction
 from app.engine.classical_dasha import calculate_varahamihira_dasha_context
 from app.engine.classical_reference import (
     get_varahamihira_grahas,
@@ -55,6 +56,10 @@ from app.schemas.classical_conditions import (
 from app.schemas.classical_dasha import (
     ClassicalDashaRequest,
     ClassicalDashaResponse,
+)
+from app.schemas.classical_prediction import (
+    ClassicalPredictionRequest,
+    ClassicalPredictionResponse,
 )
 from app.schemas.classical_relationships import (
     ClassicalRelationshipsRequest,
@@ -407,6 +412,36 @@ def varahamihira_weighted_dasha_current(
 
     try:
         return calculate_varahamihira_weighted_dasha(request)
+    except (BirthTimeError, DashaQueryError) as exc:
+        raise _unprocessable(exc) from exc
+    except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
+        raise _ephemeris_unavailable(exc) from exc
+
+
+@router.post(
+    "/prediction",
+    response_model=ClassicalPredictionResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Compose source-traceable Varahamihira findings",
+    responses={
+        422: {
+            "description": (
+                "Invalid birth/query time, ambiguous civil time, or instant outside "
+                "the supported Vimshottari cycle"
+            )
+        },
+        503: {
+            "description": "Required licensed ephemeris configuration or data unavailable"
+        },
+    },
+)
+def varahamihira_prediction(
+    request: ClassicalPredictionRequest,
+) -> ClassicalPredictionResponse:
+    """Return direct findings without suppressing negative or conflicting evidence."""
+
+    try:
+        return calculate_varahamihira_prediction(request)
     except (BirthTimeError, DashaQueryError) as exc:
         raise _unprocessable(exc) from exc
     except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
