@@ -7,8 +7,8 @@ from app.engine.classical_ashtakavarga import calculate_varahamihira_ashtakavarg
 from app.engine.classical_aspects import calculate_varahamihira_aspects
 from app.engine.classical_career import calculate_varahamihira_career
 from app.engine.classical_conditions import calculate_varahamihira_conditions
-from app.engine.classical_prediction import calculate_varahamihira_prediction
 from app.engine.classical_dasha import calculate_varahamihira_dasha_context
+from app.engine.classical_prediction import calculate_varahamihira_prediction
 from app.engine.classical_reference import (
     get_varahamihira_grahas,
     get_varahamihira_profile,
