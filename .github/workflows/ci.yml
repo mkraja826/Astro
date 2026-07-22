@@ -17,6 +17,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Audit Hugging Face deployment readiness
+        run: python3 scripts/audit_huggingface_deployment_readiness.py
+
       - name: Install Ruff
         run: python3 -m pip install --quiet "ruff>=0.9,<1.0"
 
