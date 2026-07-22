@@ -31,11 +31,16 @@ COPY scripts/download_jpl_kernel.py ./scripts/download_jpl_kernel.py
 COPY deploy/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY app ./app
 
-RUN python scripts/download_jpl_kernel.py \
+RUN apt-get update \
+    && apt-get install --no-install-recommends --yes git \
+    && python scripts/download_jpl_kernel.py \
         --destination app/data/jpl/de440s.bsp \
         --url "${JPL_EPHEMERIS_URL}" \
         --sha256 "${JPL_EPHEMERIS_SHA256}" \
     && python -m pip install --no-cache-dir . \
+    && apt-get purge --yes git \
+    && apt-get autoremove --yes \
+    && rm -rf /var/lib/apt/lists/* \
     && sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh \
     && chmod 0555 /usr/local/bin/docker-entrypoint.sh
 
