@@ -147,6 +147,21 @@ Open:
 - Ephemeris readiness: `http://127.0.0.1:8000/health/ephemeris`
 - Baseline integrity: `http://127.0.0.1:8000/v1/classical/varahamihira_v1/validation/baseline/integrity`
 
+## Private-beta local preflight
+
+After the protected durable staging container has been configured, run the complete
+local gate from Windows PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass `
+  -File .\scripts\verify-private-beta-local.ps1
+```
+
+The command verifies Git safety, the pinned JPL checksum, Ruff, the full pytest suite,
+Docker readiness, exact durable Supabase binding, and the authenticated staging smoke
+without printing secrets. See
+[`docs/PRIVATE_BETA_LOCAL_RUNBOOK.md`](docs/PRIVATE_BETA_LOCAL_RUNBOOK.md).
+
 ## Positions request
 
 ```json
@@ -227,12 +242,13 @@ claims.
 - [`docs/CLASSICAL_STRENGTH_V1.md`](docs/CLASSICAL_STRENGTH_V1.md)
 - [`docs/CONTROLLED_STRENGTH_WEIGHTING_V1.md`](docs/CONTROLLED_STRENGTH_WEIGHTING_V1.md)
 - [`docs/GOLDEN_CHART_VALIDATION_V1.md`](docs/GOLDEN_CHART_VALIDATION_V1.md)
+- [`docs/PRIVATE_BETA_LOCAL_RUNBOOK.md`](docs/PRIVATE_BETA_LOCAL_RUNBOOK.md)
 - [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)
 
-## Next validation milestone
+## Next milestones
 
-1. Add generic external-export normalization and planet-name aliases.
-2. Commit approved exports from two independent Jyotisha programs per case.
-3. Review Lagna, node, sign, Nakshatra, Pada, and Navamsa boundary differences.
-4. Mark a case externally validated only after both sources are reviewed.
-5. Add authentication, metering, and commercial API plans.
+1. Run and preserve the local private-beta preflight after security or calculation changes.
+2. Deploy a hosted HTTPS Astro endpoint only after the operator explicitly approves billing.
+3. Configure Horos Edge Function secrets without exposing them to mobile code or Git.
+4. Verify the hosted Horos-to-Astro path with durable metering and unique request IDs.
+5. Continue independent external-export review and validation case approval.
