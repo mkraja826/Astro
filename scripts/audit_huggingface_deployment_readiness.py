@@ -77,7 +77,7 @@ def main() -> int:
 
     require_contains(
         entrypoint,
-        r'direct_value="\${${variable_name}:-}"',
+        r"direct_value=\${${variable_name}:-}",
         "Entrypoint direct-secret support is missing.",
     )
     require_contains(entrypoint, "load_secret_file JYOTHISYAM_API_KEY", "Astro API key loader is missing.")
