@@ -75,7 +75,11 @@ def main() -> int:
         "Production Dockerfile does not use the guarded secret-loading entrypoint.",
     )
 
-    require_contains(entrypoint, 'direct_value="\${${variable_name}:-}"', "Entrypoint direct-secret support is missing.")
+    require_contains(
+        entrypoint,
+        r'direct_value="\${${variable_name}:-}"',
+        "Entrypoint direct-secret support is missing.",
+    )
     require_contains(entrypoint, "load_secret_file JYOTHISYAM_API_KEY", "Astro API key loader is missing.")
     require_contains(
         entrypoint,
