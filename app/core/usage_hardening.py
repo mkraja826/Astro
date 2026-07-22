@@ -9,13 +9,13 @@ from uuid import UUID
 
 from fastapi import Depends, Header, Request
 
+from app.core.astro_supabase_usage import AstroSupabaseUsageBackend
 from app.core.config import RuntimeSettings
 from app.core.runtime_guard import request_id_from_scope
 from app.core.security import require_api_key
 from app.core.usage import (
     DisabledUsageBackend,
     MemoryUsageBackend,
-    SupabaseUsageBackend,
     UsageAdmission,
     UsageBackend,
     UsageBackendError,
@@ -33,8 +33,8 @@ def _supabase_credentials() -> tuple[str, str]:
     """Load only Jyothisyam-specific secrets, never generic project credentials."""
 
     base_url = getenv("JYOTHISYAM_SUPABASE_URL", "").strip()
-    service_role_key = getenv("JYOTHISYAM_SUPABASE_SERVICE_ROLE_KEY", "").strip()
-    return base_url, service_role_key
+    server_credential = getenv("JYOTHISYAM_SUPABASE_SERVICE_ROLE_KEY", "").strip()
+    return base_url, server_credential
 
 
 def _is_astro_project_url(base_url: str) -> bool:
@@ -60,7 +60,7 @@ def _is_astro_project_url(base_url: str) -> bool:
 def inspect_usage_policy(settings: RuntimeSettings) -> UsagePolicyStatus:
     """Report whether metering is safe and bound to the Astro project."""
 
-    base_url, service_role_key = _supabase_credentials()
+    base_url, server_credential = _supabase_credentials()
     if settings.usage_backend == "disabled":
         configured = True
         durable = False
@@ -70,7 +70,7 @@ def inspect_usage_policy(settings: RuntimeSettings) -> UsagePolicyStatus:
         durable = False
         ready = not settings.usage_required or settings.environment in {"development", "test"}
     else:
-        configured = _is_astro_project_url(base_url) and len(service_role_key) >= 32
+        configured = _is_astro_project_url(base_url) and len(server_credential) >= 32
         durable = True
         ready = configured
     return UsagePolicyStatus(
@@ -92,10 +92,10 @@ def build_usage_backend(settings: RuntimeSettings) -> UsageBackend:
         return DisabledUsageBackend()
     if settings.usage_backend == "memory":
         return MemoryUsageBackend()
-    base_url, service_role_key = _supabase_credentials()
-    return SupabaseUsageBackend(
+    base_url, server_credential = _supabase_credentials()
+    return AstroSupabaseUsageBackend(
         base_url=base_url,
-        service_role_key=service_role_key,
+        server_credential=server_credential,
         timeout_seconds=settings.usage_rpc_timeout_seconds,
     )
 
