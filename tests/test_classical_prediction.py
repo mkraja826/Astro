@@ -227,8 +227,11 @@ def test_prediction_composes_existing_astro_modules(monkeypatch) -> None:
     assert results["career"].favourable_timing is None
     assert results["career"].challenging_timing
     assert results["money_resources"].outlook == "challenging"
-    assert results["travel_change"].outlook == "challenging"
-    assert results["family_home"].outlook == "favourable"
+    assert results["travel_change"].outlook == "mixed"
+    assert results["travel_change"].conflict_status == "cross_channel_conflict"
+    assert results["family_home"].outlook == "mixed"
+    assert results["family_home"].confidence_status == "uncalibrated_moderate"
+    assert set(results["career"].channel_scores) == {"natal", "dasha", "transit"}
     assert results["spirituality"].outlook == "mixed"
     jupiter_confirmation = next(
         factor

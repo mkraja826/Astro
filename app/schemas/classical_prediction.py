@@ -57,6 +57,9 @@ class PredictionDomainResult(BaseModel):
     supporting_score: float
     challenging_score: float
     net_score: float
+    channel_scores: dict[str, dict[str, float]]
+    conflict_status: str
+    confidence_status: str
     statement: str
     advisory: str
     timing_status: str

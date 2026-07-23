@@ -1,7 +1,7 @@
 # Phase 3 prediction compatibility
 
 This development-only integration pins Varahamihira commit
-`bfcb89b74946716c1a0e6645cd0ec0bf31c774b3` and accepts
+`373a133d0c94928bccb9d865d430a3e4946ef7fe` and accepts
 `horos_brihat_jataka_v3_dev` responses.
 
 ## Contract changes
@@ -32,6 +32,15 @@ This development-only integration pins Varahamihira commit
   monthly transit horizon and pass it through the strict engine adapter.
 - Timing becomes `evaluated` only after sample-count, seven-Graha, rule-ID,
   polarity, range, and exact-ingress-abstention checks pass.
+- Every domain exposes separate natal, daśā, and transit channel scores. Each
+  channel is capped before its declared coefficient is applied, preventing
+  repeated evidence from making one channel dominate by volume.
+- `conflict_status` reports cross-channel disagreement instead of hiding it.
+  `confidence_status` remains explicitly `uncalibrated_*`; internal scores are
+  not probabilities or claims of measured accuracy.
+- Phase 3D automated gates now support immutable blinded cases and prospective
+  outcome metrics. Expert review and outcome gates remain pending until real
+  records meet the documented minimums.
 
 ## Release restriction
 
