@@ -15,6 +15,7 @@ from app.api.routes.classical_validation import router as classical_validation_r
 from app.api.routes.dasha import router as dasha_router
 from app.api.routes.panchanga import router as panchanga_router
 from app.api.routes.positions import router as positions_router
+from app.api.routes.transits import router as transits_router
 from app.core.config import RuntimeSettings, load_runtime_settings
 from app.core.runtime_guard import RuntimeGuardMiddleware, request_id_from_scope
 from app.core.security import ApiSecurityError
@@ -118,6 +119,7 @@ def create_app(settings: RuntimeSettings | None = None) -> FastAPI:
     protected = [Depends(require_metered_access)]
     application.include_router(system_routes.router)
     application.include_router(positions_router, dependencies=protected)
+    application.include_router(transits_router, dependencies=protected)
     application.include_router(charts_router, dependencies=protected)
     application.include_router(panchanga_router, dependencies=protected)
     application.include_router(dasha_router, dependencies=protected)
