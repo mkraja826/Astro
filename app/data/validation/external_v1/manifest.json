@@ -1,0 +1,16 @@
+{
+  "manifest_id": "jyothisyam_external_validation_manifest_v1",
+  "manifest_version": "1.0.0",
+  "profile_id": "varahamihira_v1",
+  "calculation_profile": "south_indian_drik_lahiri_jpl_de440s_v1",
+  "case_set_id": "jyothisyam_external_golden_cases_v1",
+  "case_set_digest": "5dcd67cd142e49127cdb62165ca8e1ccb7b28f58fabbf3612eeca42c5392f624",
+  "required_external_sources_per_case": 2,
+  "records": [],
+  "policy_notes": [
+    "Internal JPL regression baselines never count as independent external evidence.",
+    "A case is externally validated only after two distinct approved external source IDs are committed.",
+    "Every approved record must retain reviewer identity, review time, source provenance, file path, and SHA-256 digest.",
+    "Disagreements are resolved from calculation contracts and source settings, not majority vote."
+  ]
+}
