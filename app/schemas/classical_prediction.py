@@ -43,6 +43,7 @@ class PredictionEvidence(BaseModel):
     source_rule_ids: list[str]
     source_kind: str
     reason: str
+    independence_key: str
 
 
 class PredictionDomainResult(BaseModel):

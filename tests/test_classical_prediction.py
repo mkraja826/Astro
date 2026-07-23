@@ -40,7 +40,50 @@ def _dasha_payload() -> dict:
     return {
         "profile_id": "varahamihira_v1",
         "weighted_strength": {
-            "calculation_profile": "south_indian_drik_lahiri_jpl_de440s_v1"
+            "calculation_profile": "south_indian_drik_lahiri_jpl_de440s_v1",
+            "raw_strength": {
+                "grahas": [
+                    {
+                        "graha": name,
+                        "d1_sign_index": index,
+                        "d1_house": index,
+                    }
+                    for index, name in enumerate(
+                        [
+                            "sun",
+                            "moon",
+                            "mars",
+                            "mercury",
+                            "jupiter",
+                            "venus",
+                            "saturn",
+                        ],
+                        start=1,
+                    )
+                ]
+            },
+            "weighted_grahas": [
+                {
+                    "graha": name,
+                    "total_score": score,
+                    "components": [
+                        {
+                            "classical_rule_ids": [
+                                "VM-BJ-C02-DIGNITY-001"
+                            ]
+                        }
+                    ],
+                }
+                for name, score in {
+                    "sun": 2.0,
+                    "moon": 3.0,
+                    "mars": -8.0,
+                    "mercury": 1.0,
+                    "jupiter": 4.0,
+                    "venus": -4.0,
+                    "saturn": 2.0,
+                }.items()
+            ],
         },
         "dasha": {
             "levels": [
@@ -102,12 +145,22 @@ def test_prediction_composes_existing_astro_modules(monkeypatch) -> None:
     response = classical_prediction.calculate_varahamihira_prediction(request)
     results = {result.domain: result for result in response.results}
 
-    assert response.engine_version == "horos_brihat_jataka_v2"
+    assert response.engine_version == "horos_brihat_jataka_v3_dev"
     assert results["career"].outlook == "challenging"
     assert "negative" in results["career"].statement
     assert results["career"].challenging_timing
     assert results["money_resources"].outlook == "challenging"
     assert results["travel_change"].outlook == "challenging"
-    assert results["family_home"].outlook == "insufficient_evidence"
+    assert results["family_home"].outlook == "favourable"
+    assert results["spirituality"].outlook == "mixed"
+    assert all(
+        factor.independence_key
+        for result in response.results
+        for factor in (
+            *result.supporting_factors,
+            *result.challenging_factors,
+            *result.contextual_factors,
+        )
+    )
     assert len(results) == 9
     assert response.disclaimer
