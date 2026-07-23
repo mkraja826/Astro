@@ -166,7 +166,9 @@ def test_prediction_composes_existing_astro_modules(monkeypatch) -> None:
     assert response.engine_version == "horos_brihat_jataka_v3_dev"
     assert results["career"].outlook == "challenging"
     assert "negative" in results["career"].statement
-    assert results["career"].challenging_timing
+    assert results["career"].timing_status == "unavailable"
+    assert results["career"].favourable_timing is None
+    assert results["career"].challenging_timing is None
     assert results["money_resources"].outlook == "challenging"
     assert results["travel_change"].outlook == "challenging"
     assert results["family_home"].outlook == "mixed"
@@ -212,4 +214,5 @@ def test_prediction_composes_existing_astro_modules(monkeypatch) -> None:
         )
     )
     assert len(results) == 9
+    assert all(result.timing_status == "unavailable" for result in response.results)
     assert response.disclaimer

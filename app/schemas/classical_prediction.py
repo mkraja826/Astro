@@ -59,6 +59,7 @@ class PredictionDomainResult(BaseModel):
     net_score: float
     statement: str
     advisory: str
+    timing_status: str
     favourable_timing: str | None
     challenging_timing: str | None
     supporting_factors: list[PredictionEvidence]

@@ -1,7 +1,7 @@
 # Phase 3 prediction compatibility
 
 This development-only integration pins Varahamihira commit
-`449b6bf1ff3709950c27f689722f76ee8b8a53e1` and accepts
+`946893a1f5a17376da3f39dfee70e2c48cbd8e55` and accepts
 `horos_brihat_jataka_v3_dev` responses.
 
 ## Contract changes
@@ -23,6 +23,11 @@ This development-only integration pins Varahamihira commit
   cancellation candidates receive a non-additive boundary trace.
 - Any enabled or applied cancellation fails closed. Cross-text Nīcabhaṅga
   conventions are not imported into `varahamihira_v1`.
+- Daily, weekly, and monthly output exposes `timing_status: unavailable` and
+  returns no favourable or challenging timing window until a separate validated
+  transit channel is present.
+- Natal and active-daśā evidence remains visible as capacity and broad activation;
+  it is not relabeled as short-term transit timing.
 
 ## Release restriction
 

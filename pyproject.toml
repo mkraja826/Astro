@@ -14,7 +14,7 @@ dependencies = [
     "skyfield==1.54",
     "tzdata==2026.3",
     "uvicorn[standard]>=0.30,<1.0",
-    "varahamihira-engine @ git+https://github.com/mkraja826/varahamihira.git@449b6bf1ff3709950c27f689722f76ee8b8a53e1",
+    "varahamihira-engine @ git+https://github.com/mkraja826/varahamihira.git@946893a1f5a17376da3f39dfee70e2c48cbd8e55",
 ]
 
 [project.optional-dependencies]
