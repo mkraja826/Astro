@@ -2,7 +2,9 @@
 
 from fastapi.testclient import TestClient
 
+from app.engine.classical_transits import _sample_datetimes
 from app.main import app
+from app.schemas.classical_transits import ClassicalTransitHorizonRequest
 
 client = TestClient(app)
 BASE_PATH = "/v1/classical/varahamihira_v1"
@@ -86,3 +88,26 @@ def test_profile_and_registry_advertise_transit_evaluator() -> None:
 
 def test_openapi_lists_classical_transit_evaluator() -> None:
     assert f"{BASE_PATH}/transits/evaluate" in app.openapi()["paths"]
+    assert f"{BASE_PATH}/transits/horizon" in app.openapi()["paths"]
+
+
+def test_horizon_sample_grids_are_frozen_in_local_civil_time() -> None:
+    base = _payload()
+    expected = {
+        "daily": (4, [0, 6, 12, 18]),
+        "weekly": (7, [12] * 7),
+        "monthly": (30, [12] * 30),
+    }
+    for period, (count, hours) in expected.items():
+        request = ClassicalTransitHorizonRequest.model_validate(
+            {**base, "period": period}
+        )
+        samples = _sample_datetimes(request)
+        assert len(samples) == count
+        assert [sample.hour for sample in samples] == hours
+        assert samples[0].date().isoformat() == "2026-07-23"
+        assert all(
+            (current - previous).total_seconds()
+            == (6 * 3600 if period == "daily" else 24 * 3600)
+            for previous, current in zip(samples, samples[1:], strict=False)
+        )

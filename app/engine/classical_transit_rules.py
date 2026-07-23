@@ -16,6 +16,7 @@ from app.schemas.classical import (
 )
 
 TRANSIT_EVALUATION_ENDPOINT = "/v1/classical/varahamihira_v1/transits/evaluate"
+TRANSIT_HORIZON_ENDPOINT = "/v1/classical/varahamihira_v1/transits/horizon"
 TRANSIT_BALANCE_RULE = ClassicalRuleReference(
     rule_id="VM-BJ-C09-TRANSIT-BAV-BALANCE-001",
     profile_id=PROFILE_ID,
@@ -58,6 +59,8 @@ def extend_varahamihira_profile(
     endpoints = list(extended.endpoints)
     if TRANSIT_EVALUATION_ENDPOINT not in endpoints:
         endpoints.append(TRANSIT_EVALUATION_ENDPOINT)
+    if TRANSIT_HORIZON_ENDPOINT not in endpoints:
+        endpoints.append(TRANSIT_HORIZON_ENDPOINT)
     return extended.model_copy(
         update={
             "profile_version": "1.11.0",

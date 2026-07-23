@@ -57,3 +57,19 @@ normalized_balance = net_eighths / 8
 
 The disabled overrides require their own source registration and conflict
 policy. They are not silently mixed into this evaluator.
+
+## Horizon sampling
+
+```http
+POST /v1/classical/varahamihira_v1/transits/horizon
+```
+
+The horizon contract uses a frozen local-civil sampling grid:
+
+- daily: 00:00, 06:00, 12:00, and 18:00;
+- weekly: local noon for seven consecutive dates;
+- monthly: local noon for thirty consecutive dates.
+
+Every sample contains the same seven source-traceable balances as the instant
+evaluator. Sampling does not claim exact sign ingress, egress, or election
+boundaries; `exact_ingress_egress_applied` remains false.

@@ -17,7 +17,10 @@ from app.engine.classical_reference import (
 )
 from app.engine.classical_relationships import calculate_varahamihira_relationships
 from app.engine.classical_strength import calculate_varahamihira_strength
-from app.engine.classical_transits import calculate_varahamihira_transit_evaluation
+from app.engine.classical_transits import (
+    calculate_varahamihira_transit_evaluation,
+    calculate_varahamihira_transit_horizon,
+)
 from app.engine.classical_weighting import (
     calculate_varahamihira_weighted_strength,
     get_weighting_profile,
@@ -73,6 +76,8 @@ from app.schemas.classical_strength import (
 from app.schemas.classical_transits import (
     ClassicalTransitEvaluationRequest,
     ClassicalTransitEvaluationResponse,
+    ClassicalTransitHorizonRequest,
+    ClassicalTransitHorizonResponse,
 )
 from app.schemas.classical_weighting import (
     ClassicalWeightedCareerResponse,
@@ -355,6 +360,29 @@ def varahamihira_transits_evaluate(
 
     try:
         return calculate_varahamihira_transit_evaluation(request)
+    except BirthTimeError as exc:
+        raise _unprocessable(exc) from exc
+    except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
+        raise _ephemeris_unavailable(exc) from exc
+
+
+@router.post(
+    "/transits/horizon",
+    response_model=ClassicalTransitHorizonResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Sample Chapter 9 transit balance across a forecast horizon",
+    responses={
+        422: {"description": "Invalid coordinates, timezone, or local civil time"},
+        503: {"description": "Required local JPL ephemeris data is unavailable"},
+    },
+)
+def varahamihira_transits_horizon(
+    request: ClassicalTransitHorizonRequest,
+) -> ClassicalTransitHorizonResponse:
+    """Return deterministic daily, weekly, or monthly transit samples."""
+
+    try:
+        return calculate_varahamihira_transit_horizon(request)
     except BirthTimeError as exc:
         raise _unprocessable(exc) from exc
     except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
