@@ -47,3 +47,6 @@ This development-only integration pins Varahamihira commit
 This branch depends on an unmerged development engine commit. It must not be deployed
 to production. Production remains pinned to the validated v2 engine until Phase 3A–3D
 and hosted release gates pass.
+
+The full checksum-verified DE440s workflow must pass on the exact candidate commit;
+an earlier successful run is not transferable to a newer engine pin.
