@@ -81,7 +81,7 @@ def _dasha_payload() -> dict:
                     "mercury": 1.0,
                     "jupiter": 4.0,
                     "venus": -4.0,
-                    "saturn": 2.0,
+                    "saturn": -4.0,
                 }.items()
             ],
         },
@@ -151,7 +151,7 @@ def test_prediction_composes_existing_astro_modules(monkeypatch) -> None:
     assert results["career"].challenging_timing
     assert results["money_resources"].outlook == "challenging"
     assert results["travel_change"].outlook == "challenging"
-    assert results["family_home"].outlook == "favourable"
+    assert results["family_home"].outlook == "mixed"
     assert results["spirituality"].outlook == "mixed"
     assert all(
         factor.independence_key
