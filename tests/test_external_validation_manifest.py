@@ -23,6 +23,8 @@ from app.schemas.positions import CalculationProfile
 
 client = TestClient(app)
 BASE_PATH = "/v1/classical/varahamihira_v1/validation"
+PRIMARY_CASE_ID = "gc_india_nagarjuna_sagar_1998"
+JHORA_SNAPSHOT_SHA256 = "fdf4d6f28d849496605ab05a5fa121561e77c24a36f1323a083af36fdd811849"
 
 
 def _source(name: str, kind: ValidationSourceKind = ValidationSourceKind.EXTERNAL_SOFTWARE):
@@ -81,7 +83,7 @@ def _summary(manifest: ExternalValidationManifest):
     )
 
 
-def test_committed_manifest_is_truthfully_empty_and_digest_locked() -> None:
+def test_committed_manifest_contains_approved_source1_and_digest_is_locked() -> None:
     cases = get_validation_cases()
     result = load_external_validation_manifest(
         expected_profile_id=cases.profile_id,
@@ -95,28 +97,39 @@ def test_committed_manifest_is_truthfully_empty_and_digest_locked() -> None:
 
     assert result.manifest.manifest_id == "jyothisyam_external_validation_manifest_v1"
     assert len(result.manifest_digest) == 64
-    assert result.committed_external_snapshot_count == 0
-    assert result.approved_external_snapshot_count == 0
+    assert result.committed_external_snapshot_count == 1
+    assert result.approved_external_snapshot_count == 1
     assert result.externally_validated_case_count == 0
     assert result.validated_case_ids == []
     assert result.external_reference_validation_complete is False
     assert set(result.approved_source_counts_by_case) == {
         case.case_id for case in cases.cases
     }
+    assert result.approved_source_counts_by_case[PRIMARY_CASE_ID] == 1
+
+    record = result.manifest.records[0]
+    assert record.case_id == PRIMARY_CASE_ID
+    assert record.source_id == "jagannatha_hora_8_0"
+    assert record.source.source_name == "Jagannatha Hora"
+    assert record.source.source_version == "8.0"
+    assert record.snapshot_sha256 == JHORA_SNAPSHOT_SHA256
+    assert record.review_status == ExternalValidationReviewStatus.APPROVED
+    assert record.reviewed_by == "mkraja826"
 
 
 def test_manifest_endpoint_and_profile_use_committed_ledger() -> None:
     manifest_response = client.get(f"{BASE_PATH}/external/manifest")
     manifest_payload = manifest_response.json()
     assert manifest_response.status_code == 200, manifest_payload
-    assert manifest_payload["committed_external_snapshot_count"] == 0
-    assert manifest_payload["approved_external_snapshot_count"] == 0
+    assert manifest_payload["committed_external_snapshot_count"] == 1
+    assert manifest_payload["approved_external_snapshot_count"] == 1
     assert manifest_payload["externally_validated_case_count"] == 0
+    assert manifest_payload["approved_source_counts_by_case"][PRIMARY_CASE_ID] == 1
 
     profile_response = client.get(f"{BASE_PATH}/profile")
     profile_payload = profile_response.json()
     assert profile_response.status_code == 200, profile_payload
-    assert profile_payload["committed_external_snapshot_count"] == 0
+    assert profile_payload["committed_external_snapshot_count"] == 1
     assert profile_payload["externally_validated_case_count"] == 0
     assert profile_payload["external_reference_validation_complete"] is False
 
