@@ -172,7 +172,7 @@ def get_validation_profile() -> ValidationProfileResponse:
             "Require two independent external sources per frozen case before completion.",
         ],
         caveats=[
-            "No third-party software snapshots are committed in version 1.0.0.",
+            "One approved external snapshot is committed; Source 2 is still required for its case.",
             "The harness is ready, but external validation remains incomplete.",
             "Weighted scores are an API convention and may be omitted by external software.",
             "Sensitive birth-risk and longevity outputs remain outside validation scope.",

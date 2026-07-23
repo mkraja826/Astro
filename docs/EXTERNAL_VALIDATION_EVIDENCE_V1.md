@@ -84,6 +84,7 @@ Do not commit personal contact information or unrelated source files.
 
 ## Current truthful state
 
-Version 1.0.0 intentionally begins with zero records, zero approved snapshots, and
-zero externally validated cases. The manifest framework is complete; the evidence
-collection program is not.
+Version 1.0.0 contains one approved Jagannatha Hora 8.0 snapshot for
+`gc_india_nagarjuna_sagar_1998`. That case still requires a second independent
+approved source, so the current result remains zero externally validated cases.
+The manifest framework is complete; the broader evidence collection program is not.

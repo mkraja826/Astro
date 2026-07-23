@@ -145,7 +145,8 @@ The current truthful status remains:
 
 ```json
 {
-  "committed_external_snapshot_count": 0,
+  "committed_external_snapshot_count": 1,
+  "approved_external_snapshot_count": 1,
   "externally_validated_case_count": 0,
   "external_reference_validation_complete": false
 }

@@ -44,7 +44,7 @@ def test_validation_profile_is_explicitly_incomplete() -> None:
     assert payload["harness_version"] == "1.0.0"
     assert payload["frozen_case_count"] == 12
     assert payload["required_external_sources_per_case"] == 2
-    assert payload["committed_external_snapshot_count"] == 0
+    assert payload["committed_external_snapshot_count"] == 1
     assert payload["externally_validated_case_count"] == 0
     assert payload["external_reference_validation_complete"] is False
     assert "point_longitudes" in payload["supported_field_groups"]

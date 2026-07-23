@@ -93,8 +93,10 @@ case count:   12
 ```
 
 These snapshots are **not independent evidence**. The external validation status
-remains zero approved snapshots and zero externally validated cases until exports
-from two independent Jyotisha programs per case are reviewed and committed.
+now includes one approved Jagannatha Hora 8.0 snapshot for the Nagarjuna Sagar
+case, while zero cases are fully externally validated. A second independent source is
+still required for that case, and two approved sources remain required for every
+other frozen case.
 
 ## Local setup
 
