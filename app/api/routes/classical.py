@@ -17,6 +17,7 @@ from app.engine.classical_reference import (
 )
 from app.engine.classical_relationships import calculate_varahamihira_relationships
 from app.engine.classical_strength import calculate_varahamihira_strength
+from app.engine.classical_transits import calculate_varahamihira_transit_evaluation
 from app.engine.classical_weighting import (
     calculate_varahamihira_weighted_strength,
     get_weighting_profile,
@@ -68,6 +69,10 @@ from app.schemas.classical_relationships import (
 from app.schemas.classical_strength import (
     ClassicalStrengthRequest,
     ClassicalStrengthResponse,
+)
+from app.schemas.classical_transits import (
+    ClassicalTransitEvaluationRequest,
+    ClassicalTransitEvaluationResponse,
 )
 from app.schemas.classical_weighting import (
     ClassicalWeightedCareerResponse,
@@ -327,6 +332,29 @@ def varahamihira_strength(
 
     try:
         return calculate_varahamihira_strength(request)
+    except BirthTimeError as exc:
+        raise _unprocessable(exc) from exc
+    except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
+        raise _ephemeris_unavailable(exc) from exc
+
+
+@router.post(
+    "/transits/evaluate",
+    response_model=ClassicalTransitEvaluationResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Evaluate Chapter 9 planet-specific transit balance",
+    responses={
+        422: {"description": "Invalid coordinates, timezone, or local civil time"},
+        503: {"description": "Required local JPL ephemeris data is unavailable"},
+    },
+)
+def varahamihira_transits_evaluate(
+    request: ClassicalTransitEvaluationRequest,
+) -> ClassicalTransitEvaluationResponse:
+    """Return seven-Graha BAV balance without domain or event prediction."""
+
+    try:
+        return calculate_varahamihira_transit_evaluation(request)
     except BirthTimeError as exc:
         raise _unprocessable(exc) from exc
     except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:

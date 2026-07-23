@@ -1,10 +1,10 @@
 """Profile extension for weighting and golden-chart validation."""
 
-from app.engine.classical_strength_rules import (
-    extend_varahamihira_profile as extend_strength_profile,
+from app.engine.classical_transit_rules import (
+    extend_varahamihira_profile as extend_transit_profile,
 )
-from app.engine.classical_strength_rules import (
-    extend_varahamihira_rules as extend_strength_rules,
+from app.engine.classical_transit_rules import (
+    extend_varahamihira_rules as extend_transit_rules,
 )
 from app.schemas.classical import ClassicalProfileResponse, RuleRegistryResponse
 
@@ -34,7 +34,7 @@ def extend_varahamihira_profile(
 ) -> ClassicalProfileResponse:
     """Advertise convention and validation endpoints without creating textual rules."""
 
-    extended = extend_strength_profile(profile)
+    extended = extend_transit_profile(profile)
     endpoints = list(extended.endpoints)
     additional_endpoints = (
         WEIGHTING_PROFILE_ENDPOINT,
@@ -80,4 +80,4 @@ def extend_varahamihira_rules(
 ) -> RuleRegistryResponse:
     """Keep API conventions and validation mechanics outside the verse registry."""
 
-    return extend_strength_rules(registry)
+    return extend_transit_rules(registry)
