@@ -1,7 +1,7 @@
 # Phase 3 prediction compatibility
 
 This development-only integration pins Varahamihira commit
-`152baad8710b40e781355cbb8ac3b762a51faa1a` and accepts
+`b70ddc9472c848cb79f703061da5c882d02f4fe5` and accepts
 `horos_brihat_jataka_v3_dev` responses.
 
 ## Contract changes
@@ -14,6 +14,10 @@ This development-only integration pins Varahamihira commit
   `varahamihira_v1`; unsupported generic kārakas remain disabled.
 - Duplicate evidence derived from one planet-strength fact is consolidated by the
   engine instead of being summed.
+- D9 confirms a Graha only through Astro's existing, boundary-tested Vargottama
+  fact. Confirmation is trace-only and adds no second directional weight.
+- D10 is not calculated by Astro. Career output therefore carries an explicit
+  zero-weight abstention marker instead of a fabricated D10 interpretation.
 
 ## Release restriction
 

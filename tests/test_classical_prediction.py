@@ -47,6 +47,7 @@ def _dasha_payload() -> dict:
                         "graha": name,
                         "d1_sign_index": index,
                         "d1_house": index,
+                        "vargottama": name == "jupiter",
                     }
                     for index, name in enumerate(
                         [
@@ -153,6 +154,27 @@ def test_prediction_composes_existing_astro_modules(monkeypatch) -> None:
     assert results["travel_change"].outlook == "challenging"
     assert results["family_home"].outlook == "mixed"
     assert results["spirituality"].outlook == "mixed"
+    jupiter_confirmation = next(
+        factor
+        for factor in (
+            *results["spirituality"].supporting_factors,
+            *results["spirituality"].challenging_factors,
+        )
+        if factor.independence_key
+        == "natal-spirituality-jupiter-controlled-strength"
+    )
+    assert "D9 confirmation" in jupiter_confirmation.reason
+    assert (
+        "VM-BJ-C01-VARGOTTAMA-EVAL-001"
+        in jupiter_confirmation.source_rule_ids
+    )
+    d10_marker = next(
+        factor
+        for factor in results["career"].contextual_factors
+        if factor.evidence_id == "coverage-varga-d10-career"
+    )
+    assert d10_marker.weight == 0.0
+    assert "unavailable" in d10_marker.statement
     assert all(
         factor.independence_key
         for result in response.results
