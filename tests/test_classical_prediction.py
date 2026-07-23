@@ -42,12 +42,27 @@ def _dasha_payload() -> dict:
         "weighted_strength": {
             "calculation_profile": "south_indian_drik_lahiri_jpl_de440s_v1",
             "raw_strength": {
+                "cancellation_policy": {
+                    "confirmed_rule_count": 0,
+                    "cancellation_rules_enabled": False,
+                    "supported_rule_ids": [],
+                },
+                "cancellations_applied": False,
                 "grahas": [
                     {
                         "graha": name,
                         "d1_sign_index": index,
                         "d1_house": index,
                         "vargottama": name == "jupiter",
+                        "cancellation": {
+                            "status": (
+                                "unsupported_by_profile"
+                                if name == "saturn"
+                                else "not_applicable"
+                            ),
+                            "applicable": name == "saturn",
+                            "cancellation_applied": False,
+                        },
                     }
                     for index, name in enumerate(
                         [
@@ -67,6 +82,8 @@ def _dasha_payload() -> dict:
                 {
                     "graha": name,
                     "total_score": score,
+                    "cancellation_adjustment": 0.0,
+                    "cancellation_applied": False,
                     "components": [
                         {
                             "classical_rule_ids": [
@@ -175,6 +192,16 @@ def test_prediction_composes_existing_astro_modules(monkeypatch) -> None:
     )
     assert d10_marker.weight == 0.0
     assert "unavailable" in d10_marker.statement
+    saturn_boundary = next(
+        factor
+        for factor in results["career"].challenging_factors
+        if factor.independence_key == "natal-career-saturn-controlled-strength"
+    )
+    assert "Cancellation boundary" in saturn_boundary.reason
+    assert "No cancellation or score adjustment was applied" in saturn_boundary.reason
+    assert "VM-BJ-C02-CANCELLATION-SOURCE-BOUNDARY-001" in (
+        saturn_boundary.source_rule_ids
+    )
     assert all(
         factor.independence_key
         for result in response.results

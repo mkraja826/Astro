@@ -1,7 +1,7 @@
 # Phase 3 prediction compatibility
 
 This development-only integration pins Varahamihira commit
-`b70ddc9472c848cb79f703061da5c882d02f4fe5` and accepts
+`449b6bf1ff3709950c27f689722f76ee8b8a53e1` and accepts
 `horos_brihat_jataka_v3_dev` responses.
 
 ## Contract changes
@@ -18,6 +18,11 @@ This development-only integration pins Varahamihira commit
   fact. Confirmation is trace-only and adds no second directional weight.
 - D10 is not calculated by Astro. Career output therefore carries an explicit
   zero-weight abstention marker instead of a fabricated D10 interpretation.
+- The prediction adapter requires Astro's cancellation policy to remain disabled
+  with zero confirmed rules and zero numeric adjustment. Unsupported debilitation
+  cancellation candidates receive a non-additive boundary trace.
+- Any enabled or applied cancellation fails closed. Cross-text Nīcabhaṅga
+  conventions are not imported into `varahamihira_v1`.
 
 ## Release restriction
 
