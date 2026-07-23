@@ -1,0 +1,62 @@
+{
+  "source": {
+    "source_name": "Maitreya",
+    "source_version": "8.2",
+    "source_kind": "external_software",
+    "calculation_notes": [
+      "Birth: 1998-10-26 10:28:00 Asia/Kolkata",
+      "Coordinates: 16.575 N, 79.312 E",
+      "Altitude: 120 metres",
+      "Gregorian calendar",
+      "Vedic/sidereal zodiac",
+      "Lahiri/Chitrapaksha ayanamsha",
+      "True lunar node — confirm exact Maitreya setting label in retained evidence",
+      "Geocentric positions",
+      "No DST",
+      "AWAITING exact Maitreya ephemeris, correction, house, and node setting labels",
+      "AWAITING retained evidence filenames"
+    ]
+  },
+  "format": "generic_json_v1",
+  "payload": {
+    "chart": {
+      "ayanamsa": null,
+      "lagna_longitude": null,
+      "planetary_longitudes": {
+        "Sun": null,
+        "Moon": null,
+        "Mars": null,
+        "Mercury": null,
+        "Jupiter": null,
+        "Venus": null,
+        "Saturn": null,
+        "Rahu": null,
+        "Ketu": null
+      },
+      "rasi_signs": {
+        "Lagna": null,
+        "Sun": null,
+        "Moon": null,
+        "Mars": null,
+        "Mercury": null,
+        "Jupiter": null,
+        "Venus": null,
+        "Saturn": null,
+        "Rahu": null,
+        "Ketu": null
+      },
+      "navamsha_signs": {
+        "Lagna": null,
+        "Sun": null,
+        "Moon": null,
+        "Mars": null,
+        "Mercury": null,
+        "Jupiter": null,
+        "Venus": null,
+        "Saturn": null,
+        "Rahu": null,
+        "Ketu": null
+      }
+    }
+  }
+}
