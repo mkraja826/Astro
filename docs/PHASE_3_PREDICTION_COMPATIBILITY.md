@@ -1,7 +1,7 @@
 # Phase 3 prediction compatibility
 
 This development-only integration pins Varahamihira commit
-`946893a1f5a17376da3f39dfee70e2c48cbd8e55` and accepts
+`bfcb89b74946716c1a0e6645cd0ec0bf31c774b3` and accepts
 `horos_brihat_jataka_v3_dev` responses.
 
 ## Contract changes
@@ -28,6 +28,10 @@ This development-only integration pins Varahamihira commit
   transit channel is present.
 - Natal and active-daśā evidence remains visible as capacity and broad activation;
   it is not relabeled as short-term transit timing.
+- Non-natal predictions now calculate the frozen Chapter 9 daily, weekly, or
+  monthly transit horizon and pass it through the strict engine adapter.
+- Timing becomes `evaluated` only after sample-count, seven-Graha, rule-ID,
+  polarity, range, and exact-ingress-abstention checks pass.
 
 ## Release restriction
 

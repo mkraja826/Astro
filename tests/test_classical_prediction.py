@@ -134,6 +134,56 @@ def _dasha_payload() -> dict:
     }
 
 
+def _transit_horizon_payload() -> dict:
+    return {
+        "period": "daily",
+        "sample_count": 4,
+        "sampling_applied": True,
+        "exact_ingress_egress_applied": False,
+        "samples": [
+            {
+                "sample_index": sample_index,
+                "local_datetime": f"2026-07-23T{hour:02d}:00:00",
+                "timezone": "Asia/Kolkata",
+                "factors": [
+                    {
+                        "body": name,
+                        "transit_sign_index": house,
+                        "house_from_natal_ascendant": house,
+                        "house_from_natal_moon": house,
+                        "bindus": bindus,
+                        "rekhas": 8 - bindus,
+                        "net_eighths": (2 * bindus) - 8,
+                        "normalized_balance": ((2 * bindus) - 8) / 8,
+                        "polarity": (
+                            "supporting"
+                            if bindus > 4
+                            else "challenging"
+                            if bindus < 4
+                            else "contextual"
+                        ),
+                        "rule_ids": [
+                            "VM-BJ-C09-TRANSIT-BAV-BALANCE-001",
+                            f"VM-BJ-C09-{name.upper()}-BAV-001",
+                        ],
+                        "reason": "Synthetic transit fixture.",
+                    }
+                    for name, house, bindus in (
+                        ("sun", 1, 4),
+                        ("moon", 4, 5),
+                        ("mars", 10, 2),
+                        ("mercury", 5, 5),
+                        ("jupiter", 9, 6),
+                        ("venus", 7, 3),
+                        ("saturn", 10, 2),
+                    )
+                ],
+            }
+            for sample_index, hour in enumerate((0, 6, 12, 18), start=1)
+        ],
+    }
+
+
 def test_prediction_composes_existing_astro_modules(monkeypatch) -> None:
     monkeypatch.setattr(
         classical_prediction,
@@ -144,6 +194,13 @@ def test_prediction_composes_existing_astro_modules(monkeypatch) -> None:
         classical_prediction,
         "calculate_varahamihira_weighted_dasha",
         lambda request: SimpleNamespace(model_dump=lambda mode: _dasha_payload()),
+    )
+    monkeypatch.setattr(
+        classical_prediction,
+        "calculate_varahamihira_transit_horizon",
+        lambda request: SimpleNamespace(
+            model_dump=lambda mode: _transit_horizon_payload()
+        ),
     )
     request = ClassicalPredictionRequest(
         birth=BirthInput(
@@ -166,12 +223,12 @@ def test_prediction_composes_existing_astro_modules(monkeypatch) -> None:
     assert response.engine_version == "horos_brihat_jataka_v3_dev"
     assert results["career"].outlook == "challenging"
     assert "negative" in results["career"].statement
-    assert results["career"].timing_status == "unavailable"
+    assert results["career"].timing_status == "evaluated"
     assert results["career"].favourable_timing is None
-    assert results["career"].challenging_timing is None
+    assert results["career"].challenging_timing
     assert results["money_resources"].outlook == "challenging"
     assert results["travel_change"].outlook == "challenging"
-    assert results["family_home"].outlook == "mixed"
+    assert results["family_home"].outlook == "favourable"
     assert results["spirituality"].outlook == "mixed"
     jupiter_confirmation = next(
         factor
@@ -214,5 +271,5 @@ def test_prediction_composes_existing_astro_modules(monkeypatch) -> None:
         )
     )
     assert len(results) == 9
-    assert all(result.timing_status == "unavailable" for result in response.results)
+    assert all(result.timing_status == "evaluated" for result in response.results)
     assert response.disclaimer
