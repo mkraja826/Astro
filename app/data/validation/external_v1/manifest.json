@@ -6,7 +6,35 @@
   "case_set_id": "jyothisyam_external_golden_cases_v1",
   "case_set_digest": "5dcd67cd142e49127cdb62165ca8e1ccb7b28f58fabbf3612eeca42c5392f624",
   "required_external_sources_per_case": 2,
-  "records": [],
+  "records": [
+    {
+      "snapshot_id": "gc_india_nagarjuna_sagar_1998_jagannatha_hora_8_0",
+      "case_id": "gc_india_nagarjuna_sagar_1998",
+      "source_id": "jagannatha_hora_8_0",
+      "source": {
+        "source_name": "Jagannatha Hora",
+        "source_version": "8.0",
+        "source_kind": "external_software",
+        "calculation_notes": [
+          "Controlled manual input for the frozen Nagarjuna Sagar case.",
+          "True Lahiri/Chitrapaksha ayanamsha and true lunar nodes.",
+          "Apparent geocentric positions; refraction disabled; aberration, deflection, and nutation enabled."
+        ]
+      },
+      "snapshot_path": "app/data/validation/external_v1/gc_india_nagarjuna_sagar_1998/jagannatha_hora_8_0.json",
+      "snapshot_sha256": "fdf4d6f28d849496605ab05a5fa121561e77c24a36f1323a083af36fdd811849",
+      "review_status": "approved",
+      "reviewed_by": "mkraja826",
+      "reviewed_at": "2026-07-21T12:32:01Z",
+      "review_notes": [
+        "Migrated from the approved evidence set merged through Astro PR #24.",
+        "Diagnostic comparison passed 31 of 31 fields.",
+        "Strict comparison passed 31 of 31 fields.",
+        "D1 and D9 signs each matched 10 of 10.",
+        "This is Source 1 only; a second independent source remains required for this case."
+      ]
+    }
+  ],
   "policy_notes": [
     "Internal JPL regression baselines never count as independent external evidence.",
     "A case is externally validated only after two distinct approved external source IDs are committed.",
