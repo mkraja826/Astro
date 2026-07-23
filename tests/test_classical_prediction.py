@@ -40,7 +40,68 @@ def _dasha_payload() -> dict:
     return {
         "profile_id": "varahamihira_v1",
         "weighted_strength": {
-            "calculation_profile": "south_indian_drik_lahiri_jpl_de440s_v1"
+            "calculation_profile": "south_indian_drik_lahiri_jpl_de440s_v1",
+            "raw_strength": {
+                "cancellation_policy": {
+                    "confirmed_rule_count": 0,
+                    "cancellation_rules_enabled": False,
+                    "supported_rule_ids": [],
+                },
+                "cancellations_applied": False,
+                "grahas": [
+                    {
+                        "graha": name,
+                        "d1_sign_index": index,
+                        "d1_house": index,
+                        "vargottama": name == "jupiter",
+                        "cancellation": {
+                            "status": (
+                                "unsupported_by_profile"
+                                if name == "saturn"
+                                else "not_applicable"
+                            ),
+                            "applicable": name == "saturn",
+                            "cancellation_applied": False,
+                        },
+                    }
+                    for index, name in enumerate(
+                        [
+                            "sun",
+                            "moon",
+                            "mars",
+                            "mercury",
+                            "jupiter",
+                            "venus",
+                            "saturn",
+                        ],
+                        start=1,
+                    )
+                ]
+            },
+            "weighted_grahas": [
+                {
+                    "graha": name,
+                    "total_score": score,
+                    "cancellation_adjustment": 0.0,
+                    "cancellation_applied": False,
+                    "components": [
+                        {
+                            "classical_rule_ids": [
+                                "VM-BJ-C02-DIGNITY-001"
+                            ]
+                        }
+                    ],
+                }
+                for name, score in {
+                    "sun": 2.0,
+                    "moon": 3.0,
+                    "mars": -8.0,
+                    "mercury": 1.0,
+                    "jupiter": 4.0,
+                    "venus": -4.0,
+                    "saturn": -4.0,
+                }.items()
+            ],
         },
         "dasha": {
             "levels": [
@@ -102,12 +163,56 @@ def test_prediction_composes_existing_astro_modules(monkeypatch) -> None:
     response = classical_prediction.calculate_varahamihira_prediction(request)
     results = {result.domain: result for result in response.results}
 
-    assert response.engine_version == "horos_brihat_jataka_v2"
+    assert response.engine_version == "horos_brihat_jataka_v3_dev"
     assert results["career"].outlook == "challenging"
     assert "negative" in results["career"].statement
-    assert results["career"].challenging_timing
+    assert results["career"].timing_status == "unavailable"
+    assert results["career"].favourable_timing is None
+    assert results["career"].challenging_timing is None
     assert results["money_resources"].outlook == "challenging"
     assert results["travel_change"].outlook == "challenging"
-    assert results["family_home"].outlook == "insufficient_evidence"
+    assert results["family_home"].outlook == "mixed"
+    assert results["spirituality"].outlook == "mixed"
+    jupiter_confirmation = next(
+        factor
+        for factor in (
+            *results["spirituality"].supporting_factors,
+            *results["spirituality"].challenging_factors,
+        )
+        if factor.independence_key
+        == "natal-spirituality-jupiter-controlled-strength"
+    )
+    assert "D9 confirmation" in jupiter_confirmation.reason
+    assert (
+        "VM-BJ-C01-VARGOTTAMA-EVAL-001"
+        in jupiter_confirmation.source_rule_ids
+    )
+    d10_marker = next(
+        factor
+        for factor in results["career"].contextual_factors
+        if factor.evidence_id == "coverage-varga-d10-career"
+    )
+    assert d10_marker.weight == 0.0
+    assert "unavailable" in d10_marker.statement
+    saturn_boundary = next(
+        factor
+        for factor in results["career"].challenging_factors
+        if factor.independence_key == "natal-career-saturn-controlled-strength"
+    )
+    assert "Cancellation boundary" in saturn_boundary.reason
+    assert "No cancellation or score adjustment was applied" in saturn_boundary.reason
+    assert "VM-BJ-C02-CANCELLATION-SOURCE-BOUNDARY-001" in (
+        saturn_boundary.source_rule_ids
+    )
+    assert all(
+        factor.independence_key
+        for result in response.results
+        for factor in (
+            *result.supporting_factors,
+            *result.challenging_factors,
+            *result.contextual_factors,
+        )
+    )
     assert len(results) == 9
+    assert all(result.timing_status == "unavailable" for result in response.results)
     assert response.disclaimer

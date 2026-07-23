@@ -43,6 +43,7 @@ class PredictionEvidence(BaseModel):
     source_rule_ids: list[str]
     source_kind: str
     reason: str
+    independence_key: str
 
 
 class PredictionDomainResult(BaseModel):
@@ -58,6 +59,7 @@ class PredictionDomainResult(BaseModel):
     net_score: float
     statement: str
     advisory: str
+    timing_status: str
     favourable_timing: str | None
     challenging_timing: str | None
     supporting_factors: list[PredictionEvidence]
