@@ -56,9 +56,11 @@ class ExternalValidationSnapshotRecord(BaseModel):
 
         if self.source.source_kind == ValidationSourceKind.INTERNAL_BASELINE:
             raise ValueError("external validation records cannot use internal baselines")
-        if self.review_status == ExternalValidationReviewStatus.APPROVED:
-            if self.reviewed_by is None or self.reviewed_at is None:
-                raise ValueError("approved snapshots require reviewed_by and reviewed_at")
+        if (
+            self.review_status == ExternalValidationReviewStatus.APPROVED
+            and (self.reviewed_by is None or self.reviewed_at is None)
+        ):
+            raise ValueError("approved snapshots require reviewed_by and reviewed_at")
         return self
 
 
