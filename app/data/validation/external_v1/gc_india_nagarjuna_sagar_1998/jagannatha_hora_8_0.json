@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.0.0",
+  "case_id": "gc_india_nagarjuna_sagar_1998",
+  "source_id": "jagannatha_hora_8_0",
+  "source": {
+    "source_name": "Jagannatha Hora",
+    "source_version": "8.0",
+    "source_kind": "external_software",
+    "calculation_notes": [
+      "Controlled manual birth input: 1998-10-26 10:28:00, Asia/Kolkata.",
+      "Coordinates: 16.575 N, 79.312 E; altitude 120 metres.",
+      "True Lahiri/Chitrapaksha ayanamsha.",
+      "Apparent geocentric positions with no refraction.",
+      "Annual aberration, gravitational deflection, and nutation enabled.",
+      "True lunar nodes.",
+      "Values were transcribed from the evidence set committed by Astro PR #24."
+    ]
+  },
+  "calculation_profile": "south_indian_drik_lahiri_jpl_de440s_v1",
+  "reference_snapshot": {
+    "ayanamsha_degrees": 23.819180555556,
+    "ascendant_longitude": 246.885947222222,
+    "point_longitudes": {
+      "sun": 188.75805,
+      "moon": 252.253763888889,
+      "mars": 137.485827777778,
+      "mercury": 207.310741666667,
+      "jupiter": 324.913755555556,
+      "venus": 187.743222222222,
+      "saturn": 6.149566666667,
+      "rahu": 125.207236111111,
+      "ketu": 305.207236111111
+    },
+    "d1_signs": {
+      "ascendant": 9,
+      "sun": 7,
+      "moon": 9,
+      "mars": 5,
+      "mercury": 7,
+      "jupiter": 11,
+      "venus": 7,
+      "saturn": 1,
+      "rahu": 5,
+      "ketu": 11
+    },
+    "d9_signs": {
+      "ascendant": 3,
+      "sun": 9,
+      "moon": 4,
+      "mars": 6,
+      "mercury": 3,
+      "jupiter": 2,
+      "venus": 9,
+      "saturn": 2,
+      "rahu": 2,
+      "ketu": 8
+    }
+  },
+  "comparison": {
+    "tolerances": {
+      "longitude_degrees": 0.01,
+      "ayanamsha_degrees": 0.01,
+      "score": 1e-06
+    },
+    "diagnostic": {
+      "compared_field_count": 31,
+      "matched_field_count": 31,
+      "mismatched_field_count": 0,
+      "passed": true
+    },
+    "strict": {
+      "compared_field_count": 31,
+      "matched_field_count": 31,
+      "mismatched_field_count": 0,
+      "passed": true
+    }
+  },
+  "historical_approval": {
+    "approved_by": "mkraja826",
+    "approved_at": "2026-07-21T12:32:01Z",
+    "approval_scope": "external_source_1",
+    "evidence_sufficiency": "sufficient_for_formal_comparison",
+    "source_pull_request": 24,
+    "source_merge_commit": "0ffc035779186de310a632a4e8ef63a456a54750"
+  },
+  "evidence_location": "external-validation/gc_india_nagarjuna_sagar_1998/source-1-jagannatha-hora-8.0/"
+}
