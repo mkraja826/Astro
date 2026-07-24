@@ -1,14 +1,16 @@
-"""Protected Phase 4 route for anonymous compatibility calculation facts."""
+"""Protected Phase 4 routes for anonymous compatibility facts and reports."""
 
 from fastapi import APIRouter, HTTPException, status
 
 from app.core.ephemeris import EphemerisConfigurationError, EphemerisUnavailableError
 from app.engine.compatibility_facts import calculate_compatibility_facts
+from app.engine.compatibility_report import calculate_compatibility_report
 from app.engine.positions import BirthTimeError
 from app.schemas.compatibility import (
     CompatibilityFactsResponse,
     DualChartCompatibilityRequest,
 )
+from app.schemas.compatibility_report import CompatibilityReportResponse
 
 router = APIRouter(
     prefix="/v1/classical/varahamihira_v1/compatibility",
@@ -51,6 +53,33 @@ def compatibility_facts(
 
     try:
         return calculate_compatibility_facts(request)
+    except (BirthTimeError, ValueError) as exc:
+        raise _unprocessable(exc) from exc
+    except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
+        raise _ephemeris_unavailable(exc) from exc
+
+
+@router.post(
+    "/report",
+    response_model=CompatibilityReportResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Calculate and interpret an anonymous Kundli compatibility report",
+    responses={
+        422: {
+            "description": "Invalid birth input, roles, facts, or interpretation contract",
+        },
+        503: {
+            "description": "Required local JPL ephemeris data is unavailable",
+        },
+    },
+)
+def compatibility_report(
+    request: DualChartCompatibilityRequest,
+) -> CompatibilityReportResponse:
+    """Return raw facts plus source-traceable non-deterministic interpretation."""
+
+    try:
+        return calculate_compatibility_report(request)
     except (BirthTimeError, ValueError) as exc:
         raise _unprocessable(exc) from exc
     except (EphemerisConfigurationError, EphemerisUnavailableError) as exc:
