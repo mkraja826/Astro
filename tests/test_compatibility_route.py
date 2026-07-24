@@ -25,13 +25,14 @@ def request() -> DualChartCompatibilityRequest:
     )
 
 
-def test_router_exposes_versioned_compatibility_facts_path() -> None:
+def test_router_exposes_versioned_compatibility_paths() -> None:
     paths = {route.path for route in compatibility_route.router.routes}
 
     assert "/v1/classical/varahamihira_v1/compatibility/facts" in paths
+    assert "/v1/classical/varahamihira_v1/compatibility/report" in paths
 
 
-def test_route_translates_calculation_validation_errors(
+def test_facts_route_translates_calculation_validation_errors(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
@@ -45,3 +46,19 @@ def test_route_translates_calculation_validation_errors(
 
     assert error.value.status_code == 422
     assert error.value.detail == "invalid compatibility facts"
+
+
+def test_report_route_translates_interpretation_validation_errors(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        compatibility_route,
+        "calculate_compatibility_report",
+        lambda _request: (_ for _ in ()).throw(ValueError("invalid compatibility report")),
+    )
+
+    with pytest.raises(HTTPException) as error:
+        compatibility_route.compatibility_report(request())
+
+    assert error.value.status_code == 422
+    assert error.value.detail == "invalid compatibility report"
