@@ -207,8 +207,10 @@ def test_assembler_returns_complete_36_point_facts_with_explicit_roles(
         for item in result.ashtakoota_components
     )
     assert 0 <= result.total_achieved_points <= 36
-    assert result.subject_manglik_factors == []
-    assert any("Manglik/Kuja" in caveat for caveat in result.caveats)
+    assert len(result.subject_manglik_factors) == 3
+    assert len(result.partner_manglik_factors) == 3
+    assert all(item.rule_ids for item in result.subject_manglik_factors)
+    assert any("not rejection rules" in caveat for caveat in result.caveats)
 
 
 def test_assembler_rejects_mismatched_engine_provenance(
