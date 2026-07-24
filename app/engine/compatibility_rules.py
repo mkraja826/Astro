@@ -1,29 +1,32 @@
-"""Direction-independent Phase 4 Ashtakoota calculation conventions.
+"""Safe Phase 4 Ashtakoota convention evaluators and explicit abstentions.
 
 These evaluators expose raw calculation facts only. They do not interpret a
 relationship, guarantee an outcome, or decide whether a match should proceed.
-Directional components remain disabled until the request contract carries an
-explicit traditional role model. Tara remains disabled until its reciprocal
-counting and Janma convention are frozen.
+Directional components remain abstained until their role-aware tables are
+implemented and reviewed.
 """
 
 from __future__ import annotations
 
 from app.schemas.compatibility import (
+    ASHTAKOOTA_MAXIMUM_POINTS,
     AshtakootaComponent,
     AshtakootaComponentFact,
     CompatibilityNatalFacts,
+    ComponentEvaluationStatus,
+    TraditionalCompatibilityRole,
 )
 
-COMPATIBILITY_CONVENTION_PROFILE = "north_indian_ashtakoota_tables_v1"
+COMPATIBILITY_CONVENTION_PROFILE = "north_indian_ashtakoota_tables_v2"
 
 DIRECTIONAL_COMPONENTS = (
     AshtakootaComponent.VARNA,
     AshtakootaComponent.VASHYA,
     AshtakootaComponent.GANA,
 )
-PENDING_CONVENTION_COMPONENTS = (AshtakootaComponent.TARA,)
+PENDING_CONVENTION_COMPONENTS: tuple[AshtakootaComponent, ...] = ()
 EVALUATED_COMPONENTS = (
+    AshtakootaComponent.TARA,
     AshtakootaComponent.YONI,
     AshtakootaComponent.GRAHA_MAITRI,
     AshtakootaComponent.BHAKOOT,
@@ -72,6 +75,7 @@ _NADI_BY_NAKSHATRA = (
     0, 1, 2, 2, 1, 0, 0, 1, 2, 2, 1, 0, 0, 1, 2, 2, 1, 0,
     0, 1, 2, 2, 1, 0, 0, 1, 2,
 )
+_TARA_CHALLENGING_REMAINDERS = {3, 5, 7}
 
 
 def _fact(
@@ -80,22 +84,89 @@ def _fact(
     rule_id: str,
     *notes: str,
 ) -> AshtakootaComponentFact:
-    maximums = {
-        AshtakootaComponent.YONI: 4,
-        AshtakootaComponent.GRAHA_MAITRI: 5,
-        AshtakootaComponent.BHAKOOT: 7,
-        AshtakootaComponent.NADI: 8,
-    }
     return AshtakootaComponentFact(
         component=component,
+        status=ComponentEvaluationStatus.EVALUATED,
         achieved_points=points,
-        maximum_points=maximums[component],
+        maximum_points=ASHTAKOOTA_MAXIMUM_POINTS[component],
         rule_ids=[rule_id],
         source_kind="convention",
         calculation_notes=[
             f"Convention profile: {COMPATIBILITY_CONVENTION_PROFILE}.",
             *notes,
         ],
+    )
+
+
+def _abstained_fact(
+    component: AshtakootaComponent,
+    reason: str,
+) -> AshtakootaComponentFact:
+    return AshtakootaComponentFact(
+        component=component,
+        status=ComponentEvaluationStatus.ABSTAINED,
+        achieved_points=None,
+        maximum_points=ASHTAKOOTA_MAXIMUM_POINTS[component],
+        rule_ids=[f"ASTRO-CONV-ASHTAKOOTA-{component.value.upper()}-ABSTAIN-001"],
+        source_kind="convention",
+        abstention_reason=reason,
+        calculation_notes=[
+            f"Convention profile: {COMPATIBILITY_CONVENTION_PROFILE}.",
+            "No points are imputed for an abstained component.",
+        ],
+    )
+
+
+def _inclusive_tara_count(start_nakshatra: int, end_nakshatra: int) -> int:
+    return ((end_nakshatra - start_nakshatra) % 27) + 1
+
+
+def _tara_remainder(count: int) -> int:
+    remainder = count % 9
+    return 9 if remainder == 0 else remainder
+
+
+def evaluate_tara(
+    subject_nakshatra_index: int,
+    partner_nakshatra_index: int,
+) -> AshtakootaComponentFact:
+    """Apply reciprocal inclusive Tara counts with 1.5 points per supportive direction."""
+
+    subject_to_partner_count = _inclusive_tara_count(
+        subject_nakshatra_index,
+        partner_nakshatra_index,
+    )
+    partner_to_subject_count = _inclusive_tara_count(
+        partner_nakshatra_index,
+        subject_nakshatra_index,
+    )
+    subject_to_partner_remainder = _tara_remainder(subject_to_partner_count)
+    partner_to_subject_remainder = _tara_remainder(partner_to_subject_count)
+    supportive_directions = sum(
+        remainder not in _TARA_CHALLENGING_REMAINDERS
+        for remainder in (
+            subject_to_partner_remainder,
+            partner_to_subject_remainder,
+        )
+    )
+    points = 1.5 * supportive_directions
+    return _fact(
+        AshtakootaComponent.TARA,
+        points,
+        "ASTRO-CONV-ASHTAKOOTA-TARA-001",
+        (
+            "Counts are inclusive in both directions; remainders 3, 5, and 7 "
+            "are treated as challenging."
+        ),
+        (
+            f"Subject-to-partner count/remainder: "
+            f"{subject_to_partner_count}/{subject_to_partner_remainder}."
+        ),
+        (
+            f"Partner-to-subject count/remainder: "
+            f"{partner_to_subject_count}/{partner_to_subject_remainder}."
+        ),
+        "Each supportive direction contributes 1.5 points; Janma remainder 1 is supportive.",
     )
 
 
@@ -172,7 +243,7 @@ def evaluate_nadi(
         "ASTRO-CONV-ASHTAKOOTA-NADI-001",
         f"Subject Nadi: {_NADI_NAMES[subject_nadi]}.",
         f"Partner Nadi: {_NADI_NAMES[partner_nadi]}.",
-        "No same-star, same-sign, or other cancellation convention is applied in v1.",
+        "No same-star, same-sign, or other cancellation convention is applied in v2.",
     )
 
 
@@ -180,11 +251,46 @@ def evaluate_direction_independent_components(
     subject: CompatibilityNatalFacts,
     partner: CompatibilityNatalFacts,
 ) -> tuple[AshtakootaComponentFact, ...]:
-    """Evaluate only components that do not require traditional role assignment."""
+    """Evaluate all released components that do not require traditional roles."""
 
     return (
+        evaluate_tara(subject.moon_nakshatra_index, partner.moon_nakshatra_index),
         evaluate_yoni(subject.moon_nakshatra_index, partner.moon_nakshatra_index),
         evaluate_graha_maitri(subject.moon_sign_index, partner.moon_sign_index),
         evaluate_bhakoot(subject.moon_sign_index, partner.moon_sign_index),
         evaluate_nadi(subject.moon_nakshatra_index, partner.moon_nakshatra_index),
+    )
+
+
+def evaluate_all_components_with_abstentions(
+    subject: CompatibilityNatalFacts,
+    partner: CompatibilityNatalFacts,
+    *,
+    subject_role: TraditionalCompatibilityRole = TraditionalCompatibilityRole.UNSPECIFIED,
+    partner_role: TraditionalCompatibilityRole = TraditionalCompatibilityRole.UNSPECIFIED,
+) -> tuple[AshtakootaComponentFact, ...]:
+    """Return all eight components, abstaining instead of inventing directional points."""
+
+    roles_supplied = (
+        subject_role is not TraditionalCompatibilityRole.UNSPECIFIED
+        and partner_role is not TraditionalCompatibilityRole.UNSPECIFIED
+    )
+    if roles_supplied:
+        directional_reason = (
+            "Traditional roles were supplied, but this directional evaluator is not "
+            "released in the current convention profile."
+        )
+    else:
+        directional_reason = (
+            "Traditional bride/groom roles were not supplied; this directional "
+            "component cannot be evaluated safely."
+        )
+
+    released = {
+        fact.component: fact
+        for fact in evaluate_direction_independent_components(subject, partner)
+    }
+    return tuple(
+        released.get(component) or _abstained_fact(component, directional_reason)
+        for component in AshtakootaComponent
     )
