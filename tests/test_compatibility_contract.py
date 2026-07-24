@@ -16,7 +16,9 @@ from app.schemas.compatibility import (
     AshtakootaComponentFact,
     CompatibilityFactsResponse,
     CompatibilityNatalFacts,
+    ComponentEvaluationStatus,
     DualChartCompatibilityRequest,
+    TraditionalCompatibilityRole,
 )
 from app.schemas.positions import BirthInput, CalculationProfile, EngineMetadata
 
@@ -36,14 +38,26 @@ def birth(
     )
 
 
-def request(*, reverse: bool = False) -> DualChartCompatibilityRequest:
+def request(
+    *,
+    reverse: bool = False,
+    with_roles: bool = False,
+) -> DualChartCompatibilityRequest:
     first = birth(day=26)
     second = birth(day=27, latitude=17.385, longitude=78.487)
+    subject_role = TraditionalCompatibilityRole.UNSPECIFIED
+    partner_role = TraditionalCompatibilityRole.UNSPECIFIED
+    if with_roles:
+        subject_role = TraditionalCompatibilityRole.BRIDE
+        partner_role = TraditionalCompatibilityRole.GROOM
     if reverse:
         first, second = second, first
+        subject_role, partner_role = partner_role, subject_role
     return DualChartCompatibilityRequest(
         subject_birth=first,
         partner_birth=second,
+        subject_role=subject_role,
+        partner_role=partner_role,
     )
 
 
@@ -55,6 +69,32 @@ def component_facts() -> list[AshtakootaComponentFact]:
             maximum_points=maximum,
             rule_ids=(f"TEST-{component.value.upper()}",),
             source_kind="convention",
+        )
+        for component, maximum in ASHTAKOOTA_MAXIMUM_POINTS.items()
+    ]
+
+
+def partial_component_facts() -> list[AshtakootaComponentFact]:
+    directional = {
+        AshtakootaComponent.VARNA,
+        AshtakootaComponent.VASHYA,
+        AshtakootaComponent.GANA,
+    }
+    return [
+        AshtakootaComponentFact(
+            component=component,
+            status=(
+                ComponentEvaluationStatus.ABSTAINED
+                if component in directional
+                else ComponentEvaluationStatus.EVALUATED
+            ),
+            achieved_points=None if component in directional else maximum / 2,
+            maximum_points=maximum,
+            rule_ids=(f"TEST-{component.value.upper()}",),
+            source_kind="convention",
+            abstention_reason=(
+                "Directional evaluator not released." if component in directional else None
+            ),
         )
         for component, maximum in ASHTAKOOTA_MAXIMUM_POINTS.items()
     ]
@@ -94,9 +134,15 @@ def metadata() -> EngineMetadata:
     )
 
 
-def response() -> CompatibilityFactsResponse:
+def response(
+    components: list[AshtakootaComponentFact] | None = None,
+) -> CompatibilityFactsResponse:
     subject, partner, pair = compatibility_request_fingerprints(request())
-    components = component_facts()
+    items = components or component_facts()
+    evaluated = [
+        item for item in items if item.status is ComponentEvaluationStatus.EVALUATED
+    ]
+    evaluated_maximum = sum(item.maximum_points for item in evaluated)
     return CompatibilityFactsResponse(
         request_id="test-request",
         calculation_profile=(
@@ -107,8 +153,10 @@ def response() -> CompatibilityFactsResponse:
         pair_fingerprint=pair,
         subject=natal_facts(subject),
         partner=natal_facts(partner),
-        ashtakoota_components=components,
-        total_achieved_points=sum(item.achieved_points for item in components),
+        ashtakoota_components=items,
+        total_achieved_points=sum(item.achieved_points or 0.0 for item in evaluated),
+        evaluated_maximum_points=evaluated_maximum,
+        complete_36_point_evaluation=evaluated_maximum == ASHTAKOOTA_TOTAL_POINTS,
         rule_ids=["TEST-COMPATIBILITY-CONTRACT"],
         metadata=metadata(),
         caveats=["Synthetic contract fixture; no compatibility claim."],
@@ -137,6 +185,26 @@ def test_request_requires_pinned_jpl_profile() -> None:
         )
 
 
+def test_traditional_roles_are_optional_but_must_be_complete_and_distinct() -> None:
+    assert request().subject_role is TraditionalCompatibilityRole.UNSPECIFIED
+    assert request(with_roles=True).partner_role is TraditionalCompatibilityRole.GROOM
+
+    with pytest.raises(ValidationError, match="both people or neither"):
+        DualChartCompatibilityRequest(
+            subject_birth=birth(day=26),
+            partner_birth=birth(day=27),
+            subject_role=TraditionalCompatibilityRole.BRIDE,
+        )
+
+    with pytest.raises(ValidationError, match="one bride and one groom"):
+        DualChartCompatibilityRequest(
+            subject_birth=birth(day=26),
+            partner_birth=birth(day=27),
+            subject_role=TraditionalCompatibilityRole.BRIDE,
+            partner_role=TraditionalCompatibilityRole.BRIDE,
+        )
+
+
 def test_birth_fingerprint_is_stable_and_sensitive_to_calculation_inputs() -> None:
     profile = CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_JPL_DE440S_V1
     original = birth(day=26)
@@ -153,11 +221,13 @@ def test_birth_fingerprint_is_stable_and_sensitive_to_calculation_inputs() -> No
     assert len(first) == 64
 
 
-def test_pair_fingerprint_is_order_sensitive() -> None:
+def test_pair_fingerprint_is_order_and_role_sensitive() -> None:
     forward = compatibility_pair_fingerprint(request())
     reversed_pair = compatibility_pair_fingerprint(request(reverse=True))
+    role_aware = compatibility_pair_fingerprint(request(with_roles=True))
 
     assert forward != reversed_pair
+    assert forward != role_aware
 
 
 def test_component_maximums_are_frozen_and_total_36() -> None:
@@ -173,6 +243,30 @@ def test_component_maximums_are_frozen_and_total_36() -> None:
         )
 
 
+def test_component_abstention_never_imputes_points() -> None:
+    abstained = AshtakootaComponentFact(
+        component=AshtakootaComponent.GANA,
+        status=ComponentEvaluationStatus.ABSTAINED,
+        achieved_points=None,
+        maximum_points=6,
+        rule_ids=["TEST-GANA-ABSTAIN"],
+        source_kind="convention",
+        abstention_reason="Directional evaluator unavailable.",
+    )
+    assert abstained.achieved_points is None
+
+    with pytest.raises(ValidationError, match="cannot include achieved_points"):
+        AshtakootaComponentFact(
+            component=AshtakootaComponent.GANA,
+            status=ComponentEvaluationStatus.ABSTAINED,
+            achieved_points=0,
+            maximum_points=6,
+            rule_ids=["TEST-GANA-ABSTAIN"],
+            source_kind="convention",
+            abstention_reason="Directional evaluator unavailable.",
+        )
+
+
 def test_response_requires_all_eight_unique_components() -> None:
     payload = response().model_dump(mode="json")
     payload["ashtakoota_components"][-1] = payload["ashtakoota_components"][0]
@@ -181,12 +275,23 @@ def test_response_requires_all_eight_unique_components() -> None:
         CompatibilityFactsResponse.model_validate(payload)
 
 
-def test_response_total_must_match_component_facts() -> None:
+def test_response_total_must_match_evaluated_component_facts() -> None:
     payload = response().model_dump(mode="json")
     payload["total_achieved_points"] += 1
 
     with pytest.raises(ValidationError, match="does not match"):
         CompatibilityFactsResponse.model_validate(payload)
+
+
+def test_partial_response_reports_coverage_instead_of_a_false_36_point_total() -> None:
+    result = response(partial_component_facts())
+
+    assert result.evaluated_maximum_points == 27
+    assert not result.complete_36_point_evaluation
+    assert sum(
+        item.status is ComponentEvaluationStatus.ABSTAINED
+        for item in result.ashtakoota_components
+    ) == 3
 
 
 def test_serialized_response_contains_no_birth_or_name_fields() -> None:
@@ -195,6 +300,8 @@ def test_serialized_response_contains_no_birth_or_name_fields() -> None:
 
     assert payload["facts_version"] == COMPATIBILITY_FACTS_VERSION
     assert payload["total_maximum_points"] == 36
+    assert payload["evaluated_maximum_points"] == 36
+    assert payload["complete_36_point_evaluation"] is True
     assert len(payload["ashtakoota_components"]) == 8
     assert "local_datetime" not in serialized
     assert "subject_birth" not in serialized
