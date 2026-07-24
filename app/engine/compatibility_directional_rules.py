@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from app.engine.compatibility_rules import (
     COMPATIBILITY_CONVENTION_PROFILE,
-    DIRECTIONAL_COMPONENTS,
     evaluate_direction_independent_components,
 )
 from app.schemas.compatibility import (
