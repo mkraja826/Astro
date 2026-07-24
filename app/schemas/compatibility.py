@@ -100,6 +100,7 @@ class CompatibilityNatalFacts(BaseModel):
     chart_fingerprint: str = Field(pattern=_FINGERPRINT_PATTERN)
     ascendant_sign_index: int = Field(ge=1, le=12)
     moon_sign_index: int = Field(ge=1, le=12)
+    moon_degree_in_sign: float = Field(default=0.0, ge=0, lt=30)
     moon_nakshatra_index: int = Field(ge=1, le=27)
     moon_nakshatra: str = Field(min_length=1)
     moon_pada: int = Field(ge=1, le=4)
@@ -212,7 +213,7 @@ class CompatibilityFactsResponse(BaseModel):
             self.calculation_profile
             is not CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_JPL_DE440S_V1
         ):
-            raise ValueError("compatibility facts require the pinned JPL DE440s profile")
+            raise ValueError("compatibility facts require the pinned JPL DE440S profile")
         if self.subject.chart_fingerprint != self.subject_fingerprint:
             raise ValueError("subject fingerprint mismatch")
         if self.partner.chart_fingerprint != self.partner_fingerprint:
