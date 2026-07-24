@@ -7,8 +7,8 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 from app.schemas.positions import BirthInput, CalculationProfile, EngineMetadata
 
-COMPATIBILITY_FACTS_VERSION = "compatibility_facts_v1"
-COMPATIBILITY_PROFILE = "ashtakoota_v1"
+COMPATIBILITY_FACTS_VERSION = "compatibility_facts_v2"
+COMPATIBILITY_PROFILE = "ashtakoota_v2"
 ASHTAKOOTA_TOTAL_POINTS = 36
 _FINGERPRINT_PATTERN = r"^[0-9a-f]{64}$"
 
@@ -38,6 +38,21 @@ ASHTAKOOTA_MAXIMUM_POINTS: dict[AshtakootaComponent, int] = {
 }
 
 
+class TraditionalCompatibilityRole(StrEnum):
+    """Optional roles required only by directional convention tables."""
+
+    UNSPECIFIED = "unspecified"
+    BRIDE = "bride"
+    GROOM = "groom"
+
+
+class ComponentEvaluationStatus(StrEnum):
+    """Whether a component produced points or explicitly abstained."""
+
+    EVALUATED = "evaluated"
+    ABSTAINED = "abstained"
+
+
 class ManglikReferencePoint(StrEnum):
     """Reference points evaluated independently for Kuja/Manglik facts."""
 
@@ -53,6 +68,8 @@ class DualChartCompatibilityRequest(BaseModel):
 
     subject_birth: BirthInput
     partner_birth: BirthInput
+    subject_role: TraditionalCompatibilityRole = TraditionalCompatibilityRole.UNSPECIFIED
+    partner_role: TraditionalCompatibilityRole = TraditionalCompatibilityRole.UNSPECIFIED
     calculation_profile: CalculationProfile = (
         CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_JPL_DE440S_V1
     )
@@ -63,6 +80,16 @@ class DualChartCompatibilityRequest(BaseModel):
         if value is not CalculationProfile.SOUTH_INDIAN_DRIK_LAHIRI_JPL_DE440S_V1:
             raise ValueError("compatibility facts require the pinned JPL DE440s profile")
         return value
+
+    @model_validator(mode="after")
+    def validate_traditional_roles(self) -> Self:
+        subject_unspecified = self.subject_role is TraditionalCompatibilityRole.UNSPECIFIED
+        partner_unspecified = self.partner_role is TraditionalCompatibilityRole.UNSPECIFIED
+        if subject_unspecified != partner_unspecified:
+            raise ValueError("traditional roles must be supplied for both people or neither")
+        if not subject_unspecified and self.subject_role is self.partner_role:
+            raise ValueError("traditional roles must be one bride and one groom")
+        return self
 
 
 class CompatibilityNatalFacts(BaseModel):
@@ -89,28 +116,41 @@ class CompatibilityNatalFacts(BaseModel):
 
 
 class AshtakootaComponentFact(BaseModel):
-    """One raw scored component with its registered source boundary."""
+    """One raw component result or explicit abstention with its rule boundary."""
 
     model_config = ConfigDict(extra="forbid")
 
     component: AshtakootaComponent
-    achieved_points: float = Field(ge=0)
+    status: ComponentEvaluationStatus = ComponentEvaluationStatus.EVALUATED
+    achieved_points: float | None = Field(default=None, ge=0)
     maximum_points: int = Field(ge=1, le=8)
     rule_ids: list[str] = Field(min_length=1)
     source_kind: str = Field(pattern=r"^(classical|convention)$")
+    abstention_reason: str | None = None
     calculation_notes: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def validate_component_points(self) -> Self:
+    def validate_component_result(self) -> Self:
         expected_maximum = ASHTAKOOTA_MAXIMUM_POINTS[self.component]
         if self.maximum_points != expected_maximum:
             raise ValueError(
                 f"{self.component.value} maximum_points must be {expected_maximum}"
             )
-        if self.achieved_points > self.maximum_points:
-            raise ValueError("achieved_points cannot exceed maximum_points")
         if any(not rule_id.strip() for rule_id in self.rule_ids):
             raise ValueError("rule IDs must not be blank")
+
+        if self.status is ComponentEvaluationStatus.EVALUATED:
+            if self.achieved_points is None:
+                raise ValueError("evaluated components require achieved_points")
+            if self.achieved_points > self.maximum_points:
+                raise ValueError("achieved_points cannot exceed maximum_points")
+            if self.abstention_reason is not None:
+                raise ValueError("evaluated components cannot include an abstention reason")
+        else:
+            if self.achieved_points is not None:
+                raise ValueError("abstained components cannot include achieved_points")
+            if self.abstention_reason is None or not self.abstention_reason.strip():
+                raise ValueError("abstained components require an abstention reason")
         return self
 
 
@@ -145,11 +185,17 @@ class CompatibilityFactsResponse(BaseModel):
         max_length=8,
     )
     total_achieved_points: float = Field(ge=0, le=ASHTAKOOTA_TOTAL_POINTS)
+    evaluated_maximum_points: int = Field(
+        default=ASHTAKOOTA_TOTAL_POINTS,
+        ge=0,
+        le=ASHTAKOOTA_TOTAL_POINTS,
+    )
     total_maximum_points: int = Field(
         default=ASHTAKOOTA_TOTAL_POINTS,
         ge=ASHTAKOOTA_TOTAL_POINTS,
         le=ASHTAKOOTA_TOTAL_POINTS,
     )
+    complete_36_point_evaluation: bool = True
     subject_manglik_factors: list[ManglikFact] = Field(default_factory=list)
     partner_manglik_factors: list[ManglikFact] = Field(default_factory=list)
     rule_ids: list[str] = Field(min_length=1)
@@ -178,10 +224,26 @@ class CompatibilityFactsResponse(BaseModel):
         if set(components) != set(AshtakootaComponent):
             raise ValueError("the Ashtakoota component set is incomplete")
 
-        achieved_total = sum(item.achieved_points for item in self.ashtakoota_components)
+        evaluated = [
+            item
+            for item in self.ashtakoota_components
+            if item.status is ComponentEvaluationStatus.EVALUATED
+        ]
+        achieved_total = sum(item.achieved_points or 0.0 for item in evaluated)
         if abs(achieved_total - self.total_achieved_points) > 1e-6:
-            raise ValueError("total_achieved_points does not match component facts")
+            raise ValueError("total_achieved_points does not match evaluated component facts")
+        evaluated_maximum = sum(item.maximum_points for item in evaluated)
+        if evaluated_maximum != self.evaluated_maximum_points:
+            raise ValueError(
+                "evaluated_maximum_points does not match evaluated component facts"
+            )
+
         maximum_total = sum(item.maximum_points for item in self.ashtakoota_components)
         if maximum_total != ASHTAKOOTA_TOTAL_POINTS:
             raise ValueError("Ashtakoota component maximums must total 36")
+        expected_complete = evaluated_maximum == ASHTAKOOTA_TOTAL_POINTS
+        if self.complete_36_point_evaluation is not expected_complete:
+            raise ValueError(
+                "complete_36_point_evaluation does not match evaluated component coverage"
+            )
         return self

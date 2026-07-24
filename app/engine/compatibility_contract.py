@@ -10,7 +10,7 @@ from app.schemas.compatibility import DualChartCompatibilityRequest
 from app.schemas.positions import BirthInput, CalculationProfile
 
 BIRTH_FINGERPRINT_VERSION = "birth_input_fingerprint_v1"
-PAIR_FINGERPRINT_VERSION = "compatibility_pair_fingerprint_v1"
+PAIR_FINGERPRINT_VERSION = "compatibility_pair_fingerprint_v2"
 
 
 def _sha256(payload: dict[str, Any]) -> str:
@@ -49,7 +49,7 @@ def birth_input_fingerprint(
 
 
 def compatibility_pair_fingerprint(request: DualChartCompatibilityRequest) -> str:
-    """Return an order-sensitive fingerprint because some source rules are directional."""
+    """Return an order- and role-sensitive compatibility cache identity."""
 
     subject = birth_input_fingerprint(request.subject_birth, request.calculation_profile)
     partner = birth_input_fingerprint(request.partner_birth, request.calculation_profile)
@@ -59,6 +59,8 @@ def compatibility_pair_fingerprint(request: DualChartCompatibilityRequest) -> st
             "calculation_profile": request.calculation_profile.value,
             "subject_fingerprint": subject,
             "partner_fingerprint": partner,
+            "subject_role": request.subject_role.value,
+            "partner_role": request.partner_role.value,
         }
     )
 
