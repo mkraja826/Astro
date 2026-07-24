@@ -12,6 +12,7 @@ from app.api.routes import system as system_routes
 from app.api.routes.charts import router as charts_router
 from app.api.routes.classical import router as classical_router
 from app.api.routes.classical_validation import router as classical_validation_router
+from app.api.routes.compatibility import router as compatibility_router
 from app.api.routes.dasha import router as dasha_router
 from app.api.routes.panchanga import router as panchanga_router
 from app.api.routes.positions import router as positions_router
@@ -123,6 +124,7 @@ def create_app(settings: RuntimeSettings | None = None) -> FastAPI:
     application.include_router(dasha_router, dependencies=protected)
     application.include_router(classical_router, dependencies=protected)
     application.include_router(classical_validation_router, dependencies=protected)
+    application.include_router(compatibility_router, dependencies=protected)
     return application
 
 
