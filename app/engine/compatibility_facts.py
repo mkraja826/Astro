@@ -9,6 +9,7 @@ from app.engine.compatibility_directional_rules import (
     evaluate_ashtakoota_components,
     summarize_ashtakoota_coverage,
 )
+from app.engine.manglik_facts import evaluate_manglik_factors
 from app.engine.positions import calculate_positions
 from app.schemas.compatibility import (
     COMPATIBILITY_FACTS_VERSION,
@@ -90,10 +91,13 @@ def calculate_compatibility_facts(
     achieved_points, evaluated_maximum, complete = summarize_ashtakoota_coverage(
         components
     )
+    subject_manglik_factors = evaluate_manglik_factors(subject)
+    partner_manglik_factors = evaluate_manglik_factors(partner)
 
     caveats = [
         "These are traditional calculation facts, not a probability or marriage outcome.",
-        "Manglik/Kuja factors are not included in this assembler version.",
+        "Manglik/Kuja placements are separate factors and are not rejection rules.",
+        "No Manglik cancellation or severity convention is applied.",
     ]
     if not complete:
         caveats.append(
@@ -103,6 +107,8 @@ def calculate_compatibility_facts(
     rule_ids = [COMPATIBILITY_ASSEMBLER_RULE_ID]
     for component in components:
         rule_ids.extend(component.rule_ids)
+    for factor in (*subject_manglik_factors, *partner_manglik_factors):
+        rule_ids.extend(factor.rule_ids)
 
     return CompatibilityFactsResponse(
         request_id=f"compat_{uuid4().hex}",
@@ -118,8 +124,8 @@ def calculate_compatibility_facts(
         total_achieved_points=achieved_points,
         evaluated_maximum_points=evaluated_maximum,
         complete_36_point_evaluation=complete,
-        subject_manglik_factors=[],
-        partner_manglik_factors=[],
+        subject_manglik_factors=list(subject_manglik_factors),
+        partner_manglik_factors=list(partner_manglik_factors),
         rule_ids=list(dict.fromkeys(rule_ids)),
         metadata=subject_positions.metadata,
         caveats=caveats,
